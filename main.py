@@ -10,6 +10,8 @@ from langchain.prompts import PromptTemplate
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.llms import FakeListLLM
 
+from memory import SemanticLongTermMemory
+
 from prompts import KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT, ENTITY_EXTRACTION_PROMPT
 
 # template = (
@@ -48,7 +50,7 @@ conversation = ConversationChain(
     #llm=FakeListLLM(responses=["Hello, I'm Assistant", "That's fucking great man", "And I like onions !"]),
     llm=llm,
     prompt=PROMPT,
-    memory=ConversationKGMemory(
+    memory=SemanticLongTermMemory(
         llm=llm,
         k=8,
         human_prefix='User',
@@ -64,22 +66,12 @@ conversation = ConversationChain(
     # )
 )
 
-#conversation.memory.save_context({"input": "hi"}, {"output": "whats up"})
-# memory.save_context({"input": "say hi to john"}, {"output": "john! Who"})
-# memory.save_context({"input": "he is a friend"}, {"output": "sure"})
-
 # Define the chat function
 def chat_with_chatbot(user_input):
     print(conversation.memory.load_memory_variables({'input': user_input}))
-    # get a chat completion from the formatted messages
+    # get a chat completion from the input message
     response = conversation.predict(input=user_input)
 
-    print(conversation.memory.kg.get_triples())
-    # print(conversation.memory.chat_memory.messages)
-    # #memory.load_memory_variables({"input": "who is john"})
-    print(conversation.memory.load_memory_variables({'input': user_input}))
-
-    # print(response)
     return response
 
 

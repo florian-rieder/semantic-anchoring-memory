@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "semantic-anchoring-memory"
+version = "0.1.0"
+description = "Semantic Anchoring for Long-Term Conversational Memory"
+authors = ["Florian Rieder <florian.rieder@unil.ch>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+langchain = "^0.0.350"
+openai = "^1.4.0"
+chromadb = "^0.4.20"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

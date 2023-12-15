@@ -9,11 +9,10 @@ Process:
 
 import math
 
-def memory_retention(time_elapsed,
+def memory_retention(time_elapsed_since_last_access,
                      memory_stability,
                      decay_constant,
-                     boost_factor,
-                     last_access):
+                     boost_factor):
     """
     Summary:
     Calculate memory retention and update memory stability based on the
@@ -30,8 +29,6 @@ def memory_retention(time_elapsed,
     boost_factor (float):
         Determines how fast memories are strengthened through
         repetition.
-    last_access (float):
-        Time of the last access to the memory.
 
     Returns:
     retention (float):
@@ -44,7 +41,7 @@ def memory_retention(time_elapsed,
     Characters" by Fabian Landwehr, Erika Varis Doggett, and Romann M.
     Weber (Sept. 2023), p.242.
     """
-    retention = math.exp(-decay_constant * time_elapsed / memory_stability)
+    retention = math.exp(-decay_constant * time_elapsed_since_last_access / memory_stability)
     # Update stability with boost factor
     stability = memory_stability * boost_factor
     return retention, stability

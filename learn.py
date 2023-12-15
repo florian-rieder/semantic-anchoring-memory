@@ -6,10 +6,12 @@ Process:
     using the LLM to extract important facts, and creates corresponding
     memories.
 """
+from typing import List
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import LLMChain
 from langchain_core.language_models import BaseLanguageModel
+from langchain.prompts import PromptTemplate
 
 
 from prompts import KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT, FACT_EXTRACTION_PROMPT
@@ -64,7 +66,7 @@ def summarize(text: str, num_paragraphs: int, llm: BaseLanguageModel) -> str:
     return response
 
 
-def extract_facts(chunk: str, summary: str, llm: BaseLanguageModel) -> list[str]:
+def extract_facts(chunk: str, summary: str, llm: BaseLanguageModel) -> List[str]:
     # Define fact extraction prompt
     chain = LLMChain(llm=llm, prompt=FACT_EXTRACTION_PROMPT)
 

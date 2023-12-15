@@ -158,7 +158,7 @@ RESPONSE_GENERATION_TEMPLATE = (
     " Create a character response to the last message of the user."
     " The response must be from the point of view of Sherlock Holmes."
     " The response should be around 50-70 words.\n\n"
-    "Response:
+    "Response:"
 )
 
 RESPONSE_GENERATION_PROMPT = PromptTemplate(
