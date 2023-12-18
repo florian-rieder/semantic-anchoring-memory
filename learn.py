@@ -18,7 +18,7 @@ from prompts import KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT, FACT_EXTRACTION_PROMPT
 
 
 
-def split_chunk_context_pairs(text: str, llm: BaseLanguageModel) -> list[tuple]:
+def split_chunk_context_pairs(text: str, llm: BaseLanguageModel) -> List[tuple]:
     """Split text into multiple components."""
     # 1. Split source text into smaller chunks
     text_splitter = RecursiveCharacterTextSplitter(

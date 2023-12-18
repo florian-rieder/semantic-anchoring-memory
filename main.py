@@ -1,18 +1,14 @@
 from langchain.chat_models import ChatOpenAI
-from langchain.chains import ConversationChain
-from langchain.memory import ConversationBufferWindowMemory, ConversationKGMemory
-# from langchain.prompts.chat import (
-#     ChatPromptTemplate,
-#     HumanMessagePromptTemplate,
-#     SystemMessagePromptTemplate,
-# )
-from langchain.prompts import PromptTemplate
-from langchain.schema import HumanMessage, SystemMessage
 from langchain.llms import FakeListLLM
+from langchain.chains import ConversationChain
+from langchain.memory import (
+    CombinedMemory,
+    ConversationBufferWindowMemory,
+    ConversationKGMemory
+)
+from langchain.prompts import PromptTemplate
 
 from memory import SemanticLongTermMemory
-
-from prompts import KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT, ENTITY_EXTRACTION_PROMPT
 
 # template = (
 # """Assistant is a large language model (LLM).
@@ -36,43 +32,53 @@ from prompts import KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT, ENTITY_EXTRACTION_PROMPT
 template = """The following is a friendly conversation between a human and an AI Assistant. Assistant is talkative and provides lots of specific details from its context. If Assistant does not know the answer to a question, it truthfully says it does not know.
 
 Relevant information (for reference only):
+{long_term_memory}
+
+Conversation history:
 {history}
+
 User: {input}
 Assistant:"""
 
 
 PROMPT = PromptTemplate(
-    input_variables=["history", "input"], template=template)
+    input_variables=["history", "long_term_memory", "input"], template=template)
+
 
 llm = ChatOpenAI(model='gpt-3.5-turbo', temperature=0)
+# llm = FakeListLLM(responses=["Hello, I'm Assistant", "That's great man", "And I like onions !"])
 
-conversation = ConversationChain(
-    #llm=FakeListLLM(responses=["Hello, I'm Assistant", "That's fucking great man", "And I like onions !"]),
-    llm=llm,
-    prompt=PROMPT,
-    memory=SemanticLongTermMemory(
-        llm=llm,
-        k=8,
-        human_prefix='User',
-        ai_prefix='Assistant',
-        knowledge_extraction_prompt=KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
-        entity_extraction_prompt=ENTITY_EXTRACTION_PROMPT
-    ),
-    verbose=True,
-    # memory=ConversationBufferWindowMemory(
-    #     k=4,
-    #     ai_prefix="Assistant",
-    #     human_prefix="User"
-    # )
+conversation_memory = ConversationBufferWindowMemory(
+    k=4,
+    human_prefix='User',
+    ai_prefix='Assistant',
+    input_key='input'
 )
 
-# Define the chat function
-def chat_with_chatbot(user_input):
-    print(conversation.memory.load_memory_variables({'input': user_input}))
-    # get a chat completion from the input message
-    response = conversation.predict(input=user_input)
+long_term_memory = SemanticLongTermMemory(
+    llm=llm,
+    k=4,
+    human_prefix='User',
+    ai_prefix='Assistant',
+    memory_key='long_term_memory',
+    input_key='input'
+)
 
-    return response
+# long_term_memory = ConversationKGMemory(
+#     llm=llm,
+#     k=8,
+#     human_prefix='User',
+#     ai_prefix='Assistant',
+#     memory_key='long_term_memory',
+#     input_key='input'
+# )
+
+conversation = ConversationChain(
+    llm=llm,
+    prompt=PROMPT,
+    memory=CombinedMemory(memories=[conversation_memory, long_term_memory]),
+    verbose=True
+)
 
 
 if __name__ == '__main__':
@@ -81,5 +87,5 @@ if __name__ == '__main__':
         user_input = input("User: ")
         if user_input.lower() == 'exit':
             break
-        response = chat_with_chatbot(user_input)
+        response = conversation.predict(input=user_input)
         print("Assistant: " + response)
