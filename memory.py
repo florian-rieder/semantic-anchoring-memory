@@ -1,5 +1,6 @@
 
 import time
+from os import path
 
 from langchain.vectorstores import Chroma
 
@@ -19,12 +20,12 @@ from langchain.chains.llm import LLMChain
 from langchain.graphs import NetworkxEntityGraph
 from langchain.graphs.networkx_graph import KnowledgeTriple, get_entities, parse_triples
 from langchain.memory.chat_memory import BaseChatMemory
-from langchain.memory.prompt import (
+from langchain.memory.utils import get_prompt_input_key
+
+from prompts import (
     ENTITY_EXTRACTION_PROMPT,
     KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
 )
-from langchain.memory.utils import get_prompt_input_key
-
 
 class SemanticLongTermMemory(BaseChatMemory):
     """Knowledge graph conversation memory.
@@ -36,7 +37,8 @@ class SemanticLongTermMemory(BaseChatMemory):
     k: int = 2
     human_prefix: str = "Human"
     ai_prefix: str = "AI"
-    kg: NetworkxEntityGraph = Field(default_factory=NetworkxEntityGraph)
+    kg_path = "knowledge.gml"
+    kg: NetworkxEntityGraph = NetworkxEntityGraph.from_gml(kg_path) if path.exists(kg_path) else Field(default_factory=NetworkxEntityGraph)
     knowledge_extraction_prompt: BasePromptTemplate = KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT
     entity_extraction_prompt: BasePromptTemplate = ENTITY_EXTRACTION_PROMPT
     llm: BaseLanguageModel
@@ -132,11 +134,13 @@ class SemanticLongTermMemory(BaseChatMemory):
         """Save context from this conversation to buffer."""
         super().save_context(inputs, outputs)
         self._get_and_update_kg(inputs)
+        self.kg.write_to_gml("knowledge.gml")
 
     def clear(self) -> None:
         """Clear memory contents."""
         super().clear()
         self.kg.clear()
+        print("Knowledge graph cleared.")
 
 
 class Memory():
