@@ -160,3 +160,6 @@ cython_debug/
 #.idea/
 
 *.gml
+
+# Directories starting with an underscore
+_*/

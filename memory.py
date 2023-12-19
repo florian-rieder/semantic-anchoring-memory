@@ -1,15 +1,11 @@
-
-import time
-from os import path
-
-from langchain.vectorstores import Chroma
-
-
 ## see Conversation Knowledge Graph: https://python.langchain.com/docs/modules/memory/types/kg
 ## see source code: https://github.com/langchain-ai/langchain/blob/master/libs/langchain/langchain/memory/kg.py
 
 ## see NetworkX Graph: https://python.langchain.com/docs/use_cases/graph/graph_networkx_qa
+from os import path
 from typing import Any, Dict, List, Type, Union
+import time
+
 
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.messages import BaseMessage, SystemMessage, get_buffer_string
@@ -21,6 +17,7 @@ from langchain.graphs import NetworkxEntityGraph
 from langchain.graphs.networkx_graph import KnowledgeTriple, get_entities, parse_triples
 from langchain.memory.chat_memory import BaseChatMemory
 from langchain.memory.utils import get_prompt_input_key
+from langchain.vectorstores import Chroma
 
 from prompts import (
     ENTITY_EXTRACTION_PROMPT,
