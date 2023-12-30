@@ -2,11 +2,12 @@ from rdflib import Graph
 from langchain_core.vectorstores import VectorStore
 
 from typing import List
+from tqdm import tqdm
 
 
 class TBoxLoader():
     def __init__(self, ontology_path: str):
-        self.ontology_path = ontology_path
+        self.graph = Graph().parse(ontology_path)
 
     def load_predicates(self) -> List[str]:
         """
@@ -20,38 +21,89 @@ class TBoxLoader():
         predicate (domain, range, comment (useful for the similarity
         search !))
         """
-        graph = Graph().parse(self.ontology_path)
 
         query = """
-        SELECT DISTINCT ?property
+        SELECT DISTINCT ?property ?domain ?range ?comment ?label
         WHERE {
-        ?property rdf:type owl:ObjectProperty
+            ?property rdf:type owl:ObjectProperty .
+            OPTIONAL { ?property rdfs:label ?label FILTER(LANG(?label) = 'en'). }
+            OPTIONAL { ?property rdfs:comment ?comment FILTER(LANG(?label) = 'en'). }
+            OPTIONAL { ?property rdfs:domain ?domain . }
+            OPTIONAL { ?property rdfs:range ?range . }
         }
         """
 
-        result = graph.query(query)
+        result = self.graph.query(query)
 
-        # Extract specific properties from the query result
-        predicates = set(str(row['property']) for row in result)
-        print(f"Number of predicates: {len(predicates)}")
-        return predicates
+        # Build RDF/XML string for each predicate
+        predicates_rdf = []
+        for row in tqdm(result):
+            predicate_uri = str(row['property'])
 
-    def load_classes(self):
-        graph = Graph().parse(self.ontology_path)
+            label = str(row['label'])
+            comment = str(row['comment'])
+            domain = str(row['domain'])
+            range_ = str(row['range'])
+
+            predicate_rdf = '\n'.join(p for p in (
+            f'<rdf:Description rdf:about="{predicate_uri}">',
+            '    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>',
+            f'    <rdfs:label xml:lang="en">{label}</rdfs:label>' if label else '',
+            f'    <rdfs:comment xml:lang="en">{comment}</rdfs:comment>' if comment else '',
+            f'    <rdfs:domain rdf:resource="{domain}"/>' if domain else '',
+            f'    <rdfs:range rdf:resource="{range_}"/>' if range_ else '',
+            '</rdf:Description>'
+            ) if p)
+
+            predicates_rdf.append(predicate_rdf)
+
+        return set(predicates_rdf)
+
+    def load_classes(self) -> List[str]:
+        """
+        Store all of the classes in the given ontology inside a
+        vector store.
+
+        Improvement idea:
+        Not only store the URI of the class, but a chunk of RDF XML
+        (probably in the most compact format, something like turtle to
+        save tokens) that contains all relevant information about the
+        class (label, comment, subClassOf)
+        """
 
         query = """
-        SELECT DISTINCT ?class
+        SELECT DISTINCT ?class ?label ?comment ?subClassOf
         WHERE {
-        ?class rdf:type owl:Class.
+            ?class rdf:type owl:Class .
+            OPTIONAL { ?class rdfs:label ?label FILTER(LANG(?label) = 'en'). }
+            OPTIONAL { ?class rdfs:comment ?comment FILTER(LANG(?label) = 'en'). }
+            OPTIONAL { ?class rdfs:subClassOf ?subClassOf . }
         }
         """
 
-        result = graph.query(query)
-        classes = set(str(row['class']) for row in result)
+        result = self.graph.query(query)
 
-        print(f"Number of classes: {len(classes)}")
-        return classes
+        # Build RDF/XML string for each class
+        classes_rdf = []
+        for row in tqdm(result):
+            class_uri = str(row['class'])
 
+            label = str(row['label'])
+            comment = str(row['comment'])
+            subClassOf = str(row['subClassOf'])
+
+            class_rdf = '\n'.join(p for p in (
+                f'<rdf:Description rdf:about="{class_uri}">',
+                '    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>',
+                f'    <rdfs:label xml:lang="en">{label}</rdfs:label>' if label else '',
+                f'    <rdfs:comment>{comment}</rdfs:comment>' if comment else '',
+                f'    <rdfs:subClassOf rdf:resource="{subClassOf}"/>' if subClassOf else '',
+                '</rdf:Description>'
+            ) if p)
+
+            classes_rdf.append(class_rdf)
+
+        return set(classes_rdf)
 
 class TBoxStorage():
     def __init__(self, predicates_db : VectorStore, classes_db : VectorStore):
@@ -89,11 +141,11 @@ class TBoxStorage():
         for i in range(0, len(input_list), chunk_size):
             yield input_list[i:i + chunk_size]
 
+
 if __name__ == '__main__':
     from langchain.vectorstores import Chroma
-    from langchain.embeddings.openai import OpenAIEmbeddings
     from langchain.embeddings import HuggingFaceEmbeddings
-
+    # from langchain.embeddings.openai import OpenAIEmbeddings
     # embeddings = OpenAIEmbeddings(
             #     model='text-embedding-ada-002',
             #     #show_progress_bar=True,)
@@ -103,9 +155,10 @@ if __name__ == '__main__':
     #     encode_kwargs={"normalize_embeddings": True},
     # )
 
-    TBox_path = 'ontologies/dbpedia_T_Box.owl'
+    print('Initializing embeddings...')
     embeddings = HuggingFaceEmbeddings()
 
+    print('Initializing vector stores...')
     store = TBoxStorage(
         predicates_db=Chroma(
             persist_directory='./vector_db/hf_predicates_db',
@@ -117,16 +170,32 @@ if __name__ == '__main__':
         )
     )
     
-
-    # Load the classes and predicates into vector stores
-    # c = TBoxLoader(TBox_path)
-    # classes = c.load_classes()
-    # predicates = c.load_predicates()
     
-    # store.store_predicates(predicates)
-    # store.store_classes(classes)
+    print('Loading T-Box...')
+    TBox_path = 'ontologies/dbpedia_T_Box.owl'
+    # Load the classes and predicates into vector stores
+    loader = TBoxLoader(TBox_path)
+
+    print('Loading classes...')
+    classes = loader.load_classes()
+    with open('classes.owl', 'w') as f:
+        for c in classes:
+            f.write(c)
+
+    print('Loading predicates...')
+    predicates = loader.load_predicates()
+    with open('predicates.owl', 'w') as f:
+        for p in predicates:
+            f.write(p)
+    
+    print('Storing predicates...')
+    store.store_predicates(predicates)
+
+    print('Storing classes...')
+    store.store_classes(classes)
 
 
+    print('Test predictions:')
     print(f"sister: {store.query_predicates('has sister')}")
     print(f"friend: {store.query_predicates('has friend')}")
     print(f"likes: {store.query_predicates('likes')}")
