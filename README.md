@@ -11,17 +11,17 @@ The goal of this project is to give a long-term memory to a conversational LLM. 
 - [x] Chat with the user in the command line
 
 ### Reproducing Landwehr et al.
-- [x] Extract facts from conversation
-- [ ] Store facts as memories in a persistent way
+- [x] Extract facts from texts
+- [ ] Store facts as memories **beforehand** in a persistent vector store
 - [ ] Recall relevant stored facts during a conversation
 - [ ] Generate responses using these facts
 
 ### Semantic Memory
 - [x] Create a custom Memory module
-- [ ] Extract triplets from conversation
+- [x] Extract triplets from conversation
+- [ ] Encode triplets into RDF
 - [ ] Store triplets in knowledge graph
-- [ ] Store triplets in vector store
-- [ ] Recall triplets based on a similarity search
+- [ ] Recall entities based on a similarity search
 - [ ] Recall triplets using Named Entity Recognition to do a graph search
 
 

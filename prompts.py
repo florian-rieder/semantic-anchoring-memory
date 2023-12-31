@@ -20,6 +20,41 @@ FACT_EXTRACTION_PROMPT = PromptTemplate(
 )
 
 
+CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = (
+    "You are a networked intelligence helping a human track knowledge triples"
+    " about all relevant people, things, concepts, etc. and integrating"
+    " them with your knowledge stored within your weights"
+    " as well as that stored in a knowledge graph."
+    " Extract all of the knowledge triples from the summary of the last conversation."
+    " A knowledge triple is a clause that contains a subject, a predicate,"
+    " and an object. The subject is the entity being described,"
+    " the predicate is the property of the subject that is being"
+    " described, and the object is the value of the property."
+    " When information about the user is to be recorded, always use 'User' as the entity name.\n\n"
+    "EXAMPLE\n"
+    "The user is named Florian."
+    "Output: (User, is named, Florian)"
+    "END OF EXAMPLE\n\n"
+    "In more complex sentences, break down the sentence into its fundamental entities and relationships:\n"
+    "EXAMPLE\n"
+    "The user is a student who is working on a memory module for conversational AIs."
+    "Output: (User, is, student), (User, is working on, memory module), (memory module, is for, conversational AIs)"
+    "END OF EXAMPLE\n\n"
+    "EXAMPLE\n"
+    "The user is a student who received a job offer to work on a website in December.\n"
+    "Output: (User, is, student), (User, received, job offer),"
+    " (job offer, received in, December), (job offer, concerns the task of, working on a Website)\n"
+    "END OF EXAMPLE\n"
+    "Summary of the last conversation:\n"
+    "{summary}"
+    "\nOutput:"
+    ""
+)
+NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
+    input_variables=["history", "input"],
+    template=CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE,
+)
+
 
 KG_TRIPLE_DELIMITER = '<|>'
 TRIPLET_EXTRACTION_TEMPLATE = (
@@ -83,7 +118,6 @@ KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
 )
 
 
-
 _DEFAULT_ENTITY_EXTRACTION_TEMPLATE = """You are an AI assistant reading the transcript of a conversation between an AI and a human. Extract all of the proper nouns from the last line of conversation. As a guideline, a proper noun is generally capitalized. You should definitely extract all names and places. "I" usually refers to the User.
 
 The conversation history is provided just in case of a coreference (e.g. "What do you know about him" where "him" is defined in a previous line) -- ignore items mentioned there that are not in the last line.
@@ -124,7 +158,6 @@ ENTITY_EXTRACTION_PROMPT = PromptTemplate(
 )
 
 
-
 QUERY_CREATION_TEMPLATE = (
     "{history}\n\n"
     "Create a search query for the character's memory that helps answer the last user message."
@@ -135,7 +168,6 @@ QUERY_CREATION_PROMPT = PromptTemplate(
     input_variables=['history'],
     template=QUERY_CREATION_TEMPLATE
 )
-
 
 
 RESPONSE_GENERATION_TEMPLATE = (

@@ -2,19 +2,19 @@
 Purpose: get the predicate or class which most closely resembles our input
 """
 
-from rdflib import Graph
-from langchain_core.vectorstores import VectorStore
-
 from typing import List
 from tqdm import tqdm
 import shutil
+
+from rdflib import Graph
+from langchain_core.vectorstores import VectorStore
+
 
 class TBoxLoader():
     def __init__(self, ontologies_paths: str):
         self.graph = Graph()
         for path in ontologies_paths:
             self.graph.parse(path)
-
 
     def load_predicates(self) -> List[str]:
         """
@@ -55,13 +55,13 @@ class TBoxLoader():
             range_ = str(row['range'])
 
             predicate_rdf = '\n'.join(p for p in (
-            f'<rdf:Description rdf:about="{predicate_uri}">',
-            f'    <rdf:type rdf:resource="{property_type}"/>',
-            f'    <rdfs:label>{label}</rdfs:label>' if label and label != 'None' else '',
-            f'    <rdfs:comment>{comment}</rdfs:comment>' if comment and comment != 'None' else '',
-            f'    <rdfs:domain rdf:resource="{domain}"/>' if domain and domain != 'None' else '',
-            f'    <rdfs:range rdf:resource="{range_}"/>' if range_ and range_ != 'None' else '',
-            '</rdf:Description>'
+                f'<rdf:Description rdf:about="{predicate_uri}">',
+                f'    <rdf:type rdf:resource="{property_type}"/>',
+                f'    <rdfs:label>{label}</rdfs:label>' if label and label != 'None' else '',
+                f'    <rdfs:comment>{comment}</rdfs:comment>' if comment and comment != 'None' else '',
+                f'    <rdfs:domain rdf:resource="{domain}"/>' if domain and domain != 'None' else '',
+                f'    <rdfs:range rdf:resource="{range_}"/>' if range_ and range_ != 'None' else '',
+                '</rdf:Description>'
             ) if p)
 
             predicates_rdf.append(predicate_rdf)
@@ -108,12 +108,12 @@ class TBoxLoader():
 
         return set(classes_rdf)
 
+
 class TBoxStorage():
-    def __init__(self, predicates_db : VectorStore, classes_db : VectorStore):
+    def __init__(self, predicates_db: VectorStore, classes_db: VectorStore):
         self.pred_db = predicates_db
         self.class_db = classes_db
 
-    
     def store_predicates(self, predicates):
         self.pred_db.add_texts(predicates)
         self.pred_db.persist()
@@ -121,7 +121,7 @@ class TBoxStorage():
         # for split_docs_chunk in split_docs_chunked:
         #     self.db.add_texts(split_docs_chunk)
         #     self.db.persist()
-    
+
     def store_classes(self, classes):
         self.class_db.add_texts(classes)
         self.class_db.persist()
@@ -131,12 +131,12 @@ class TBoxStorage():
         Returns a single predicate which is most similar to the input query.
         """
         return [d.page_content for d in self.pred_db.similarity_search(query)]
-    
+
     def query_classes(self, query: str) -> str:
-            """
-            Returns a single predicate which is most similar to the input query.
-            """
-            return [d.page_content for d in self.class_db.similarity_search(query)]
+        """
+        Returns a single predicate which is most similar to the input query.
+        """
+        return [d.page_content for d in self.class_db.similarity_search(query)]
 
     @staticmethod
     def _split_list(input_list, chunk_size):
@@ -148,6 +148,8 @@ class TBoxStorage():
 
 def generate_tbox_db(ontologies_paths):
     # Load the classes and predicates into vector stores
+
+    print('Loading T-Box...')
     loader = TBoxLoader(ontologies_paths)
 
     print('Loading classes...')
@@ -168,17 +170,17 @@ def generate_tbox_db(ontologies_paths):
         print('Deleting vector db...')
         shutil.rmtree('./vector_db/hf_predicates_db')
         shutil.rmtree('./vector_db/hf_classes_db')
-    
+
     print('Storing predicates...')
     store.store_predicates(predicates)
 
     print('Storing classes...')
     store.store_classes(classes)
 
+
 if __name__ == '__main__':
     from langchain.vectorstores import Chroma
     from langchain.embeddings import HuggingFaceEmbeddings
-
 
     print('Initializing embeddings...')
     # here we choose a simple and cheap option
@@ -188,9 +190,9 @@ if __name__ == '__main__':
 
     # from langchain.embeddings.openai import OpenAIEmbeddings
     # embeddings = OpenAIEmbeddings(
-            #     model='text-embedding-ada-002',
-            #     #show_progress_bar=True,)
-    
+    #     model='text-embedding-ada-002',
+    #     #show_progress_bar=True,)
+
     # embeddings = HuggingFaceEmbeddings(
     #     model_name="thenlper/gte-large",
     #     model_kwargs={"device": "cuda"},
@@ -201,25 +203,24 @@ if __name__ == '__main__':
     store = TBoxStorage(
         predicates_db=Chroma(
             persist_directory='./vector_db/hf_predicates_db',
-            embedding_function = embeddings
+            embedding_function=embeddings
         ),
         classes_db=Chroma(
             persist_directory='./vector_db/hf_classes_db',
-                embedding_function=embeddings
+            embedding_function=embeddings
         )
     )
-    
-    print('Loading T-Box...')
+
     ontologies_paths = [
-        'ontologies/dbpedia_T_Box.owl', # general ontology
-        'http://xmlns.com/foaf/spec/index.rdf' # people ontology
+        'ontologies/dbpedia.owl',  # general ontology
+        'http://xmlns.com/foaf/spec/index.rdf'  # people ontology
     ]
 
     generate_tbox_db(ontologies_paths)
 
     # Testing
     print('Test predicates:')
-    test_predicates=[
+    test_predicates = [
         'has sister', 'has friend', 'likes', 'is good at',
         'works on', 'has', 'lives in', 'owns', 'has birthday'
     ]
@@ -227,7 +228,7 @@ if __name__ == '__main__':
         print(f'{p}: {store.query_predicates(p)[0]}\n')
 
     print('Test classes')
-    test_classes=[
+    test_classes = [
         'person', 'place', 'city', 'concept',
         'US Army', 'friend', 'brother'
     ]
