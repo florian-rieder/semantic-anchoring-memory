@@ -5,8 +5,9 @@ Purpose: get the predicate or class which most closely resembles our input
 from typing import List
 from tqdm import tqdm
 import shutil
+import re
 
-from rdflib import Graph
+from rdflib import BNode, Namespace, Graph, URIRef, Literal
 from langchain_core.vectorstores import VectorStore
 
 
@@ -104,6 +105,11 @@ class TBoxLoader():
                 '</rdf:Description>'
             ) if p)
 
+            class_rdf = f"""{class_uri}
+                {label if label and label != 'None' else ''}
+                {comment if comment and comment != 'None' else ''}
+            """
+
             classes_rdf.append(class_rdf)
 
         return set(classes_rdf)
@@ -137,6 +143,21 @@ class TBoxStorage():
         Returns a single predicate which is most similar to the input query.
         """
         return [d.page_content for d in self.class_db.similarity_search(query)]
+    
+    def encode_triplets(self, triplets : "list[tuple[str, str, str]]"):
+        
+        for triplet in triplets:
+            subject, predicate, object = triplet
+            if triplet[0] == 'User':
+                subject_class = URIRef('http://dbpedia.org/ontology/Person')
+            
+            type_, value = [s.strip() for s in object.split(':')]
+            if type_ == 'D':
+                object = Literal(value)
+            elif type_ == 'O':
+                pass
+
+            predicate = self.query_predicates(predicate)
 
     @staticmethod
     def _split_list(input_list, chunk_size):
@@ -146,7 +167,7 @@ class TBoxStorage():
             yield input_list[i:i + chunk_size]
 
 
-def generate_tbox_db(ontologies_paths):
+def generate_tbox_db(ontologies_paths: "list[str]", store: TBoxStorage):
     # Load the classes and predicates into vector stores
 
     print('Loading T-Box...')
@@ -155,27 +176,27 @@ def generate_tbox_db(ontologies_paths):
     print('Loading classes...')
     classes = loader.load_classes()
     print(f'Number of classes: {len(classes)}')
-    with open('ontologies/classes.owl', 'w') as f:
+    with open('ontologies/classes.txt', 'w') as f:
         for c in classes:
             f.write(c + '\n')
 
     print('Loading predicates...')
     predicates = loader.load_predicates()
     print(f'Number of predicates: {len(predicates)}')
-    with open('ontologies/predicates.owl', 'w') as f:
+    with open('ontologies/predicates.txt', 'w') as f:
         for p in predicates:
             f.write(p + '\n')
 
-    if input('Delete vector db ? (y/n) ').lower() == 'y':
-        print('Deleting vector db...')
-        shutil.rmtree('./vector_db/hf_predicates_db')
-        shutil.rmtree('./vector_db/hf_classes_db')
+    # if input('Delete vector db ? (y/n) ').lower() == 'y':
+    #     print('Deleting vector db...')
+    #     shutil.rmtree('./vector_db/hf_predicates_db')
+    #     shutil.rmtree('./vector_db/hf_classes_db')
 
-    print('Storing predicates...')
-    store.store_predicates(predicates)
+    # print('Storing predicates...')
+    # store.store_predicates(predicates)
 
-    print('Storing classes...')
-    store.store_classes(classes)
+    # print('Storing classes...')
+    # store.store_classes(classes)
 
 
 if __name__ == '__main__':
@@ -216,7 +237,7 @@ if __name__ == '__main__':
         'http://xmlns.com/foaf/spec/index.rdf'  # people ontology
     ]
 
-    generate_tbox_db(ontologies_paths)
+    generate_tbox_db(ontologies_paths, store)
 
     # Testing
     print('Test predicates:')

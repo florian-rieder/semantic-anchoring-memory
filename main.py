@@ -1,4 +1,7 @@
 from langchain.chat_models import ChatOpenAI
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+
 from langchain.llms import FakeListLLM
 from langchain.chains import ConversationChain
 from langchain.memory import (
@@ -9,6 +12,7 @@ from langchain.memory import (
 from langchain.prompts import PromptTemplate
 
 from memory import SemanticLongTermMemory
+from landwehr import LandwehrMemory
 
 # template = (
 # """Assistant is a large language model (LLM).
@@ -42,7 +46,9 @@ Assistant:"""
 
 
 PROMPT = PromptTemplate(
-    input_variables=["history", "long_term_memory", "input"], template=template)
+    input_variables=["history", "long_term_memory", "input"],
+    template=template
+)
 
 
 llm = ChatOpenAI(model='gpt-3.5-turbo', temperature=0)
@@ -55,14 +61,14 @@ conversation_memory = ConversationBufferWindowMemory(
     input_key='input'
 )
 
-long_term_memory = SemanticLongTermMemory(
-    llm=llm,
-    k=4,
-    human_prefix='User',
-    ai_prefix='Assistant',
-    memory_key='long_term_memory',
-    input_key='input'
-)
+# long_term_memory = SemanticLongTermMemory(
+#     llm=llm,
+#     k=4,
+#     human_prefix='User',
+#     ai_prefix='Assistant',
+#     memory_key='long_term_memory',
+#     input_key='input'
+# )
 
 # long_term_memory = ConversationKGMemory(
 #     llm=llm,
@@ -73,6 +79,24 @@ long_term_memory = SemanticLongTermMemory(
 #     input_key='input'
 # )
 
+
+
+long_term_memory = LandwehrMemory(
+    llm=llm,
+    db=Chroma(
+        persist_directory='./_memories/landwehr_memories_db',
+        embedding_function=OpenAIEmbeddings(
+            model='text-embedding-ada-002',
+            show_progress_bar=True
+        )
+    ),
+    k=8,
+    human_prefix='User',
+    ai_prefix='Assistant',
+    memory_key='long_term_memory',
+    input_key='input'
+)
+
 conversation = ConversationChain(
     llm=llm,
     prompt=PROMPT,
@@ -80,12 +104,18 @@ conversation = ConversationChain(
     verbose=True
 )
 
+def end_conversation(conversation: ConversationChain):
+    chat_history=conversation.memory.memories[0].chat_memory
+    print(chat_history)
+    conversation.memory.memories[1].memorize(chat_history)
+
 
 if __name__ == '__main__':
     # Run the chat loop
     while True:
         user_input = input("User: ")
         if user_input.lower() == 'exit':
+            end_conversation(conversation)
             break
         response = conversation.predict(input=user_input)
         print("Assistant: " + response)

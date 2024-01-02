@@ -5,13 +5,17 @@ from langchain.prompts import PromptTemplate
 
 
 FACT_EXTRACTION_TEMPLATE = (
-    "[INST]Extract all important to remember facts about people, places and"
-    " concepts from the given chunk. Don't repeat facts from the context, only from the chunk.[/INST]\n\n"
+    "Extract all important observations about people, places and"
+    " concepts from the given chunk."
+    " Make sure that each fact is understandable in isolation."
+    " Always refer to entities by their name. Proper noun is preferred."
+    " For example, when referring to the user, user 'the user' instead of 'they'."
+    " Don't repeat facts from the context, only from the current chunk. Output each fact on a new line.\n\n"
     "Context (for reference only):\n"
     "{summary}\n\n"
     "Current chunk (for fact extraction):\n"
     "{chunk}\n\n"
-    "Summary of the current chunk:"
+    "Important facts from the current chunk:"
 )
 
 FACT_EXTRACTION_PROMPT = PromptTemplate(
@@ -21,35 +25,25 @@ FACT_EXTRACTION_PROMPT = PromptTemplate(
 
 
 CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = (
-    "You are a networked intelligence helping a human track knowledge triples"
-    " about all relevant people, things, concepts, etc. and integrating"
-    " them with your knowledge stored within your weights"
-    " as well as that stored in a knowledge graph."
-    " Extract all of the knowledge triples from the summary of the last conversation."
-    " A knowledge triple is a clause that contains a subject, a predicate,"
-    " and an object. The subject is the entity being described,"
-    " the predicate is the property of the subject that is being"
-    " described, and the object is the value of the property."
-    " When information about the user is to be recorded, always use 'User' as the entity name.\n\n"
-    "EXAMPLE\n"
-    "The user is named Florian."
-    "Output: (User, is named, Florian)"
-    "END OF EXAMPLE\n\n"
-    "In more complex sentences, break down the sentence into its fundamental entities and relationships:\n"
-    "EXAMPLE\n"
-    "The user is a student who is working on a memory module for conversational AIs."
-    "Output: (User, is, student), (User, is working on, memory module), (memory module, is for, conversational AIs)"
-    "END OF EXAMPLE\n\n"
-    "EXAMPLE\n"
-    "The user is a student who received a job offer to work on a website in December.\n"
-    "Output: (User, is, student), (User, received, job offer),"
-    " (job offer, received in, December), (job offer, concerns the task of, working on a Website)\n"
-    "END OF EXAMPLE\n"
-    "Summary of the last conversation:\n"
+    "You are a networked intelligence tasked with extracting knowledge triples"
+    " from a conversation summary. Ensure consistency in named entities, always using 'User' for the user."
+    " A knowledge triple consists of a subject, a predicate, and an object. The subject is the entity being described,"
+    " the predicate is the property of the subject being described, and the object is the value of the property."
+    " If the predicate is an ObjectProperty, indicate it with 'O:', and if it's a DataProperty, use 'D:' in the output."
+    "\n\nExamples:\n"
+    "1. The user, named Florian, is a student.\n   Output: (O: User, is, O: student), (O: User, is named, D: Florian)"
+    "\n2. The user, a student, received a job offer to work on a website in December.\n"
+    "   Output: (O: User, received, O: job offer), (O: job offer, concerns the task of, D: working on a website), (O: job offer, received in, D: December)"
+    "\n3. The user, a student, declined a job offer due to a busy schedule at the end of the semester.\n"
+    "   Output: (O: User, declined, O: job offer), (O: User, has, O: busy schedule), (O: busy schedule, is during time period, D: end of semester)"
+    "\n4. Paris is the capital of France. The user went to Paris in May 2022.\n"
+    "   Output: (O: Paris, is capital, O: France), (O: Paris, is, O: city), (O: User, has traveled to , O: Paris)"
+    "\nSummary of the last conversation:\n"
     "{summary}"
     "\nOutput:"
-    ""
 )
+
+
 NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
     input_variables=["history", "input"],
     template=CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE,
@@ -160,7 +154,7 @@ ENTITY_EXTRACTION_PROMPT = PromptTemplate(
 
 QUERY_CREATION_TEMPLATE = (
     "{history}\n\n"
-    "Create a search query for the character's memory that helps answer the last user message."
+    "Create a search query for the character's memory (which is a vector database) that helps answer the user's last message."
     " You cannot ask for clarification. Provide only the query."
 )
 
