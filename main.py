@@ -1,121 +1,112 @@
-from langchain.chat_models import ChatOpenAI
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
+import logging
 
-from langchain.llms import FakeListLLM
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from websockets.exceptions import ConnectionClosedOK
 from langchain.chains import ConversationChain
-from langchain.memory import (
-    CombinedMemory,
-    ConversationBufferWindowMemory,
-    ConversationKGMemory
-)
-from langchain.prompts import PromptTemplate
 
-from memory import SemanticLongTermMemory
-from landwehr import LandwehrMemory
+from server.chat import get_chain
+from server.callback import StreamingLLMCallbackHandler
+from schemas import ChatResponse
 
-# template = (
-# """Assistant is a large language model (LLM).
+logger = logging.getLogger(__name__)
 
-# Assistant is designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, Assistant is able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand. If Assistant does not know the answer to a question, it truthfully says it does not know.
+app = FastAPI()
 
-# Assistant is constantly learning and improving, and its capabilities are constantly evolving. It is able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. Additionally, Assistant is able to generate its own text based on the input it receives, allowing it to engage in discussions and provide explanations and descriptions on a wide range of topics.
-
-# Overall, Assistant is a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether you need help with a specific question or just want to have a conversation about a particular topic, Assistant is here to assist.
-
-# Relevant information that Assistant learned from previous conversations:
-
-# {history}
-
-# User: {input}
-# Assistant:
-# """
-# )
-
-# Short system prompt to economize tokens
-template = """The following is a friendly conversation between a human and an AI Assistant. Assistant is talkative and provides lots of specific details from its context. If Assistant does not know the answer to a question, it truthfully says it does not know.
-
-Relevant information (for reference only):
-{long_term_memory}
-
-Conversation history:
-{history}
-
-User: {input}
-Assistant:"""
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 
-PROMPT = PromptTemplate(
-    input_variables=["history", "long_term_memory", "input"],
-    template=template
-)
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
 
 
-llm = ChatOpenAI(model='gpt-3.5-turbo', temperature=0)
-# llm = FakeListLLM(responses=["Hello, I'm Assistant", "That's great man", "And I like onions !"])
-
-conversation_memory = ConversationBufferWindowMemory(
-    k=4,
-    human_prefix='User',
-    ai_prefix='Assistant',
-    input_key='input'
-)
-
-# long_term_memory = SemanticLongTermMemory(
-#     llm=llm,
-#     k=4,
-#     human_prefix='User',
-#     ai_prefix='Assistant',
-#     memory_key='long_term_memory',
-#     input_key='input'
-# )
-
-# long_term_memory = ConversationKGMemory(
-#     llm=llm,
-#     k=8,
-#     human_prefix='User',
-#     ai_prefix='Assistant',
-#     memory_key='long_term_memory',
-#     input_key='input'
-# )
+manager = ConnectionManager()
 
 
-
-long_term_memory = LandwehrMemory(
-    llm=llm,
-    db=Chroma(
-        persist_directory='./_memories/landwehr_memories_db',
-        embedding_function=OpenAIEmbeddings(
-            model='text-embedding-ada-002',
-            show_progress_bar=True
-        )
-    ),
-    k=8,
-    human_prefix='User',
-    ai_prefix='Assistant',
-    memory_key='long_term_memory',
-    input_key='input'
-)
-
-conversation = ConversationChain(
-    llm=llm,
-    prompt=PROMPT,
-    memory=CombinedMemory(memories=[conversation_memory, long_term_memory]),
-    verbose=True
-)
-
-def end_conversation(conversation: ConversationChain):
-    chat_history=conversation.memory.memories[0].chat_memory
-    print(chat_history)
-    conversation.memory.memories[1].memorize(chat_history)
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse(
+        context={'request': request}, name="index.html"
+    )
 
 
-if __name__ == '__main__':
-    # Run the chat loop
+@app.websocket("/ws/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: int):
+    await manager.connect(websocket)
+
+    stream_handler = StreamingLLMCallbackHandler(websocket)
+    conversation = get_chain(stream_handler)
+
+    def end_conversation(conversation: ConversationChain):
+        # Get the conversation history from the conversation memory
+        chat_history = conversation.memory.memories[0].chat_memory
+        print(str(chat_history))
+        # Memorize the conversation
+        #conversation.memory.memories[1].memorize(chat_history)
+
     while True:
-        user_input = input("User: ")
-        if user_input.lower() == 'exit':
+        # Mostly lifted out of https://github.com/pors/langchain-chat-websockets
+        try:
+            # Receive and send back the client message
+            user_msg = await websocket.receive_text()
+            resp = ChatResponse(
+                sender="human", message=user_msg, type="stream")
+            await websocket.send_json(resp.dict())
+
+            # Construct a response
+            start_resp = ChatResponse(sender="bot", message="", type="start")
+            await websocket.send_json(start_resp.dict())
+
+            # Send the message to the chain and feed the response back to the client
+            # the stream handler will send chunks as they come
+            await conversation.acall({"input": user_msg})
+
+            # Send the end-response back to the client
+            end_resp = ChatResponse(sender="bot", message="", type="end")
+            await websocket.send_json(end_resp.dict())
+
+        except WebSocketDisconnect:
+            logging.info("WebSocketDisconnect")
+            # TODO try to reconnect with back-off
+            manager.disconnect(websocket)
             end_conversation(conversation)
             break
-        response = conversation.predict(input=user_input)
-        print("Assistant: " + response)
+
+        except ConnectionClosedOK:
+            logging.info("ConnectionClosedOK")
+            # TODO handle this?
+            end_conversation(conversation)
+            break
+
+        except Exception as e:
+            logging.error(e)
+            resp = ChatResponse(
+                sender="bot",
+                message="Sorry, something went wrong. Try again.",
+                type="error",
+            )
+            await websocket.send_json(resp.dict())
+
+
+@app.get("/health")
+async def health():
+    """Check the api is running"""
+    return {"status": "🤙"}

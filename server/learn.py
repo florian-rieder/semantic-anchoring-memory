@@ -14,7 +14,7 @@ from langchain_core.language_models import BaseLanguageModel
 from langchain.prompts import PromptTemplate
 
 
-from prompts import (
+from server.prompts import (
     FACT_EXTRACTION_PROMPT,
     NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT
 )

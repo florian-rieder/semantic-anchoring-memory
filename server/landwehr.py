@@ -8,9 +8,7 @@ from langchain_core.language_models import BaseLanguageModel
 from langchain_core.vectorstores import VectorStore
 from langchain.memory.chat_memory import BaseChatMemory
 
-from pydantic import BaseModel
-
-from prompts import FACT_EXTRACTION_PROMPT, QUERY_CREATION_PROMPT
+from server.prompts import FACT_EXTRACTION_PROMPT, QUERY_CREATION_PROMPT
 
 class LandwehrMemory(BaseChatMemory):
     """
@@ -18,8 +16,6 @@ class LandwehrMemory(BaseChatMemory):
     laid out in Landwehr et al. (2023)
     """
 
-    # Define dictionary to store information about entities.
-    entities: dict = {}
     # Define key to pass information about entities into prompt.
     memory_key: str = "memories"
 
@@ -33,8 +29,7 @@ class LandwehrMemory(BaseChatMemory):
 
     def load_memory_variables(self, inputs: Dict[str, Any]) -> Dict[str, str]:
         """Load the memory variables, in this case the memories from the vector database."""
-        print(inputs)
-        print(inputs['input'])
+        # Generate a query for the memories
         query = generate_retrieval_query(inputs['input'], self.llm)
         print(query)
         # Do a similarity search on the memories
@@ -48,6 +43,8 @@ class LandwehrMemory(BaseChatMemory):
         """Save context from this conversation to buffer."""
         # Actually, do nothing. Our save_context part is at the end of a
         # conversation, not at the end of a conversation turn.
+        # We'll save new info in memorize(), which is called externally, when
+        # the conversation has ended.
         pass
 
     def memorize(self, conversation: str):

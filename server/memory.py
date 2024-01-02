@@ -19,7 +19,7 @@ from langchain.memory.chat_memory import BaseChatMemory
 from langchain.memory.utils import get_prompt_input_key
 from langchain.vectorstores import Chroma
 
-from prompts import (
+from server.prompts import (
     ENTITY_EXTRACTION_PROMPT,
     KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
 )

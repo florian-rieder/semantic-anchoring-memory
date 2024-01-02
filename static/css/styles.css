@@ -1,0 +1,202 @@
+body {
+    background-color: rgb(45, 45, 45);
+    color: rgb(230, 230, 230);
+    font-family: Helvetica, Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+}
+
+header {
+    position: fixed;
+    box-sizing: border-box;
+    width: calc(100% - 15px);
+    background-color: rgb(45, 45, 45);
+    padding: 1.5em;
+    z-index: 50;
+
+}
+
+h1 {
+    margin: 0;
+}
+
+/* The sticky class is added to the header with JS when it reaches its scroll position */
+.sticky {
+    position: fixed;
+    top: 0;
+    width: calc(100% - 16px); /*-16px to not cover the scroll bar*/
+}
+
+
+main {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-height: 0;
+
+}
+
+#messages-container {
+    flex-grow: 1;
+    overflow-y: scroll;
+
+}
+
+#messages {
+    list-style-type: none;
+    padding-left: 25%;
+    padding-right: 25%;
+    margin: 0;
+}
+
+.message {
+    margin-bottom: 2em;
+    font-weight: 300;
+}
+
+.message pre>code {
+    border-radius: 10px;
+    line-height: 1.2;
+    background: radial-gradient(circle, rgb(21, 23, 32) 0%, rgb(46, 28, 44) 100%);
+    background-size: 400% 400%;
+    animation: gradient 90s ease infinite;
+    font-weight: 400;
+}
+
+.message code {
+    font-weight: 600;
+}
+
+.error-msg {
+    color: rgb(180, 90, 90);
+    border: 1px solid rgb(180, 90, 90);
+    border-radius: 10px;
+    padding: 1em;
+}
+
+.info-msg {
+    color: rgb(90, 128, 180);
+    border: 1px solid rgb(90, 128, 180);
+    border-radius: 10px;
+    padding: 1em;
+}
+
+form {
+    display: flex;
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-top: 1em;
+}
+
+#messageText {
+    font-family: inherit;
+    color: rgb(230, 230, 230);
+    background-color: rgb(55, 55, 55);
+    border: 1px solid rgb(89, 88, 99);
+    border-radius: 5px;
+    margin: 0;
+    flex-grow: 1;
+    scrollbar-width: thin;
+    outline: none;
+    resize: none;
+    width: 100%;
+    min-height: 0px;
+    max-height: 160px;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.send-btn {
+    border-radius: 5px;
+    background-color: rgb(85, 161, 147);
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 16px;
+    margin-left: 10px;
+    transition-duration: 0.2s;
+    box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.5);
+
+}
+
+.send-btn:disabled, .send-btn:disabled:hover, .send-btn:disabled:active {
+    background-color: rgb(149, 162, 160);
+    transform: scale(0.98);
+    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
+
+}
+
+.send-btn:hover {
+    background-color: rgb(91, 166, 152);
+    transform: scale(1.04);
+    box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.5);
+
+}
+
+.send-btn:active {
+    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
+    background-color: rgb(80, 147, 135);
+    transform: scale(0.98);
+}
+
+#memory-system {
+    background-color: rgb(45, 45, 45);
+    border: 1px solid rgb(89, 88, 99);
+    border-radius: 5px;
+    color: white;
+    margin-left: 10px;
+    padding: 5px;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+footer {
+    font-size: 12px;
+    padding-left: 1em;
+    color: rgb(146, 146, 146);
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+@media screen and (max-width: 756px) {
+    #messages {
+        padding-left: 10%;
+        padding-right: 10%;
+    }
+
+    form {
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+}
+
+.cursor-marker {
+    animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}

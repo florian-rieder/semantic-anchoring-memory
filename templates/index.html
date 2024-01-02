@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MemoryChat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Code highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <!-- Code highlighting theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlightjs-themes@1.0.0/monokai_sublime.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Pure CSS -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+</head>
+
+<body>
+    <main>
+        <div id="messages-container">
+            <header>
+                <h1>Memory Chat</h1>
+            </header>
+            <ul id='messages'></ul>
+        </div>
+        <form action="" onsubmit="sendMessage(event)">
+            <textarea name="messageText" id="messageText" class="textarea-expand" rows="1" placeholder="Message FastAPI Chat..."></textarea>
+            <button class="send-btn" id="send" disabled><i class="fa fa-paper-plane" aria-hidden="true" aria-label="Send message"></i></button>
+            <!-- <select name="memory-system" id="memory-system">
+                <option value="landwehr">Landwehr et al.</option>
+                <option value="ours">Our memory system</option>
+            </select> -->
+        </form>
+    </main>
+
+    <footer>
+        <p>Memory Chat 0.0.1</p>
+        <p>Session ID: <span id="ws-id"></span></p>
+    </footer>
+
+    <!-- Markdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"
+        integrity="sha512-LhccdVNGe2QMEfI3x4DVV3ckMRe36TfydKss6mJpdHjNFiV07dFpS2xzeZedptKZrwxfICJpez09iNioiSZ3hA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Code highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- DOM Purify -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/textarea.js') }}"></script>
+
+</body>
+
+</html>

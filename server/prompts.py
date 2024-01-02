@@ -154,7 +154,7 @@ ENTITY_EXTRACTION_PROMPT = PromptTemplate(
 
 QUERY_CREATION_TEMPLATE = (
     "{history}\n\n"
-    "Create a search query for the character's memory (which is a vector database) that helps answer the user's last message."
+    "Create a search query for a similarity search in the AI memory that helps answer the user's last message."
     " You cannot ask for clarification. Provide only the query."
 )
 
