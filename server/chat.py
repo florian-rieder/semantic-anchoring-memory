@@ -1,4 +1,5 @@
 from langchain.chat_models import ChatOpenAI
+from langchain_community.llms import OpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chains import ConversationChain
@@ -63,8 +64,8 @@ def get_chain(stream_handler) -> ConversationChain:
         callback_manager=stream_manager
     )
 
-    background_llm = ChatOpenAI(
-        model='gpt-3.5-turbo',
+    background_llm = OpenAI(
+        model='gpt-3.5-turbo-instruct',
         temperature=0
     )
 
@@ -88,7 +89,7 @@ def get_chain(stream_handler) -> ConversationChain:
     long_term_memory = LandwehrMemory(
         llm=background_llm,
         db=Chroma(
-            persist_directory='./_memories/landwehr_memories_db',
+            persist_directory='./database/_memories/landwehr_memories_db',
             embedding_function=OpenAIEmbeddings(
                 model='text-embedding-ada-002'
             )

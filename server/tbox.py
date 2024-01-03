@@ -223,11 +223,11 @@ if __name__ == '__main__':
     print('Initializing vector stores...')
     store = TBoxStorage(
         predicates_db=Chroma(
-            persist_directory='./vector_db/hf_predicates_db',
+            persist_directory='./database/vector_db/hf_predicates_db',
             embedding_function=embeddings
         ),
         classes_db=Chroma(
-            persist_directory='./vector_db/hf_classes_db',
+            persist_directory='./database/vector_db/hf_classes_db',
             embedding_function=embeddings
         )
     )
