@@ -48,7 +48,7 @@ floret==0.10.5
 fonttools==4.46.0
 frozenlist==1.4.0
 fsspec==2023.9.2
-gpt4all==2.0.1
+gpt4all
 greenlet==3.0.0
 grpcio==1.59.0
 h11==0.14.0
@@ -94,7 +94,7 @@ nest-asyncio==1.5.8
 networkx==3.2.1
 nltk==3.8.1
 numpy==1.26.1
-onnxruntime==1.16.1
+onnxruntime
 openai==0.28.1
 overrides==7.4.0
 packaging==23.2
