@@ -28,6 +28,10 @@ class TBoxLoader():
         save tokens) that contains all relevant information about the
         predicate (domain, range, comment (useful for the similarity
         search !))
+
+        Improvement idea 2:
+        Instead of storing RDF inside the vector store, store the data
+        relevant to a similarity search only, one item per line.
         """
 
         query = """
@@ -48,20 +52,22 @@ class TBoxLoader():
         # Build RDF/XML string for each predicate
         predicates_rdf = []
         for row in tqdm(result):
-            predicate_uri = str(row['property'])
-            property_type = str(row['propertyType'])
-            label = str(row['label'])
-            comment = str(row['comment'])
-            domain = str(row['domain'])
-            range_ = str(row['range'])
+            #predicate_storage_lines = []
+            predicate_uri = str(row['property']) if row['property'] else None
+            property_type = str(row['propertyType']) if row['propertyType'] else None
+            label = str(row['label']) if row['label'] else None
+            comment = str(row['comment']) if row['comment'] else None
+            domain = str(row['domain']) if row['domain'] else None
+            range_ = str(row['range']) if row['range'] else None
+
 
             predicate_rdf = '\n'.join(p for p in (
                 f'<rdf:Description rdf:about="{predicate_uri}">',
                 f'    <rdf:type rdf:resource="{property_type}"/>',
-                f'    <rdfs:label>{label}</rdfs:label>' if label and label != 'None' else '',
-                f'    <rdfs:comment>{comment}</rdfs:comment>' if comment and comment != 'None' else '',
-                f'    <rdfs:domain rdf:resource="{domain}"/>' if domain and domain != 'None' else '',
-                f'    <rdfs:range rdf:resource="{range_}"/>' if range_ and range_ != 'None' else '',
+                f'    <rdfs:label>{label}</rdfs:label>' if label else '',
+                f'    <rdfs:comment>{comment}</rdfs:comment>' if comment else '',
+                f'    <rdfs:domain rdf:resource="{domain}"/>' if domain else '',
+                f'    <rdfs:range rdf:resource="{range_}"/>' if range_ else '',
                 '</rdf:Description>'
             ) if p)
 
@@ -87,32 +93,45 @@ class TBoxLoader():
 
         result = self.graph.query(query)
 
-        # Build RDF/XML string for each class
-        classes_rdf = []
+        # Parse results
+        classes_rdf = {}
         for row in tqdm(result):
             class_uri = str(row['class'])
+            label = str(row['label']) if row['label'] else None
+            comment = str(row['comment']) if row['comment'] else None
+            subClassOf = str(row['subClassOf']) if row['subClassOf'] else None
 
-            label = str(row['label'])
-            comment = str(row['comment'])
-            subClassOf = str(row['subClassOf'])
+            if class_uri not in classes_rdf:
+                classes_rdf[class_uri] = {'label': label, 'comment': comment, 'subClassOf': []}
 
-            class_rdf = '\n'.join(p for p in (
-                f'<rdf:Description rdf:about="{class_uri}">',
-                '    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>',
-                f'    <rdfs:label>{label}</rdfs:label>' if label and label != 'None' else '',
-                f'    <rdfs:comment>{comment}</rdfs:comment>' if comment and comment != 'None' else '',
-                f'    <rdfs:subClassOf rdf:resource="{subClassOf}"/>' if subClassOf and subClassOf != 'None' else '',
+            if subClassOf:
+                classes_rdf[class_uri]['subClassOf'].append(subClassOf)
+
+        # Generate RDF/XML
+        rdf_descriptions = []
+        for class_uri, class_data in tqdm(classes_rdf.items()):
+            label = class_data['label']
+            comment = class_data['comment']
+            subClassOf_list = class_data['subClassOf']
+
+            # precompute optional fstrings
+            subClassOf_rdf_lines = [f'    <rdfs:subClassOf rdf:resource="{sc}"/>' for sc in subClassOf_list if sc]
+            subClassOf_rdf = "\n".join(subClassOf_rdf_lines)
+            label = f'    <rdfs:label>{label}</rdfs:label>\n' if label else ''
+            comment = f'    <rdfs:comment>{comment}</rdfs:comment>\n' if comment else ''
+
+            class_rdf_description = (
+                f'<rdf:Description rdf:about="{class_uri}">\n'
+                '    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>\n'
+                f'{label}'
+                f'{comment}'
+                f'{subClassOf_rdf}\n'
                 '</rdf:Description>'
-            ) if p)
+            )
 
-            class_rdf = f"""{class_uri}
-                {label if label and label != 'None' else ''}
-                {comment if comment and comment != 'None' else ''}
-            """
+            rdf_descriptions.append(class_rdf_description)
 
-            classes_rdf.append(class_rdf)
-
-        return set(classes_rdf)
+        return set(rdf_descriptions)
 
 
 class TBoxStorage():
@@ -176,43 +195,46 @@ def generate_tbox_db(ontologies_paths: "list[str]", store: TBoxStorage):
     print('Loading classes...')
     classes = loader.load_classes()
     print(f'Number of classes: {len(classes)}')
-    with open('ontologies/classes.txt', 'w') as f:
+    with open('ontologies/classes.owl', 'w') as f:
         for c in classes:
             f.write(c + '\n')
 
     print('Loading predicates...')
     predicates = loader.load_predicates()
     print(f'Number of predicates: {len(predicates)}')
-    with open('ontologies/predicates.txt', 'w') as f:
+    with open('ontologies/predicates.owl', 'w') as f:
         for p in predicates:
             f.write(p + '\n')
 
-    # if input('Delete vector db ? (y/n) ').lower() == 'y':
-    #     print('Deleting vector db...')
-    #     shutil.rmtree('./vector_db/hf_predicates_db')
-    #     shutil.rmtree('./vector_db/hf_classes_db')
+    # Storage into vector databases
+    if input('Delete vector db ? (y/n) ').lower() == 'y':
+        print('Deleting vector db...')
+        shutil.rmtree('.database/vector_db/oa_predicates_db')
+        shutil.rmtree('.database/vector_db/oa_classes_db')
 
-    # print('Storing predicates...')
-    # store.store_predicates(predicates)
+    print('Storing predicates...')
+    store.store_predicates(predicates)
 
-    # print('Storing classes...')
-    # store.store_classes(classes)
+    print('Storing classes...')
+    store.store_classes(classes)
 
 
 if __name__ == '__main__':
     from langchain.vectorstores import Chroma
-    from langchain.embeddings import HuggingFaceEmbeddings
 
     print('Initializing embeddings...')
-    # here we choose a simple and cheap option
-    embeddings = HuggingFaceEmbeddings()
+
+    from langchain.embeddings.openai import OpenAIEmbeddings
+    embeddings = OpenAIEmbeddings(
+        model='text-embedding-ada-002',
+        show_progress_bar=True
+    )
 
     # Different possible embeddings:
 
-    # from langchain.embeddings.openai import OpenAIEmbeddings
-    # embeddings = OpenAIEmbeddings(
-    #     model='text-embedding-ada-002',
-    #     #show_progress_bar=True,)
+    # from langchain.embeddings import HuggingFaceEmbeddings
+    # # simple and cheap option
+    # embeddings = HuggingFaceEmbeddings()
 
     # embeddings = HuggingFaceEmbeddings(
     #     model_name="thenlper/gte-large",
@@ -223,11 +245,11 @@ if __name__ == '__main__':
     print('Initializing vector stores...')
     store = TBoxStorage(
         predicates_db=Chroma(
-            persist_directory='./database/vector_db/hf_predicates_db',
+            persist_directory='./database/vector_db/oa_predicates_db',
             embedding_function=embeddings
         ),
         classes_db=Chroma(
-            persist_directory='./database/vector_db/hf_classes_db',
+            persist_directory='./database/vector_db/oa_classes_db',
             embedding_function=embeddings
         )
     )
