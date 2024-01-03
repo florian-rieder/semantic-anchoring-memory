@@ -25,7 +25,7 @@
             <ul id='messages'></ul>
         </div>
         <form action="" onsubmit="sendMessage(event)">
-            <textarea name="messageText" id="messageText" class="textarea-expand" rows="1" placeholder="Message FastAPI Chat..."></textarea>
+            <textarea name="messageText" id="messageText" class="textarea-expand" rows="1" placeholder="Message Memory Chat..."></textarea>
             <button class="send-btn" id="send" disabled><i class="fa fa-paper-plane" aria-hidden="true" aria-label="Send message"></i></button>
             <!-- <select name="memory-system" id="memory-system">
                 <option value="landwehr">Landwehr et al.</option>
@@ -45,8 +45,6 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Code highlighting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <!-- DOM Purify -->
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <script src="{{ url_for('static', path='/js/main.js') }}"></script>
     <script src="{{ url_for('static', path='/js/textarea.js') }}"></script>
 

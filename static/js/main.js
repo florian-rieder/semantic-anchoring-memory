@@ -25,7 +25,7 @@ showdown.extension('highlight', function () {
     }];
 });
 
-var markdown_converter = new showdown.Converter({extensions: ['highlight']});
+var markdown_converter = new showdown.Converter({ extensions: ['highlight'] });
 
 
 // Set the top margin to be equal to the header height so that the
@@ -43,7 +43,33 @@ messages.addEventListener("scroll", () => {
     userScrolledDuringMessage = true;
 });
 
-function createMessageElement(){
+ws.onmessage = function (event) {
+    let data = parseJSONrecursively(event.data);
+    
+    if (data.sender === "bot") {
+        addBotMessage(data);
+    }
+};
+
+function parseJSONrecursively(blob) {
+    // https://stackoverflow.com/a/67576746/10914628
+    let parsed = JSON.parse(blob);
+    if (typeof parsed === 'string') parsed = parseJSONrecursively(parsed);
+    return parsed;
+}
+
+function sendMessage(event) {
+    event.preventDefault();
+    var input = document.getElementById("messageText");
+
+    if (input.value.trim() === "") return;
+
+    addHumanMessage({message: input.value});
+    ws.send(input.value);
+    input.value = '';
+}
+
+function createMessageElement() {
     let messageElement = document.createElement("li");
     messageElement.classList.add('message');
     messages.appendChild(messageElement);
@@ -53,24 +79,15 @@ function createMessageElement(){
 let lastMessage = null;
 let currentMessage = "";
 
-function addMessage(messageData) {
-    if (messageData.sender === "human") {
-        addHumanMessage(messageData);
-    }
-    else if (messageData.sender === "bot") {
-        addBotMessage(messageData);
-    }
-
-    // Scroll to the bottom only if the user hasn't scrolled recently
-    if(!userScrolledDuringMessage){
-        messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
-    }
-}
-
 function addHumanMessage(messageData) {
     let message = createMessageElement();
     message.innerHTML = "User: " + messageData.message;
     enableForm(false);
+
+    // Scroll to the bottom only if the user hasn't scrolled recently
+    if (!userScrolledDuringMessage) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+    }
 }
 
 function addBotMessage(messageData) {
@@ -122,6 +139,11 @@ function addBotMessage(messageData) {
         cursorMarker.innerHTML = '&#9612;'
         lastMessage.appendChild(cursorMarker);
     }
+
+    // Scroll to the bottom only if the user hasn't scrolled recently
+    if (!userScrolledDuringMessage) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+    }
 }
 
 function enableForm(value) {
@@ -133,35 +155,14 @@ function enableForm(value) {
     sendButton.disabled = !value;
 }
 
-ws.onmessage = function (event) {
-    let data = parseJSONrecursively(event.data);
-    addMessage(data);
-};
-
-function parseJSONrecursively(blob) {
-    // https://stackoverflow.com/a/67576746/10914628
-    let parsed = JSON.parse(blob);
-    if (typeof parsed === 'string') parsed = parseJSONrecursively(parsed);
-    return parsed;
- }
-
-function sendMessage(event) {
-    event.preventDefault();
-    var input = document.getElementById("messageText");
-
-    if (input.value.trim() === "") return;
-
-    ws.send(input.value);
-    input.value = '';
-}
-
+/**
+ * @summary Generates a (pseudo)unique ID (used for session identification)
+ * by combining the current time and a random number translated to base 36.
+ * @returns {string} pseudo-unique 32 character ID
+ * @see https://stackoverflow.com/a/34168882/1549992
+ */
 function uniqueId() {
-    /**
-     * @summary Generates a (pseudo)unique ID (used for session identification)
-     * by combining the current time and a random number translated to base 36.
-     * @returns {string} pseudo-unique 32 character ID
-     * @see https://stackoverflow.com/a/34168882/1549992
-     */
+    
     // desired length of Id
     var idStrLen = 32;
     // always start with a letter -- base 36 makes for a nice shortcut
@@ -186,7 +187,7 @@ function create(htmlStr) {
     // Create a document fragment and a temporary div element
     var frag = document.createDocumentFragment(),
         temp = document.createElement('div');
-    
+
     // Set the HTML content of the temporary div element
     temp.innerHTML = htmlStr;
 

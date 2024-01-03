@@ -4,17 +4,17 @@
 The goal of this project is to give a long-term memory to a conversational LLM. The aim is to reproduce the architecture outlined in Landwehr et al. (2023) [[1](#references)] to use as a baseline, and to create a new memory creation pipeline based on the storage of atomic facts in the form of semantic triplets, which could allow for a memory which captures the rich relationships between concepts and entities.
 
 
-
 ## Task list
 
 ### General
 - [x] Chat with the user in the command line
+- [x] Chat in a web interface
 
 ### Reproducing Landwehr et al.
 - [x] Extract facts from texts
-- [ ] Store facts as memories **beforehand** in a persistent vector store
-- [ ] Recall relevant stored facts during a conversation
-- [ ] Generate responses using these facts
+- [x] Store facts as memories in a persistent vector store
+- [x] Recall relevant stored facts during a conversation
+- [x] Generate responses using these facts
 
 ### Semantic Memory
 - [x] Create a custom Memory module
@@ -47,6 +47,16 @@ pip install -r requirements.txt
 
 ```bash
 python tbox.py
+```
+
+### Launch the chat in the command line
+```bash
+python cli.py
+```
+
+### Launch the chat with the web interface
+```bash
+uvicorn main:app
 ```
 
 ## References

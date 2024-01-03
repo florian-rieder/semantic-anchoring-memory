@@ -56,11 +56,15 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
     conversation = get_chain(stream_handler)
 
     def end_conversation(conversation: ConversationChain):
+        """
+        At the end of the conversation, pass the conversation history through
+        the memory creation pipeline.
+        """
         # Get the conversation history from the conversation memory
         chat_history = conversation.memory.memories[0].chat_memory
-        print(str(chat_history))
+        print(chat_history)
         # Memorize the conversation
-        #conversation.memory.memories[1].memorize(chat_history)
+        conversation.memory.memories[1].memorize(str(chat_history))
 
     while True:
         # Mostly lifted out of https://github.com/pors/langchain-chat-websockets

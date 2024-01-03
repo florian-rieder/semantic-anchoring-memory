@@ -10,7 +10,8 @@ FACT_EXTRACTION_TEMPLATE = (
     " Make sure that each fact is understandable in isolation."
     " Always refer to entities by their name. Proper noun is preferred."
     " For example, when referring to the user, user 'the user' instead of 'they'."
-    " Don't repeat facts from the context, only from the current chunk. Output each fact on a new line.\n\n"
+    " Don't repeat facts from the context, only from the current chunk. Output each fact on a new line."
+    " If there is nothing important to remember, like if the user is just greeting, output nothing.\n\n"
     "Context (for reference only):\n"
     "{summary}\n\n"
     "Current chunk (for fact extraction):\n"
@@ -153,9 +154,12 @@ ENTITY_EXTRACTION_PROMPT = PromptTemplate(
 
 
 QUERY_CREATION_TEMPLATE = (
+    "Chat history (for reference only): "
     "{history}\n\n"
+    "Task:\n"
     "Create a search query for a similarity search in the AI memory that helps answer the user's last message."
     " You cannot ask for clarification. Provide only the query."
+    "Query: "
 )
 
 QUERY_CREATION_PROMPT = PromptTemplate(

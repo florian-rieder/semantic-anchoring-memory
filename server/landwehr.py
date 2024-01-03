@@ -10,6 +10,7 @@ from langchain.memory.chat_memory import BaseChatMemory
 
 from server.prompts import FACT_EXTRACTION_PROMPT, QUERY_CREATION_PROMPT
 
+
 class LandwehrMemory(BaseChatMemory):
     """
     Memory class for storing memories, following the architecture
@@ -32,10 +33,12 @@ class LandwehrMemory(BaseChatMemory):
         # Generate a query for the memories
         query = generate_retrieval_query(inputs['input'], self.llm)
         print(query)
+
         # Do a similarity search on the memories
         results = [d.page_content for d in self.db.similarity_search(query)]
         print(results)
         output_string = "\n\n".join(results)
+
         # Return combined information about entities to put into context.
         return {self.memory_key: output_string}
 
@@ -52,6 +55,7 @@ class LandwehrMemory(BaseChatMemory):
         memorize(conversation, self.llm, self.db)
 
     def clear(self):
+        # os.rmdir(self.db.persist_directory) # Untested
         pass
 
 
@@ -63,7 +67,7 @@ def memorize(input_text: str, llm: BaseLanguageModel, store: VectorStore):
     for chunk, summary in tqdm(chunk_summary_pairs):
         facts = extract_facts(chunk, summary, llm)
         print(facts)
-        extracted_facts.append(facts)
+        extracted_facts += facts
 
     # TODO: These facts are then post-processed by resolving references
     # (e.g., pronouns), ensuring that each fact is understandable atomically
@@ -164,8 +168,9 @@ def extract_facts(chunk: str, summary: str, llm: BaseLanguageModel) -> List[str]
     response = chain.predict(chunk=chunk, summary=summary)
 
     # TODO: Parse output
+    facts = [f.strip().strip('-').strip() for f in response.strip().split('\n')]
 
-    return response
+    return facts
 
 
 def generate_retrieval_query(input_query: str, llm: BaseLanguageModel) -> str:
