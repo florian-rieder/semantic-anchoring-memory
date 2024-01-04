@@ -6,22 +6,36 @@ from typing import List
 from tqdm import tqdm
 import shutil
 import re
+import queue
 
-from rdflib import BNode, Namespace, Graph, URIRef, Literal
+
+from rdflib import BNode, Namespace, Graph, URIRef, Literal, RDF, RDFS
 from langchain_core.vectorstores import VectorStore
 
+import pprint
 
 class TBoxLoader():
-    def __init__(self, ontologies_paths: str):
+    def __init__(self, ontologies_paths: list[str]):
         self.graph = Graph()
         for path in ontologies_paths:
             self.graph.parse(path)
 
-    def load_predicates(self) -> List[str]:
+    def load_predicates(self) -> list[str]:
         """
+        Summary
+        -------
         Store all of the predicates in the given ontology inside a
         vector store.
 
+        Returns
+        -------
+        list[str]:
+            A list of predicate embedding strings, which are strings
+            containing extra information about the classes described in
+            the given ontology, to be stored in a vector database.
+
+        Notes
+        -----
         Improvement idea:
         Not only store the URI of the property, but a chunk of RDF XML
         (probably in the most compact format, something like turtle to
@@ -40,8 +54,8 @@ class TBoxLoader():
             ?property rdf:type ?propertyType .
             VALUES ?propertyType { owl:ObjectProperty owl:DatatypeProperty }
 
-            OPTIONAL { ?property rdfs:label ?label FILTER(LANG(?label) = 'en'). }
-            OPTIONAL { ?property rdfs:comment ?comment FILTER(LANG(?comment) = 'en'). }
+            OPTIONAL { ?property rdfs:label ?label FILTER(LANG(?label) = 'en' || LANG(?label) = ''). }
+            OPTIONAL { ?property rdfs:comment ?comment FILTER(LANG(?comment) = 'en' || LANG(?comment) = ''). }
             OPTIONAL { ?property rdfs:domain ?domain . }
             OPTIONAL { ?property rdfs:range ?range . }
         }
@@ -75,10 +89,19 @@ class TBoxLoader():
 
         return set(predicates_rdf)
 
-    def load_classes(self) -> List[str]:
+    def load_classes(self) -> list[str]:
         """
+        Summary
+        -------
         Store all of the classes in the given ontology inside a
         vector store.
+
+        Returns
+        -------
+        list[str]:
+            A list of class embedding strings, which are strings
+            containing extra information about the classes described in
+            the given ontology, to be stored in a vector database.
         """
 
         query = """
@@ -132,12 +155,63 @@ class TBoxLoader():
             rdf_descriptions.append(class_rdf_description)
 
         return set(rdf_descriptions)
+    
+    def get_properties(self, subject: URIRef, properties_to_get: dict) -> dict[str, URIRef]:
+        properties = dict()
+        for property_name, property in properties_to_get.items():
+            triples = list(self.graph.triples((subject, property, None)))
+            property_values = [t[2] for t in triples]
+            properties[property_name] = property_values
+        return properties
+    
+    def _get_properties_from_embedding_strings(self, embedding_strings: list[str], properties_to_get: dict[str, URIRef]) -> dict[str, dict[str, URIRef]]:
+        subject_properties = {}
+        for idx, pred_str in enumerate(embedding_strings):
 
+            # Grab the URI
+            pattern = re.compile(r'<rdf:Description rdf:about="((?:.)+?)">')
+            uri = pattern.match(pred_str).group(1)
+
+            properties = self.tbox.get_properties(
+                URIRef(uri),
+                properties_to_get
+            )
+            properties['priority'] = idx
+            subject_properties[uri] = properties
+        return subject_properties
+
+    def get_parent_classes(self, target_class: URIRef) -> list[URIRef]:
+        """Get all direct parents of the given class"""
+        return [t[2] for t in self.graph.triples((target_class, RDFS.subClassOf, None))]
+
+    def get_all_parent_classes(self, target_class: URIRef) -> list[URIRef]:
+        """Get all the parent classes in the hierarchy"""
+        
+        parents = self.get_parent_classes(target_class)
+
+        nodes_to_check = queue.Queue()
+        for parent in parents:
+            nodes_to_check.put(parent)
+
+        while not nodes_to_check.empty():
+            next_parents = self.get_parent_classes(nodes_to_check.get())
+            for parent in next_parents:
+                nodes_to_check.put(parent)
+                parents.append(parent)
+
+        return list(set(parents))
+
+    
 
 class TBoxStorage():
-    def __init__(self, predicates_db: VectorStore, classes_db: VectorStore):
-        self.pred_db = predicates_db
-        self.class_db = classes_db
+    def __init__(self,
+                 predicates_db: VectorStore,
+                 classes_db: VectorStore,
+                 loader: TBoxLoader
+                ):
+        self.pred_db : VectorStore = predicates_db
+        self.class_db : VectorStore = classes_db
+        self.tbox : TBoxLoader = loader
 
     def store_predicates(self, predicates):
         self.pred_db.add_texts(predicates)
@@ -163,20 +237,54 @@ class TBoxStorage():
         """
         return [d.page_content for d in self.class_db.similarity_search(query)]
     
-    def encode_triplets(self, triplets : "list[tuple[str, str, str]]"):
-        
-        for triplet in triplets:
-            subject, predicate, object = triplet
-            if triplet[0] == 'User':
-                subject_class = URIRef('http://dbpedia.org/ontology/Person')
-            
-            type_, value = [s.strip() for s in object.split(':')]
-            if type_ == 'D':
-                object = Literal(value)
-            elif type_ == 'O':
-                pass
+    def encode_triplet(self, triplet: tuple[str, str, str]) -> tuple[str, str, str]:
+        # triplet[0] and triplet[2] -> Cast to class
+        # triplet[1] -> Cast to predicate
 
-            predicate = self.query_predicates(predicate)
+        # 1st attempt: take the whole triplet, and find out which classes and predicates are chosen
+
+        # subject_query = f'{str(triplet)}: RDF for subject "{triplet[0]}"'
+        # subject = self.query_classes(subject_query)
+        # object_properties = self.tbox._get_properties_from_embedding_strings(
+        #     [object_[0]],
+        #     {
+        #         'parent_class': RDFS.subClassOf,
+        #     }
+        # )
+        
+        # object_query = f'{str(triplet)}: RDF for object "{triplet[2]}"'
+        # object_ = self.query_classes(object_query)
+        # object_properties = self.tbox._get_properties_from_embedding_strings(
+        #     [object_[0]],
+        #     {
+        #         'parent_class': RDFS.subClassOf,
+        #     }
+        # )
+
+        predicate_query = f'{str(triplet)}: RDF for predicate representing "{triplet[1]}"'
+        results = self.query_predicates(predicate_query)
+        predicates_properties = self.tbox._get_properties_from_embedding_strings(
+            [results][0],
+            {
+                    'domain': RDFS.domain,
+                    'range': RDFS.range,
+                    'type': RDF.type
+            }
+        )
+
+        possible_domains = []
+        possible_ranges = []
+
+        for predicate_properties in predicates_properties:
+            domain_parents = self.tbox.get_all_parent_classes(predicate_properties['domain'])
+            range_parents = self.tbox.get_all_parent_classes(predicate_properties['range'])
+
+            possible_domains.append(domain_parents)
+            possible_ranges.append(range_parents)
+        
+        encoded_triplet = ()
+
+
 
     @staticmethod
     def _split_list(input_list, chunk_size):
@@ -185,38 +293,29 @@ class TBoxStorage():
         for i in range(0, len(input_list), chunk_size):
             yield input_list[i:i + chunk_size]
 
-
-def generate_tbox_db(ontologies_paths: "list[str]", store: TBoxStorage):
+def generate_tbox_db(store: TBoxStorage):
     # Load the classes and predicates into vector stores
 
-    print('Loading T-Box...')
-    loader = TBoxLoader(ontologies_paths)
-
     print('Loading classes...')
-    classes = loader.load_classes()
+    classes = store.tbox.load_classes()
     print(f'Number of classes: {len(classes)}')
     with open('ontologies/classes.owl', 'w') as f:
         for c in classes:
             f.write(c + '\n')
 
     print('Loading predicates...')
-    predicates = loader.load_predicates()
+    predicates = store.tbox.load_predicates()
     print(f'Number of predicates: {len(predicates)}')
     with open('ontologies/predicates.owl', 'w') as f:
         for p in predicates:
             f.write(p + '\n')
 
     # Storage into vector databases
-    if input('Delete vector db ? (y/n) ').lower() == 'y':
-        print('Deleting vector db...')
-        shutil.rmtree('.database/vector_db/oa_predicates_db')
-        shutil.rmtree('.database/vector_db/oa_classes_db')
+    print('Storing classes...')
+    store.store_classes(classes)
 
     print('Storing predicates...')
     store.store_predicates(predicates)
-
-    print('Storing classes...')
-    store.store_classes(classes)
 
 
 if __name__ == '__main__':
@@ -242,38 +341,61 @@ if __name__ == '__main__':
     #     encode_kwargs={"normalize_embeddings": True},
     # )
 
-    print('Initializing vector stores...')
-    store = TBoxStorage(
-        predicates_db=Chroma(
-            persist_directory='./database/vector_db/oa_predicates_db',
-            embedding_function=embeddings
-        ),
-        classes_db=Chroma(
-            persist_directory='./database/vector_db/oa_classes_db',
-            embedding_function=embeddings
-        )
-    )
-
     ontologies_paths = [
         'ontologies/dbpedia.owl',  # general ontology
-        'http://xmlns.com/foaf/spec/index.rdf'  # people ontology
+        'ontologies/foaf.owl'
+        #'http://xmlns.com/foaf/spec/index.rdf'  # people ontology
     ]
 
-    generate_tbox_db(ontologies_paths, store)
+    print('Initializing T-Box...')
+    tbox_loader = TBoxLoader(ontologies_paths)
+
+    # print('Initializing vector stores...')
+    # store = TBoxStorage(
+    #     predicates_db=Chroma(
+    #         persist_directory='./database/vector_db/oa_predicates_db',
+    #         embedding_function=embeddings
+    #     ),
+    #     classes_db=Chroma(
+    #         persist_directory='./database/vector_db/oa_classes_db',
+    #         embedding_function=embeddings
+    #     ),
+    #     loader=tbox_loader
+    # )
+
+    #generate_tbox_db(store)
+
+    print('getting all parent classes...')
+    print(tbox_loader.get_all_parent_classes(URIRef('http://dbpedia.org/ontology/StormSurge')))
+    #store.encode_triplet(('User', 'is named', 'Florian'))
 
     # Testing
-    print('Test predicates:')
-    test_predicates = [
-        'has sister', 'has friend', 'likes', 'is good at',
-        'works on', 'has', 'lives in', 'owns', 'has birthday'
-    ]
-    for p in test_predicates:
-        print(f'{p}: {store.query_predicates(p)[0]}\n')
 
-    print('Test classes')
-    test_classes = [
-        'person', 'place', 'city', 'concept',
-        'US Army', 'friend', 'brother'
-    ]
-    for c in test_classes:
-        print(f'{c}: {store.query_classes(c)[0]}\n')
+    #results = ["""<rdf:Description rdf:about="http://dbpedia.org/ontology/peopleName">
+    #     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    #     <rdfs:label>peopleName</rdfs:label>
+    #     <rdfs:comment>Name for the people inhabiting a place, eg Ankara->Ankariotes, Bulgaria->Bulgarians</rdfs:comment>
+    #     <rdfs:domain rdf:resource="http://dbpedia.org/ontology/PopulatedPlace"/>
+    #     <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"/>
+    # </rdf:Description>
+    # """]
+    # store.tbox._get_properties_from_embedding_strings(results)
+    # print('Test predicates:')
+    # # test_predicates = [
+    # #     'has sister', 'has friend', 'likes', 'is good at',
+    # #     'works on', 'has', 'lives in', 'owns', 'has birthday',
+    # #     'is named'
+    # # ]
+    # test_predicates = [
+    #     '(User, has sister, Shana): for predicate "has sister"'
+    # ]
+    # for p in test_predicates:
+    #     print(f'{p}: {store.query_predicates(p)[0]}\n')
+
+    # print('Test classes')
+    # test_classes = [
+    #     'person', 'place', 'city', 'concept',
+    #     'US Army', 'friend', 'brother'
+    # ]
+    # for c in test_classes:
+    #     print(f'{c}: {store.query_classes(c)[0]}\n')
