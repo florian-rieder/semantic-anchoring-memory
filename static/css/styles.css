@@ -5,6 +5,7 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+
     padding: 0;
     margin: 0;
 }
@@ -121,13 +122,13 @@ form {
     margin-left: 10px;
     transition-duration: 0.2s;
     box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.5);
-
 }
 
 .send-btn:disabled, .send-btn:disabled:hover, .send-btn:disabled:active {
     background-color: rgb(149, 162, 160);
     transform: scale(0.98);
     box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
+    cursor: default;
 
 }
 
@@ -135,6 +136,7 @@ form {
     background-color: rgb(91, 166, 152);
     transform: scale(1.04);
     box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
 
 }
 

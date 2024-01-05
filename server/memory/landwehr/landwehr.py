@@ -8,7 +8,9 @@ from langchain_core.language_models import BaseLanguageModel
 from langchain_core.vectorstores import VectorStore
 from langchain.memory.chat_memory import BaseChatMemory
 
-from server.prompts import FACT_EXTRACTION_PROMPT, QUERY_CREATION_PROMPT
+from server.memory.prompts import (
+    FACT_EXTRACTION_PROMPT, QUERY_CREATION_PROMPT
+)
 
 
 class LandwehrMemory(BaseChatMemory):

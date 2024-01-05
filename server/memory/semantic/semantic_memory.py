@@ -19,11 +19,11 @@ from langchain.memory.chat_memory import BaseChatMemory
 from langchain.memory.utils import get_prompt_input_key
 from langchain.vectorstores import Chroma
 
-from server.prompts import (
+from server.memory.prompts import (
     ENTITY_EXTRACTION_PROMPT,
     KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
 )
-from server.memory.learn import memorize
+from server.memory.semantic.learn import memorize
 
 class SemanticLongTermMemory(BaseChatMemory):
     """Knowledge graph conversation memory.
@@ -138,6 +138,7 @@ class SemanticLongTermMemory(BaseChatMemory):
         print("Knowledge graph cleared.")
     
     def memorize(self, conversation_history: str):
+        #memorize(conversation_history, self.llm, self.tbox_db)
         pass
 
 

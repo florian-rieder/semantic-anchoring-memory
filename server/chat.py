@@ -11,7 +11,7 @@ from langchain.memory import (
 )
 
 # from memory import SemanticLongTermMemory
-from server.memory.landwehr import LandwehrMemory
+from server.memory.landwehr.landwehr import LandwehrMemory
 
 
 # template = (
