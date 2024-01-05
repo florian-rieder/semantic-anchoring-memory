@@ -128,7 +128,13 @@ function addBotMessage(messageData) {
         lastMessage.innerHTML = ""; // reset message contents
 
         currentMessage += messageData.message;
-        const html = markdown_converter.makeHtml(currentMessage);
+
+        // Automatically close unclosed triple backticks during message display
+        fixed_triple_backticks = currentMessage;
+        if (hasUnclosedTripleBacktick(currentMessage)){
+            fixed_triple_backticks = currentMessage + '\n```'
+        }
+        const html = markdown_converter.makeHtml(fixed_triple_backticks);
         const fragment = create(html);
 
         lastMessage.appendChild(fragment);
@@ -154,6 +160,17 @@ function enableForm(value) {
     const sendButton = document.getElementById("send");
     sendButton.disabled = !value;
 }
+
+function hasUnclosedTripleBacktick(inputString) {
+    // Use a regular expression to check for unclosed triple backticks
+    const regex = /```/g;
+    
+    // Count the number of occurrences of triple backticks
+    const count = (inputString.match(regex) || []).length;
+  
+    // Check if the count is odd, indicating an unclosed triple backtick
+    return count % 2 !== 0;
+  }
 
 /**
  * @summary Generates a (pseudo)unique ID (used for session identification)
