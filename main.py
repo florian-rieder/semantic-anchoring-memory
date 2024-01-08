@@ -64,16 +64,23 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         chat_history = conversation.memory.memories[0].chat_memory
         print(chat_history)
         # Memorize the conversation
-        conversation.memory.memories[1].memorize(str(chat_history))
+        # conversation.memory.memories[1].memorize(str(chat_history))
 
     while True:
         # Mostly lifted out of https://github.com/pors/langchain-chat-websockets
         try:
             # Receive and send back the client message
             user_msg = await websocket.receive_text()
+
+            # Handle when the user pressed the "end conversation" button
+            if user_msg == 'END_CONVERSATION':
+                logger.info('User ended the conversation')
+                end_conversation(conversation)
+                break
+
             resp = ChatResponse(
                 sender="human", message=user_msg, type="stream")
-            await websocket.send_json(resp.dict())
+            # await websocket.send_json(resp.dict())
 
             # Construct a response
             start_resp = ChatResponse(sender="bot", message="", type="start")
@@ -91,13 +98,13 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
             logging.info("WebSocketDisconnect")
             # TODO try to reconnect with back-off
             manager.disconnect(websocket)
-            end_conversation(conversation)
+            # end_conversation(conversation)
             break
 
         except ConnectionClosedOK:
             logging.info("ConnectionClosedOK")
             # TODO handle this?
-            end_conversation(conversation)
+            # end_conversation(conversation)
             break
 
         except Exception as e:

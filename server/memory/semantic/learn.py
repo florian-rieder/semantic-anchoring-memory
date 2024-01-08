@@ -234,6 +234,7 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     return triplets
 
 
+
 if __name__ == '__main__':
 
     parse_triplet_string("(a, b, c), (aaa aa, b bbbb, cc ccc), (aa, bb)")

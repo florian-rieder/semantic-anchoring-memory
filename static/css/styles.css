@@ -146,6 +146,34 @@ form {
     transform: scale(0.98);
 }
 
+.end-conversation-btn {
+    border-radius: 5px;
+    background-color: rgb(187, 88, 88);
+    border: none;
+    color: white;
+    font-size: 24px;
+    padding: 16px;
+    margin-left: 10px;
+    transition-duration: 0.2s;
+}
+
+.end-conversation-btn:disabled, .end-conversation-btn:disabled:hover, .end-conversation-btn:disabled:active {
+    background-color: rgb(163, 130, 130);
+    transform: scale(0.98);
+    cursor: default;
+}
+
+.end-conversation-btn:hover {
+    cursor: pointer;
+    transform: scale(1.04);
+    background-color: rgb(193, 97, 97);
+}
+
+.end-conversation-btn:active {
+    background-color: rgb(159, 80, 80);
+    transform: scale(0.98);
+}
+
 #memory-system {
     background-color: rgb(45, 45, 45);
     border: 1px solid rgb(89, 88, 99);

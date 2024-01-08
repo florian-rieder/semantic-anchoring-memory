@@ -21,7 +21,9 @@ if __name__ == '__main__':
     stream_handler = StdOutCallbackHandler()
     conversation = get_chain(stream_handler)
 
-    print("Welcome to Memory Chat's command line interface ! Type your message to start chatting.")
+    print("Welcome to Memory Chat's command line interface !"
+          " Type your message to start chatting."
+          " Type 'exit' to end the conversation and memorize.")
     # Run the chat loop
     while True:
         user_input = input("User: ")

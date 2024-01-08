@@ -43,9 +43,20 @@ messages.addEventListener("scroll", () => {
     userScrolledDuringMessage = true;
 });
 
+// document.getElementById('send').addEventListener('click', (e) => {
+//     e.preventDefault();
+//     this.form.dispatchEvent(new Event('submit'));
+//     sendMessage();
+// });
+
+document.getElementById('end-conversation').addEventListener('click', (e) => {
+    e.preventDefault();
+    endConversation();
+});
+
 ws.onmessage = function (event) {
     let data = parseJSONrecursively(event.data);
-    
+
     if (data.sender === "bot") {
         addBotMessage(data);
     }
@@ -60,11 +71,16 @@ function parseJSONrecursively(blob) {
 
 function sendMessage(event) {
     event.preventDefault();
-    var input = document.getElementById("messageText");
+    const input = document.getElementById("messageText");
 
     if (input.value.trim() === "") return;
 
-    addHumanMessage({message: input.value});
+    const endConversationButton = document.getElementById("end-conversation");
+    endConversationButton.disabled = false;
+
+    enableForm(false);
+    addHumanMessage({ message: input.value });
+
     ws.send(input.value);
     input.value = '';
 }
@@ -82,7 +98,6 @@ let currentMessage = "";
 function addHumanMessage(messageData) {
     let message = createMessageElement();
     message.innerHTML = "User: " + messageData.message;
-    enableForm(false);
 
     // Scroll to the bottom only if the user hasn't scrolled recently
     if (!userScrolledDuringMessage) {
@@ -131,7 +146,7 @@ function addBotMessage(messageData) {
 
         // Automatically close unclosed triple backticks during message display
         fixed_triple_backticks = currentMessage;
-        if (hasUnclosedTripleBacktick(currentMessage)){
+        if (hasUnclosedTripleBacktick(currentMessage)) {
             fixed_triple_backticks = currentMessage + '\n```'
         }
         const html = markdown_converter.makeHtml(fixed_triple_backticks);
@@ -142,6 +157,7 @@ function addBotMessage(messageData) {
 
         let cursorMarker = document.createElement('span');
         cursorMarker.classList.add('cursor-marker');
+        // Symbol for a thicker vertical bar
         cursorMarker.innerHTML = '&#9612;'
         lastMessage.appendChild(cursorMarker);
     }
@@ -164,13 +180,23 @@ function enableForm(value) {
 function hasUnclosedTripleBacktick(inputString) {
     // Use a regular expression to check for unclosed triple backticks
     const regex = /```/g;
-    
+
     // Count the number of occurrences of triple backticks
     const count = (inputString.match(regex) || []).length;
-  
+
     // Check if the count is odd, indicating an unclosed triple backtick
     return count % 2 !== 0;
-  }
+}
+
+function endConversation() {
+    // Tell the server we want to end the conversation
+    ws.send("END_CONVERSATION");
+    // Delete messages display
+    messages.innerHTML = ''
+
+    document.getElementById("send").disabled = true;
+    document.getElementById("end-conversation").disabled = true;
+}
 
 /**
  * @summary Generates a (pseudo)unique ID (used for session identification)
@@ -179,7 +205,6 @@ function hasUnclosedTripleBacktick(inputString) {
  * @see https://stackoverflow.com/a/34168882/1549992
  */
 function uniqueId() {
-    
     // desired length of Id
     var idStrLen = 32;
     // always start with a letter -- base 36 makes for a nice shortcut
