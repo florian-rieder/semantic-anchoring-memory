@@ -277,20 +277,22 @@ class TBoxStorage():
         self.class_db.persist()
 
     def query_predicates(self,
-                         query: str
+                         query: str,
+                         k: int = 4
                          ) -> str:
         """
         Returns a single predicate which is most similar to the input query.
         """
-        return [d.page_content for d in self.pred_db.similarity_search(query)]
+        return [d.page_content for d in self.pred_db.similarity_search(query, k=k)]
 
     def query_classes(self,
-                      query: str
+                      query: str,
+                      k: int = 4
                       ) -> str:
         """
         Returns a single predicate which is most similar to the input query.
         """
-        return [d.page_content for d in self.class_db.similarity_search(query)]
+        return [d.page_content for d in self.class_db.similarity_search(query, k)]
 
     def encode_triplet(self,
                        triplet: tuple[str, str, str],
@@ -430,9 +432,9 @@ if __name__ == '__main__':
             embedding_function=embeddings
         ),
         tbox=tbox_loader,
-        abox=ABox(
-            memory_path='./ontologies/base_knowledge.owl'
-        )
+        # abox=ABox(
+        #     memory_path='./ontologies/base_knowledge.owl'
+        # )
 
     )
 

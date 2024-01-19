@@ -9,9 +9,10 @@ from langchain.chains import ConversationChain
 
 from server.chat import get_chain
 from server.callback import StreamingLLMCallbackHandler
-from schemas import ChatResponse
+from server.schemas import ChatResponse
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 app = FastAPI()
 
@@ -76,7 +77,9 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
             if user_msg == 'END_CONVERSATION':
                 logger.info('User ended the conversation')
                 end_conversation(conversation)
-                break
+                # reset conversation
+                conversation = get_chain(stream_handler)
+                continue
 
             resp = ChatResponse(
                 sender="human", message=user_msg, type="stream")

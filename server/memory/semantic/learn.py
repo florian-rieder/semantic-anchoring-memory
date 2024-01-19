@@ -8,18 +8,23 @@ Process:
 """
 from typing import List
 import re
+import json
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import LLMChain
 from langchain_core.language_models import BaseLanguageModel
 from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain_core.output_parsers import JsonOutputParser
+from pydantic import BaseModel, Field
 
 from rdflib import BNode, Namespace, Graph, URIRef, Literal
 #from rdflib.term import URIRef
 
 from server.memory.prompts import (
     FACT_EXTRACTION_PROMPT,
-    NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT
+    NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
+    TRIPLET_ENCODER_PROMPT
 )
 from server.memory.semantic.tbox import TBoxStorage
 
@@ -202,7 +207,7 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
 
     summary_splitter = RecursiveCharacterTextSplitter(
         chunk_size=512, chunk_overlap=64)
-    
+
     # import spacy
     # import textacy
     # nlp = spacy.load('en_core_web_sm')
@@ -235,36 +240,101 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
 
 
 
-if __name__ == '__main__':
+class Relation(BaseModel):
+    head: str #= Field()#Field(description="The resource at the head of the relationship")
+    head_type: str #= Field()#Field(description="Type of the head resource")
+    relation: str #= Field()#Field(description="Type of the relation")
+    tail: str #= Field()#Field(description="The resource at the tail of the relationship")
+    tail_type: str #= Field()#Field(description="Type of the tail resource")
 
-    parse_triplet_string("(a, b, c), (aaa aa, b bbbb, cc ccc), (aa, bb)")
-    # from langchain.llms import OpenAI
-    # from langchain.embeddings import OpenAIEmbeddings
-    # from langchain.vectorstores import Chroma
+def extract_triplets_new(text: str, llm, tbox: TBoxStorage):
+    # Set up a parser + inject instructions into the prompt template.
+    chain = LLMChain(
+        llm=llm,
+        prompt=TRIPLET_ENCODER_PROMPT,
+        #parser = JsonOutputParser(pydantic_object=Relation),
+        verbose=True
+    )
 
-    # embeddings = OpenAIEmbeddings(
-    #     model='text-embedding-ada-002',
-    #     show_progress_bar=True
-    # )
+    pattern = re.compile(r'<rdf:Description rdf:about="((?:.)+?)">')
 
-    # store = TBoxStorage(
-    #     predicates_db=Chroma(
-    #         persist_directory='./database/vector_db/oa_predicates_db',
-    #         embedding_function=embeddings
-    #     ),
-    #     classes_db=Chroma(
-    #         persist_directory='./database/vector_db/oa_classes_db',
-    #         embedding_function=embeddings
-    #     )
-    # )
-
-    # llm = OpenAI(
-    #     model='gpt-3.5-turbo-instruct',
-    #     temperature=0
-    # )
-
-    # with open('../_work/conversation_example.txt', 'r') as f:
-    #     text = f.read()
+    entity_types = tbox.query_classes(text, k=8)
+    cleaned_entity_types = []
+    for t in entity_types:
+        uri = pattern.match(t).group(1)
+        entity_type = uri.split('/')[-1]
+        cleaned_entity_types.append(entity_type)
     
+    property_types = tbox.query_predicates(text, k=8)
+    cleaned_property_types = []
+    for t in property_types:
+        uri = pattern.match(t).group(1)
+        relation_type = uri.split('/')[-1]
+        cleaned_property_types.append(relation_type)
+
+    print(cleaned_entity_types)
+    print(cleaned_property_types)
+
+    json_object = chain.predict(
+        entity_types=",\n".join(cleaned_entity_types),
+        relation_types=",\n".join(cleaned_property_types),
+        information=text
+    )
+
+    return json_object
+    
+
+    
+
+
+if __name__ == '__main__':
+    from server.memory.landwehr.landwehr import extract_facts, \
+        split_chunk_context_pairs
+    from server.memory.prompts import TRIPLET_ENCODER_PROMPT
+    from server.memory.semantic.tbox import TBoxStorage, TBox, ABox
+    from langchain.llms import OpenAI
+    from langchain.embeddings import OpenAIEmbeddings
+    from langchain.vectorstores import Chroma
+
+    embeddings = OpenAIEmbeddings(
+        model='text-embedding-ada-002',
+        show_progress_bar=True
+    )
+
+    store = TBoxStorage(
+        predicates_db=Chroma(
+            persist_directory='./database/vector_db/oa_predicates_db',
+            embedding_function=embeddings
+        ),
+        classes_db=Chroma(
+            persist_directory='./database/vector_db/oa_classes_db',
+            embedding_function=embeddings
+        )
+    )
+
+    llm = OpenAI(
+        model='gpt-3.5-turbo-instruct',
+        temperature=0
+    )
+
+    
+
+    with open('../_work/conversation_example.txt', 'r') as f:
+        text = f.read()
+    
+    chunk_context_pairs = split_chunk_context_pairs(text, llm, chunk_size=1024)
+
+    extracted_facts = []
+    #print(results)
+    for chunk, summary in chunk_context_pairs:
+        facts = extract_facts(chunk, summary, llm)
+        print(facts)
+        extracted_facts.append(facts)
+    
+    f = extracted_facts[0]
+
+    results = extract_triplets_new(f, llm, store)
+
     # memorize(text, llm, store)
 
+    #parse_triplet_string("(a, b, c), (aaa aa, b bbbb, cc ccc), (aa, bb)")

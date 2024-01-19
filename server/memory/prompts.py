@@ -4,7 +4,7 @@ Prompts
 from langchain.prompts import PromptTemplate
 
 
-FACT_EXTRACTION_TEMPLATE = (
+_FACT_EXTRACTION_TEMPLATE = (
     "Extract all important observations about people, places and"
     " concepts from the given chunk."
     " Make sure that each fact is understandable in isolation."
@@ -21,11 +21,11 @@ FACT_EXTRACTION_TEMPLATE = (
 
 FACT_EXTRACTION_PROMPT = PromptTemplate(
     input_variables=['summary', 'chunk'],
-    template=FACT_EXTRACTION_TEMPLATE
+    template=_FACT_EXTRACTION_TEMPLATE
 )
 
 
-CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = (
+_CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = (
     "You are a networked intelligence tasked with extracting knowledge triples"
     " from a conversation summary. Ensure consistency in named entities, always using 'User' for the user."
     " A knowledge triple consists of a subject, a predicate, and an object. The subject is the entity being described,"
@@ -47,12 +47,12 @@ CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = (
 
 NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
     input_variables=["history", "input"],
-    template=CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE,
+    template=_CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE,
 )
 
 
 KG_TRIPLE_DELIMITER = '<|>'
-TRIPLET_EXTRACTION_TEMPLATE = (
+_TRIPLET_EXTRACTION_TEMPLATE = (
     "You are a networked intelligence helping a human track knowledge triples"
     " about all relevant people, things, concepts, etc. and integrating"
     " them with your knowledge stored within your weights"
@@ -109,7 +109,7 @@ TRIPLET_EXTRACTION_TEMPLATE = (
 )
 KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
     input_variables=["history", "input"],
-    template=TRIPLET_EXTRACTION_TEMPLATE,
+    template=_TRIPLET_EXTRACTION_TEMPLATE,
 )
 
 
@@ -153,7 +153,7 @@ ENTITY_EXTRACTION_PROMPT = PromptTemplate(
 )
 
 
-QUERY_CREATION_TEMPLATE = (
+_QUERY_CREATION_TEMPLATE = (
     "Chat history (for reference only): "
     "{history}\n\n"
     "Task:\n"
@@ -164,11 +164,11 @@ QUERY_CREATION_TEMPLATE = (
 
 QUERY_CREATION_PROMPT = PromptTemplate(
     input_variables=['history'],
-    template=QUERY_CREATION_TEMPLATE
+    template=_QUERY_CREATION_TEMPLATE
 )
 
 
-RESPONSE_GENERATION_TEMPLATE = (
+_RESPONSE_GENERATION_TEMPLATE = (
     "You are acting as a virtual character and you are having a conversation with a user."
     " The character you are simulating is named {name}."
     " Your task is to answer the user based on the chat history."
@@ -196,5 +196,68 @@ RESPONSE_GENERATION_TEMPLATE = (
 
 RESPONSE_GENERATION_PROMPT = PromptTemplate(
     input_variables=["name", "bio", "history", "memories"],
-    template=RESPONSE_GENERATION_TEMPLATE
+    template=_RESPONSE_GENERATION_TEMPLATE
+)
+
+
+
+_TRIPLET_ENCODER_TEMPLATE = (
+    """You are an expert agent specialized in analyzing product specifications in an online retail store.
+Your task is to identify the entities and relations requested with the user prompt, from a given product specification.
+You must generate the output in a JSON containing a list with JOSN objects having the following keys: "head", "head_type", "relation", "tail", and "tail_type".
+The "head" key must contain the text of the extracted entity with one of the types from the provided list in the user prompt, the "head_type"
+key must contain the type of the extracted head entity which must be one of the types from the provided user list,
+the "relation" key must contain the type of relation between the "head" and the "tail", the "tail" key must represent the text of an
+extracted entity which is the tail of the relation, and the "tail_type" key must contain the type of the tail entity. Attempt to extract as
+many entities and relations as you can.\n
+"""
+"Based on the following example, extract entities and relations from the provided text.\n"
+
+
+"--> Beginning of example\n"
+
+"# Information\n"
+"""
+The user is named Florian. He has a cat.
+"""
+
+"\n# Output\n"
+"""[
+  {{
+    "head": "User",
+    "head_type": "Person",
+    "relation": "isNamed",
+    "tail": "Florian",
+    "tail_type": "literal"
+  }},
+  {{
+    "head": "User",
+    "head_type": "Person",
+    "relation": "hasPet",
+    "tail": "cat",
+    "tail_type": "Animal"
+  }}
+]
+"""
+"--> End of example\n\n"
+
+"Use the following entity types:"
+
+"# ENTITY TYPES:\n"
+"{entity_types}\n\n"
+
+"Use the following relation types:\n"
+"{relation_types}\n\n"
+
+"You can also use regular OWL relations and entity types.\n\n"
+
+"For the following information, extract entitites and relations as in the provided example.\n\n"
+"# Information\n"
+"{information}\n"
+"# Output"
+)
+
+TRIPLET_ENCODER_PROMPT = PromptTemplate(
+    input_variables=["entity_types", "relation_types", "information"],
+    template=_TRIPLET_ENCODER_TEMPLATE
 )
