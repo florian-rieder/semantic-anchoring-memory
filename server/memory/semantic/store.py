@@ -5,6 +5,8 @@ from langchain.chains import LLMChain
 
 from rdflib import Namespace, URIRef, Literal, RDF, RDFS
 
+from urllib.parse import quote
+
 from server.memory.prompts import CHOOSE_CLASS_PROMPT, CHOOSE_PREDICATE_PROMPT
 from server.memory.semantic.abox import ABox
 from server.memory.semantic.tbox import TBox
@@ -19,7 +21,7 @@ LITERAL_TYPES = (
 )
 
 
-class TBoxStorage():
+class SemanticStore():
     def __init__(self,
                  predicates_db: VectorStore,
                  classes_db: VectorStore,
@@ -63,9 +65,12 @@ class TBoxStorage():
         """
         return [d.page_content for d in self.class_db.similarity_search(query, k)]
 
-    def encode_triplet(self,
+    def encode_triplets(self, triplets: list[tuple[str, str, str]]):
+        return (self._encode_triplet(t) for t in triplets)
+
+    def _encode_triplet(self,
                        triplet: tuple[str, str, str],
-                       ) -> tuple[str, str, str]:
+                       ) -> dict:
         """Encode a triplet in natural language (ex. (User, is named, Bob))
         into a dictionary that lists the RDF classes and predicate that
         best represent the triple.
@@ -84,9 +89,11 @@ class TBoxStorage():
 
         # Cases where the object is a literal
         if object_class in LITERAL_TYPES:
-            object_class = RDF.Literal
+            object_class = 'Literal'
 
         predicate = self.encode_predicate(triplet, subject_class, object_class)
+        # If there is a space, that means it's the end of the predicate.
+        predicate = predicate.split(' ')[0]
 
         encoded_triplet = {
             'subject': {
@@ -103,34 +110,61 @@ class TBoxStorage():
         }
 
         return encoded_triplet
+    
+    def memorize_encoded_triplets(self, encoded_triplets: list[dict]):
+        for triplet in encoded_triplets:
+            self._memorize_encoded_triplet(triplet)
+        self.abox.save_graph()
 
-    def memorize_encoded_triplet(self, encoded_triplet: dict):
-        """ Takes in a dictionary from the encode_triplet method, and
-        saves it to the knowledge memory graph
+    def _memorize_encoded_triplet(self, encoded_triplet: dict):
+        """Takes in a dictionary from the encode_triplet method, and
+        saves it to the knowledge memory graph. If an entity is not
+        already in the memory graph, create a new node
         """
 
-        # Step 3: Convert string values to URIRef objects
-        subject_uri = EX[encoded_triplet['subject']['value']]
+        # Convert string values to URIRef objects
         predicate_uri = encoded_triplet['predicate']['type']
-        object_uri = EX[encoded_triplet['object']['value']]
 
-        # TODO: Check if there are similar entities in the graph ?
-        # Should we put every entity in the graph into a vector db
-        # for similarity search ?
+        ## SUBJECT
+        subject = quote(encoded_triplet['subject']['value'])
 
-        # Cases where the object is a literal
-        if encoded_triplet['object']['type'] == RDF.Literal:
-            object_node = Literal(encoded_triplet['object']['value'])
+        # Check if there are similar entities in the graph ?
+        subject_node = self.resolve_memorized_entity(
+            subject)
+        if not subject_node:
+            subject_node = EX[subject]
+            # Add the new node to the graph
+            self.abox.graph.add(
+                (subject_node, RDF.type, encoded_triplet['subject']['type']))
+            self.abox.graph.add(
+                (subject_node, RDFS.label, encoded_triplet['subject']['value']))
+            # Store the new entity in the entities database
+            self.abox.store_entities([str(subject_node)])
+        
+        ## OBJECT
+        object_ = encoded_triplet['object']['value']
+
+        # Cases where the object is a Literal
+        if str(encoded_triplet['object']['type']) == 'Literal':
+            object_node = Literal(object_)
         else:
-            object_node = EX[encoded_triplet['object']['value']]
+            # Cases where the object is an ObjectProperty
+            # Look in the memory
+            object_node = self.resolve_memorized_entity(quote(object_))
+            # If the entity doesn't already exist, create a new one
+            if not object_node:
+                object_node = EX[quote(object_)]
+                # Add the new node to the graph
+                self.abox.graph.add(
+                    (object_node, RDF.type, encoded_triplet['object']['type']))
+                self.abox.graph.add(
+                    (subject_node, RDFS.label, encoded_triplet['object']['value']))
+                # Store the new entity in the entities database
+                self.abox.store_entities([str(object_node)])
 
-        # Step 4: Add Triples to the Graph
-        self.abox.add(
-            (subject_uri, RDF.type, encoded_triplet['subject']['type']))
-        self.abox.add((subject_uri, predicate_uri, object_uri))
-        self.abox.add(
-            (subject_uri, RDF.type, encoded_triplet['subject']['type']))
-        self.abox.add((subject_uri, predicate_uri, object_node))
+        ## PREDICATE
+        # Add the triple to the Graph
+        self.abox.graph.add((subject_node, predicate_uri, object_node))
 
     def encode_class(self, triplet: tuple[str, str, str], role: str) -> URIRef:
         """Use an LLM to choose the best class to represent the subject
@@ -188,18 +222,18 @@ class TBoxStorage():
                          ) -> URIRef:
         # Build the query for the predicates vector database
         predicate_query = f'{str(triplet)}: RDF for predicate representing "{triplet[1]}"'
-        
+
         # Get k possibly relevant predicates
         results = self.query_predicates(
             predicate_query, k=num_predicates_to_get)
-        
+
         # Get the domain and range of each predicate
         predicates_properties = self.tbox._get_properties_from_embedding_strings(
             results,
             {
                 'domain': RDFS.domain,
                 'range': RDFS.range,
-                #'type': RDF.type
+                # 'type': RDF.type
             }
         )
 
@@ -207,14 +241,14 @@ class TBoxStorage():
         # domain for each predicate
         possible_predicates = list()
         for uriref, properties in predicates_properties.items():
-            # list to string
+            # list to string the domain and range
             domain = ", ".join(str(p) for p in properties['domain']) if len(
                 properties['domain']) > 0 else 'Any'
             range_ = ", ".join(str(p) for p in properties['range']) if len(
                 properties['range']) > 0 else 'Any'
 
+            # Format the string describing this predicate
             pred_str = f'{str(uriref)} (domain: {domain}; range: {range_})'
-            print(pred_str)
             possible_predicates.append(pred_str)
 
         # Use an LLM to choose the best predicate to use to represent the
@@ -230,8 +264,28 @@ class TBoxStorage():
         print(chosen_predicate)
         return URIRef(chosen_predicate)
 
+    def resolve_memorized_entity(self, new_entity) -> URIRef:
+        """Searches the memory to see if the new entity is already in memory.
+        Returns the URIRef of the memorized entity, or None if no entity is found
+        """
+        # Verify if the object is an entity that's already in memory
+        subject_entity_query = f"{new_entity}"
+        similar_objects_in_memory = self.abox.query_entities_with_score(
+            subject_entity_query)
 
-def generate_tbox_db(store: TBoxStorage):
+        # If there is exactly one match, then we're probably talking about the
+        # same entity
+        if len(similar_objects_in_memory) == 1:
+            return similar_objects_in_memory[0]
+        elif len(similar_objects_in_memory) > 1:
+            # TODO: Ask the user to clarify ?
+            # But for now do exactly the same
+            return similar_objects_in_memory[0]
+        else:
+            return None
+
+
+def generate_tbox_db(store: SemanticStore):
     # Load the classes and predicates into vector stores
 
     print('Loading classes...')

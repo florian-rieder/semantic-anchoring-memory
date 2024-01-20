@@ -18,45 +18,39 @@ from langchain.chains import LLMChain
 from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
 
-from rdflib import BNode, Namespace, Graph, URIRef, Literal
-#from rdflib.term import URIRef
 
 from server.memory.prompts import (
     FACT_EXTRACTION_PROMPT,
     NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
     TRIPLET_ENCODER_PROMPT
 )
-from server.memory.semantic.tbox import TBoxStorage
+
+from server.memory.semantic.store import SemanticStore
 
 
-TRIPLET_PARSING_PATTERN = re.compile(r'\((?:([^,]+?),)\s*(?:([^,]+?),)\s*([^,]+?)\)')
-
-
-def memorize(conversation_history: str, llm: BaseLanguageModel, tbox: TBoxStorage):
-
+def memorize(conversation_history: str, llm: BaseLanguageModel, semantic_store: SemanticStore):
+    # Extract raw triplets from the conversation history
     raw_triplets = conversation_to_triplets(conversation_history, llm)
-    print(raw_triplets)
+    print(list(raw_triplets))
 
-    encoded_triplets = []
-    for triplet in raw_triplets:
-        # Encode triplet to rdf
-        encoded_triplet = tbox.encode_triplet(triplet)
-        encoded_triplets.append(encoded_triplet)
-    
+    # Encode triplet to RDF
+    encoded_triplets = semantic_store.encode_triplets(raw_triplets)
+    print(list(encoded_triplets))
+
     # Add encoded triplets to graph
-    print(encoded_triplets)
+    semantic_store.memorize_encoded_triplets(encoded_triplets)
 
-
-    pass
 
 def parse_triplet_string(triplets_string: str) -> tuple[str, str, str]:
     """
     Parse a string containing multiple triplets into a list of tuples
     """
+    TRIPLET_PARSING_PATTERN = re.compile(r'\((?:([^,]+?),)\s*(?:([^,]+?),)\s*([^,]+?)\)')
     # split triplets apart
     triplets = TRIPLET_PARSING_PATTERN.findall(triplets_string)
 
     return triplets
+
 
 def split_chunk_context_pairs(text: str, llm: BaseLanguageModel) -> List[tuple]:
     """Split text into multiple chunks, and for each chunk create a summary
@@ -78,12 +72,13 @@ def split_chunk_context_pairs(text: str, llm: BaseLanguageModel) -> List[tuple]:
         # if idx > 0:
         #     context = contexts[idx-1][1]
 
-        #summary = summarize_chunk(context, chunk, llm)
+        # summary = summarize_chunk(context, chunk, llm)
         summary = summarize(context, llm)
         contexts.append((chunk, summary))
         break
 
     return contexts
+
 
 def summarize_chunk(summary_of_previous_chunks, chunk, llm):
     chunk_summarizer_prompt_template = (
@@ -110,6 +105,7 @@ def summarize_chunk(summary_of_previous_chunks, chunk, llm):
         chunk=chunk
     )
     return response
+
 
 def summarize(text: str, llm: BaseLanguageModel) -> str:
     # Define summarizer prompt
@@ -157,7 +153,7 @@ def extract_triplets(summary: str, llm: BaseLanguageModel) -> list[tuple[str, st
 
 # def resolve_coreferences(text: str):
 #     """
-#     Use SpaCy and NeuralCoref to resolve all 
+#     Use SpaCy and NeuralCoref to resolve all
 #     User's dog is named grace. She is beautiful
 #     -> User's dog is named Grace. Grace is beautiful
 #     """
@@ -175,6 +171,7 @@ def extract_triplets(summary: str, llm: BaseLanguageModel) -> list[tuple[str, st
 
 #     doc._.has_coref
 #     doc._.coref_clusters
+
 
 def extract_triplets_spacy(sentence):
     import spacy
@@ -200,6 +197,7 @@ def extract_triplets_spacy(sentence):
 
     return triplets
 
+
 def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     conversation_splitter = RecursiveCharacterTextSplitter(
         chunk_size=3072, chunk_overlap=256)
@@ -218,7 +216,6 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     #         tuples_to_list = list(tuples)
     #         return tuples_to_list
 
-    
     print(f'Number of chunks: {len(chunks)}')
     triplets = []
     for chunk in chunks:
@@ -229,7 +226,8 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
         #     triplets.append(sentence_triplets)
 
         summary_sentences = summary_splitter.split_text(summary)
-        print(f'Number of chunks in the summary chunk: {len(summary_sentences)}')
+        print(
+            f'Number of chunks in the summary chunk: {len(summary_sentences)}')
 
         for sentence in summary_sentences:
             sentence_triplets = extract_triplets(sentence, llm)
@@ -239,33 +237,33 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     return triplets
 
 
-
 class Relation(BaseModel):
-    head: str = Field()#Field(description="The resource at the head of the relationship")
-    head_type: str = Field()#Field(description="Type of the head resource")
-    relation: str = Field()#Field(description="Type of the relation")
-    tail: str = Field()#Field(description="The resource at the tail of the relationship")
-    tail_type: str = Field()#Field(description="Type of the tail resource")
+    head: str = Field()  # Field(description="The resource at the head of the relationship")
+    head_type: str = Field()  # Field(description="Type of the head resource")
+    relation: str = Field()  # Field(description="Type of the relation")
+    tail: str = Field()  # Field(description="The resource at the tail of the relationship")
+    tail_type: str = Field()  # Field(description="Type of the tail resource")
 
-def extract_triplets_new(text: str, llm, tbox: TBoxStorage):
+
+def extract_triplets_new(text: str, llm, semantic_store: SemanticStore):
     # Set up a parser + inject instructions into the prompt template.
     chain = LLMChain(
         llm=llm,
         prompt=TRIPLET_ENCODER_PROMPT,
-        #parser = JsonOutputParser(pydantic_object=Relation),
+        # parser = JsonOutputParser(pydantic_object=Relation),
         verbose=True
     )
 
     pattern = re.compile(r'<rdf:Description rdf:about="((?:.)+?)">')
 
-    entity_types = tbox.query_classes(text, k=8)
+    entity_types = semantic_store.query_classes(text, k=8)
     cleaned_entity_types = []
     for t in entity_types:
         uri = pattern.match(t).group(1)
         entity_type = uri.split('/')[-1]
         cleaned_entity_types.append(entity_type)
-    
-    property_types = tbox.query_predicates(text, k=8)
+
+    property_types = semantic_store.query_predicates(text, k=8)
     cleaned_property_types = []
     for t in property_types:
         uri = pattern.match(t).group(1)
@@ -282,61 +280,3 @@ def extract_triplets_new(text: str, llm, tbox: TBoxStorage):
     )
 
     return json_object
-    
-
-    
-
-
-if __name__ == '__main__':
-    from server.memory.landwehr.landwehr import extract_facts, \
-        split_chunk_context_pairs
-    from server.memory.prompts import TRIPLET_ENCODER_PROMPT
-    from server.memory.semantic.tbox import TBoxStorage, TBox, ABox
-    from langchain.llms import OpenAI
-    from langchain.embeddings import OpenAIEmbeddings
-    from langchain.vectorstores import Chroma
-
-    embeddings = OpenAIEmbeddings(
-        model='text-embedding-ada-002',
-        show_progress_bar=True
-    )
-
-    store = TBoxStorage(
-        predicates_db=Chroma(
-            persist_directory='./database/vector_db/oa_predicates_db',
-            embedding_function=embeddings
-        ),
-        classes_db=Chroma(
-            persist_directory='./database/vector_db/oa_classes_db',
-            embedding_function=embeddings
-        )
-    )
-
-    llm = OpenAI(
-        model='gpt-3.5-turbo-instruct',
-        temperature=0
-    )
-
-    
-
-    with open('../_work/conversation_example.txt', 'r') as f:
-        text = f.read()
-    
-    memorize(text, llm, store)
-    
-    # chunk_context_pairs = split_chunk_context_pairs(text, llm, chunk_size=1024)
-
-    # extracted_facts = []
-    # #print(results)
-    # for chunk, summary in chunk_context_pairs:
-    #     facts = extract_facts(chunk, summary, llm)
-    #     print(facts)
-    #     extracted_facts.append(facts)
-    
-    # f = extracted_facts[0]
-
-    # results = extract_triplets_new(f, llm, store)
-
-    # memorize(text, llm, store)
-
-    #parse_triplet_string("(a, b, c), (aaa aa, b bbbb, cc ccc), (aa, bb)")

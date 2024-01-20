@@ -13,6 +13,9 @@ from langchain_openai import OpenAI
 from langchain_openai import OpenAIEmbeddings
 
 from server.memory.semantic.semantic_memory import SemanticLongTermMemory
+from server.memory.semantic.abox import ABox
+from server.memory.semantic.tbox import TBox
+from server.memory.semantic.store import SemanticStore
 from server.memory.landwehr.landwehr import LandwehrMemory
 
 
@@ -45,11 +48,18 @@ Conversation history:
 User: {input}
 Assistant:"""
 
-
-PROMPT = PromptTemplate(
+CONVERSATION_PROMPT = PromptTemplate(
     input_variables=["history", "long_term_memory", "input"],
     template=template
 )
+
+
+ONTOLOGIES_PATHS = [
+    'ontologies/dbpedia.owl',  # General ontology
+    'ontologies/foaf.owl' # People ontology
+    # 'http://xmlns.com/foaf/spec/index.rdf'  # People ontology
+    # 'https://www.cirma.unito.it/drammar/drammar.owl' # Emotions ontology
+]
 
 
 def get_chain(stream_handler) -> ConversationChain:
@@ -59,6 +69,7 @@ def get_chain(stream_handler) -> ConversationChain:
     manager = AsyncCallbackManager([])
     stream_manager = AsyncCallbackManager([stream_handler])
 
+    # ChatLLM whose responses are streamed to the client
     stream_llm = ChatOpenAI(
         model='gpt-3.5-turbo',
         temperature=0.05,
@@ -66,9 +77,16 @@ def get_chain(stream_handler) -> ConversationChain:
         callback_manager=stream_manager
     )
 
+    # Workhorse LLM
     background_llm = OpenAI(
         model='gpt-3.5-turbo-instruct',
         temperature=0
+    )
+
+    # Embedding function to be used by vector stores
+    embeddings = OpenAIEmbeddings(
+        model='text-embedding-ada-002',
+        show_progress_bar=False
     )
 
     # Regular conversation window memory
@@ -79,8 +97,28 @@ def get_chain(stream_handler) -> ConversationChain:
         input_key='input'
     )
 
+    semantic_store = SemanticStore(
+        predicates_db=Chroma(
+            persist_directory='./database/vector_db/oa_predicates_db',
+            embedding_function=embeddings
+        ),
+        classes_db=Chroma(
+            persist_directory='./database/vector_db/oa_classes_db',
+            embedding_function=embeddings
+        ),
+        encoder_llm=background_llm,
+        tbox=TBox(ONTOLOGIES_PATHS),
+        abox=ABox(
+            entities_store=Chroma(
+                persist_directory='./database/_memories/entities_db',
+                embedding_function=embeddings
+            )
+        )
+    )
+
     long_term_memory = SemanticLongTermMemory(
         llm=background_llm,
+        semantic_store=semantic_store,
         k=4,
         human_prefix='User',
         ai_prefix='Assistant',
@@ -105,7 +143,7 @@ def get_chain(stream_handler) -> ConversationChain:
 
     conversation = ConversationChain(
         llm=stream_llm,
-        prompt=PROMPT,
+        prompt=CONVERSATION_PROMPT,
         memory=CombinedMemory(
             memories=[
                 conversation_memory,

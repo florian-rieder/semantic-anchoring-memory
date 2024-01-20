@@ -30,15 +30,15 @@ _CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = (
     " from a conversation summary. Ensure consistency in named entities, always using 'User' for the user."
     " A knowledge triple consists of a subject, a predicate, and an object. The subject is the entity being described,"
     " the predicate is the property of the subject being described, and the object is the value of the property."
-    " If the predicate is an ObjectProperty, indicate it with 'O:', and if it's a DataProperty, use 'D:' in the output."
+
     "\n\nExamples:\n"
     "1. The user, named Florian, is a student.\n   Output: (O: User, is, O: student), (O: User, is named, D: Florian)"
     "\n2. The user, a student, received a job offer to work on a website in December.\n"
-    "   Output: (O: User, received, O: job offer), (O: job offer, concerns the task of, D: working on a website), (O: job offer, received in, D: December)"
+    "   Output: (User, received, job offer), (job offer, concerns the task of, working on a website), (job offer, received in, December)"
     "\n3. The user, a student, declined a job offer due to a busy schedule at the end of the semester.\n"
-    "   Output: (O: User, declined, O: job offer), (O: User, has, O: busy schedule), (O: busy schedule, is during time period, D: end of semester)"
+    "   Output: (User, declined, job offer), (User, has, busy schedule), (busy schedule, is during time period, end of semester)"
     "\n4. Paris is the capital of France. The user went to Paris in May 2022.\n"
-    "   Output: (O: Paris, is capital, O: France), (O: Paris, is, O: city), (O: User, has traveled to , O: Paris)"
+    "   Output: (Paris, is capital, France), (Paris, is, city), (User, has traveled to , Paris)"
     "\nSummary of the last conversation:\n"
     "{summary}"
     "\nOutput:"
@@ -51,7 +51,7 @@ NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
 )
 
 
-KG_TRIPLE_DELIMITER = '<|>'
+KG_TRIPLE_DELIMITER = ', '
 _TRIPLET_EXTRACTION_TEMPLATE = (
     "You are a networked intelligence helping a human track knowledge triples"
     " about all relevant people, things, concepts, etc. and integrating"
@@ -272,6 +272,8 @@ TRIPLET_ENCODER_PROMPT = PromptTemplate(
 
 
 _CHOOSE_PREDICATE_TEMPLATE = """Choose the predicate from the list which corresponds best to the given intent.
+If no predicate in the list fits, create your own using the namespace http://example.com/.
+Only output the chosen predicate and nothing else.
 
 List of predicates:
 {predicates}
