@@ -18,10 +18,10 @@ The goal of this project is to give a long-term memory to a conversational LLM. 
 ### Semantic Memory
 - [x] Create a custom Memory module
 - [x] Extract triplets from conversation
-- [ ] Encode triplets into RDF
-- [ ] Store triplets in knowledge graph
-- [ ] Recall entities based on a similarity search
-- [ ] Recall triplets using Named Entity Recognition to do a graph search
+- [x] Encode triplets into RDF
+- [x] Store triplets in knowledge graph
+- [x] Recall entities based on a similarity search
+- [x] Recall triplets using Named Entity Recognition to do a graph search
 
 
 ## Memory architecture

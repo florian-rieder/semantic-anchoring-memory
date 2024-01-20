@@ -4,7 +4,7 @@ from langchain_core.language_models import BaseLanguageModel
 from langchain.chains import LLMChain
 
 from rdflib import Namespace, URIRef, Literal, RDF, RDFS
-
+import traceback
 from urllib.parse import quote
 
 from server.memory.prompts import CHOOSE_CLASS_PROMPT, CHOOSE_PREDICATE_PROMPT
@@ -93,7 +93,7 @@ class SemanticStore():
 
         predicate = self.encode_predicate(triplet, subject_class, object_class)
         # If there is a space, that means it's the end of the predicate.
-        predicate = predicate.split(' ')[0]
+        predicate = URIRef(predicate.split(' ')[0])
 
         encoded_triplet = {
             'subject': {
@@ -113,7 +113,12 @@ class SemanticStore():
     
     def memorize_encoded_triplets(self, encoded_triplets: list[dict]):
         for triplet in encoded_triplets:
-            self._memorize_encoded_triplet(triplet)
+            try:
+                self._memorize_encoded_triplet(triplet)
+            except Exception:
+                # If an encoding fails, print the exception
+                traceback.print_exc()
+        
         self.abox.save_graph()
 
     def _memorize_encoded_triplet(self, encoded_triplet: dict):
@@ -137,7 +142,7 @@ class SemanticStore():
             self.abox.graph.add(
                 (subject_node, RDF.type, encoded_triplet['subject']['type']))
             self.abox.graph.add(
-                (subject_node, RDFS.label, encoded_triplet['subject']['value']))
+                (subject_node, RDFS.label, Literal(encoded_triplet['subject']['value'])))
             # Store the new entity in the entities database
             self.abox.store_entities([str(subject_node)])
         
@@ -158,12 +163,13 @@ class SemanticStore():
                 self.abox.graph.add(
                     (object_node, RDF.type, encoded_triplet['object']['type']))
                 self.abox.graph.add(
-                    (subject_node, RDFS.label, encoded_triplet['object']['value']))
+                    (object_node, RDFS.label, Literal(encoded_triplet['object']['value'])))
                 # Store the new entity in the entities database
                 self.abox.store_entities([str(object_node)])
 
         ## PREDICATE
         # Add the triple to the Graph
+        print((str(subject_node), str(predicate_uri), str(object_node)))
         self.abox.graph.add((subject_node, predicate_uri, object_node))
 
     def encode_class(self, triplet: tuple[str, str, str], role: str) -> URIRef:
@@ -276,11 +282,11 @@ class SemanticStore():
         # If there is exactly one match, then we're probably talking about the
         # same entity
         if len(similar_objects_in_memory) == 1:
-            return similar_objects_in_memory[0]
+            return URIRef(similar_objects_in_memory[0])
         elif len(similar_objects_in_memory) > 1:
             # TODO: Ask the user to clarify ?
             # But for now do exactly the same
-            return similar_objects_in_memory[0]
+            return URIRef(similar_objects_in_memory[0])
         else:
             return None
 

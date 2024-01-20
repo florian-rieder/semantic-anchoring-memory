@@ -36,7 +36,11 @@ class ABox():
         self.entities_db.similarity_search(query)
         return [d.page_content for d in self.entities_db.similarity_search(query, k)]
 
-    def query_entities_with_score(self, query: str, threshold: float = 0.75, k=4):
+    def query_entities_with_score(self,
+                                  query: str,
+                                  threshold: float = 0.75,
+                                  k=4
+                                  ) -> list[str]:
         """Get the entities which are most relevant to the query, above
         the threshold"""
         # Query with score:
@@ -44,9 +48,8 @@ class ABox():
             query, k)
         # Get only the results with a relevance greater than the threshold
         matches = [d[0].page_content for d in results if d[1] > threshold]
-        matches = [URIRef(m) for m in matches]
         return matches
-    
+
     def get_entity_knowledge(self, entity: str) -> list[str]:
         # Get similar entities using a similarity search in the entities database
         similar_entities = self.query_entities(entity)
