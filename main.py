@@ -65,7 +65,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         chat_history = conversation.memory.memories[0].chat_memory
         print(chat_history)
         # Memorize the conversation
-        # conversation.memory.memories[1].memorize(str(chat_history))
+        conversation.memory.memories[1].memorize(str(chat_history))
 
     while True:
         # Mostly lifted out of https://github.com/pors/langchain-chat-websockets

@@ -8,8 +8,13 @@ from tqdm import tqdm
 import urllib
 
 from rdflib import BNode, Namespace, Graph, URIRef, Literal, RDF, RDFS
-from langchain_core.vectorstores import VectorStore
 
+from langchain_core.vectorstores import VectorStore
+from langchain_core.language_models import BaseLanguageModel
+
+from langchain.chains import LLMChain
+
+from server.memory.prompts import CHOOSE_CLASS_PROMPT, CHOOSE_PREDICATE_PROMPT
 
 OWL = Namespace("http://www.w3.org/2002/07/owl#")
 
@@ -50,7 +55,7 @@ class TBox():
             relevant to a similarity search only, one item per line.
         - Use a more compact format, something like turtle to save tokens
             and tokens which don't add much to the similarity search.
-        
+
         Add rdfs:subPropertyOf and rdfs:inverseOf?
         """
 
@@ -180,10 +185,17 @@ class TBox():
             property_values = list(self.graph.objects(subject, property))
             properties[property_name] = property_values
         return properties
+    
+    @staticmethod
+    def _get_uri_from_embedding_string(embedding_string: str):
+        """Quickly grab the URI from an embedding string"""
+        pattern = re.compile(r'<rdf:Description rdf:about="((?:.)+?)">')
+        uri = pattern.match(embedding_string).group(1)
+        return uri
 
     def _get_properties_from_embedding_strings(self,
                                                embedding_strings: list[str],
-                                               properties_to_get: dict[str, URIRef]
+                                               properties_to_get: dict[str, URIRef] = None
                                                ) -> dict[str, dict[str, URIRef]]:
         """
         Convenience for first getting the URI from the embedding
@@ -191,47 +203,54 @@ class TBox():
         graph.
         """
         subject_properties = {}
-        for idx, pred_str in enumerate(embedding_strings):
+        for idx, embedding_string in enumerate(embedding_strings):
 
             # Grab the URI
-            pattern = re.compile(r'<rdf:Description rdf:about="((?:.)+?)">')
-            uri = pattern.match(pred_str).group(1)
+            uri = self._get_uri_from_embedding_string(embedding_string)
 
-            properties = self.tbox.get_properties(
-                URIRef(uri),
-                properties_to_get
-            )
-            properties['priority'] = idx
-            subject_properties[uri] = properties
+            if properties_to_get:
+                properties = self.get_properties(
+                    URIRef(uri),
+                    properties_to_get
+                )
+                properties['priority'] = idx
+                subject_properties[uri] = properties
+            else:
+                subject_properties[uri] = None
         return subject_properties
 
     def get_parent_classes(self,
                            target_class: URIRef
                            ) -> list[URIRef]:
         """Get all direct parents of the given class"""
-        # type check: only accept URIRefs of classes
-        type = self.graph.value(target_class, RDFS.type)
-        if type != OWL.Class:
-            raise TypeError(f'Expected URIRef of a class, got {type}')
-
-        return self.graph.objects(target_class, RDFS.subClassOf)
+        parents = list(self.graph.objects(target_class, RDFS.subClassOf))
+        return parents
 
     def get_all_parent_classes(self,
-                               target_class: URIRef
+                               target_class: URIRef,
+                               max_depth: int = 4
                                ) -> list[URIRef]:
         """Get all the parent classes in the hierarchy"""
 
-        parents = self.get_parent_classes(target_class)
-
+        parents = list()
         nodes_to_check = queue.Queue()
-        for parent in parents:
-            nodes_to_check.put(parent)
+        nodes_to_check.put(target_class)
+        depth = 0
 
         while not nodes_to_check.empty():
-            next_parents = self.get_parent_classes(nodes_to_check.get())
-            for parent in next_parents:
+            if depth > max_depth:
+                print(f'Maximum recursion depth reached ({max_depth})')
+                return list(set(parents))
+
+            # get the next node to check from the queue
+            node_to_check = nodes_to_check.get()
+
+            # Add parent classes to the queue and parents list
+            for parent in self.get_parent_classes(node_to_check):
                 nodes_to_check.put(parent)
                 parents.append(parent)
+            
+            depth += 1
 
         return list(set(parents))
 
@@ -239,7 +258,7 @@ class TBox():
 class ABox():
     def __init__(self, memory_path: str):
         self.graph = Graph()
-        self.memory_base_path = 'database/memories/semantic/initial_memory.owl'
+        self.memory_base_path = 'ontologies/base_knowledge.ttl'
 
         if os.path.exists(memory_path):
             self.graph.parse(memory_path)
@@ -247,9 +266,9 @@ class ABox():
             # first time setting up the memory A-Box:
             # set up the memory with a predefined base
             self.graph.parse(self.memory_base_path)
-        
+
     def get_entities(query: str):
-        #return graph.objects()
+        # return graph.objects()
         return URIRef('http://example.org/' + urllib.parse.quote(query.strip()))
 
 
@@ -262,6 +281,7 @@ class TBoxStorage():
         self.pred_db: VectorStore = predicates_db
         self.class_db: VectorStore = classes_db
         self.tbox: TBox = tbox
+        self.encoder_llm: BaseLangageModel
         # self.abox: ABox =
 
     def store_predicates(self,
@@ -281,7 +301,7 @@ class TBoxStorage():
                          k: int = 4
                          ) -> str:
         """
-        Returns a single predicate which is most similar to the input query.
+        Returns k predicates which are most similar to the input query.
         """
         return [d.page_content for d in self.pred_db.similarity_search(query, k=k)]
 
@@ -290,38 +310,46 @@ class TBoxStorage():
                       k: int = 4
                       ) -> str:
         """
-        Returns a single predicate which is most similar to the input query.
+        Returns k predicates which are most similar to the input query.
         """
         return [d.page_content for d in self.class_db.similarity_search(query, k)]
 
     def encode_triplet(self,
                        triplet: tuple[str, str, str],
-                       abox: ABox,
                        ) -> tuple[str, str, str]:
         # triplet[0] and triplet[2] -> Cast to class
         # triplet[1] -> Cast to predicate
         # 1st attempt: take the whole triplet, and find out which classes and predicates are chosen
 
-        # subject_query = f'{str(triplet)}: RDF for subject "{triplet[0]}"'
-        # subject = self.query_classes(subject_query)
-        # object_properties = self.tbox._get_properties_from_embedding_strings(
-        #     [object_[0]],
-        #     {
-        #         'parent_class': RDFS.subClassOf,
-        #     }
-        # )
+        subject_query = f'{str(triplet)}: RDF for subject "{triplet[0]}"'
+        subject = self.query_classes(subject_query)
+        subject_properties = self.tbox._get_properties_from_embedding_strings(
+            [subject[0]] ## DEBUG: remove [0] to take all results into account
+        )
+        print(subject_properties)
 
-        # object_query = f'{str(triplet)}: RDF for object "{triplet[2]}"'
-        # object_ = self.query_classes(object_query)
-        # object_properties = self.tbox._get_properties_from_embedding_strings(
-        #     [object_[0]],
-        #     {
-        #         'parent_class': RDFS.subClassOf,
-        #     }
-        # )
+        possible_subject_classes = list()
+        # get all the parent classes
+        for uri, _ in subject_properties.items():
+            parents = self.tbox.get_all_parent_classes(URIRef(uri))
+            possible_subject_classes += parents
+
+        print('subject properties\n\n')
+        print(possible_subject_classes)
+
+        return
+
+        object_query = f'{str(triplet)}: RDF for object "{triplet[2]}"'
+        object_ = self.query_classes(object_query)
+        object_properties = self.tbox._get_properties_from_embedding_strings(
+            [object_[0]] ## DEBUG: remove [0] to take all results into account
+        )
+
+        print('object properties\n\n')
+        print(object_properties)
 
         # subject is always an entity
-        subject_entities = abox.get_entities(triplet[0])
+        # subject_entities = abox.get_entities(triplet[0])
         # object can be a DataProperty or an ObjectProperty
         # object_entities = abox.get_entities(triplet[2])
 
@@ -336,31 +364,35 @@ class TBoxStorage():
             }
         )
 
-        possible_domains = []
-        possible_ranges = []
+        print('predicates properties\n\n')
+        print(predicates_properties)
 
-        # get all the possible domain and ranges of the predicate, by
-        # collecting all parent classes
-        for predicate_properties in predicates_properties:
-            domain_parents = self.tbox.get_all_parent_classes(
-                predicate_properties['domain'])
-            range_parents = self.tbox.get_all_parent_classes(
-                predicate_properties['range'])
+        # possible_domains = []
+        # possible_ranges = []
 
-            possible_domains.append(domain_parents)
-            possible_ranges.append(range_parents)
+        # # get all the possible domain and ranges of the predicate, by
+        # # collecting all parent classes
+        # for predicate_properties in predicates_properties:
+        #     domain_parents = self.tbox.get_all_parent_classes(
+        #         predicate_properties['domain'])
+        #     range_parents = self.tbox.get_all_parent_classes(
+        #         predicate_properties['range'])
+
+        #     possible_domains.append(domain_parents)
+        #     possible_ranges.append(range_parents)
 
         encoded_triplet = ()
 
-        for uri, properties in predicates_properties.items():
-            subject_objects = self.abox.graph.subject_objects(URIRef(uri))
-            print(uri)
 
-            for subj, obj in subject_objects:
-                print(subj, obj)
-            # Check if there are similar entities in the graph ?
-            # Should we put every entity in the graph into a vector db
-            # for similarity search ?
+        # for uri, properties in predicates_properties.items():
+        #     subject_objects = self.abox.graph.subject_objects(URIRef(uri))
+        #     print(uri)
+
+        #     for subj, obj in subject_objects:
+        #         print(subj, obj)
+        #     # Check if there are similar entities in the graph ?
+        #     # Should we put every entity in the graph into a vector db
+        #     # for similarity search ?
 
 
 def generate_tbox_db(store: TBoxStorage):
@@ -388,90 +420,29 @@ def generate_tbox_db(store: TBoxStorage):
     store.store_predicates(predicates)
 
 
-if __name__ == '__main__':
-    from langchain.vectorstores import Chroma
-
-    print('Initializing embeddings...')
-
-    from langchain.embeddings.openai import OpenAIEmbeddings
-    embeddings = OpenAIEmbeddings(
-        model='text-embedding-ada-002',
-        show_progress_bar=True
+def choose_predicate(intent: str, predicates: list[str], llm) -> str:
+    chain = LLMChain(
+        llm=llm,
+        prompt=CHOOSE_PREDICATE_PROMPT
     )
 
-    # Different possible embeddings:
-
-    # from langchain.embeddings import HuggingFaceEmbeddings
-    # # simple and cheap option
-    # embeddings = HuggingFaceEmbeddings()
-
-    # embeddings = HuggingFaceEmbeddings(
-    #     model_name="thenlper/gte-large",
-    #     model_kwargs={"device": "cuda"},
-    #     encode_kwargs={"normalize_embeddings": True},
-    # )
-
-    ontologies_paths = [
-        'ontologies/dbpedia.owl',  # general ontology
-        'ontologies/foaf.owl'
-        # 'http://xmlns.com/foaf/spec/index.rdf'  # people ontology
-        # 'https://www.cirma.unito.it/drammar/drammar.owl' # emotions ontology
-    ]
-
-    print('Initializing T-Box...')
-    tbox_loader = TBox(ontologies_paths)
-
-    print('Initializing vector stores...')
-    store = TBoxStorage(
-        predicates_db=Chroma(
-            persist_directory='./database/vector_db/oa_predicates_db',
-            embedding_function=embeddings
-        ),
-        classes_db=Chroma(
-            persist_directory='./database/vector_db/oa_classes_db',
-            embedding_function=embeddings
-        ),
-        tbox=tbox_loader,
-        # abox=ABox(
-        #     memory_path='./ontologies/base_knowledge.owl'
-        # )
-
+    chosen_predicate = chain.predict(
+        predicates=predicates,
+        intent=intent
     )
 
-    # generate_tbox_db(store)
+    return chosen_predicate
 
-    # print('getting all parent classes...')
-    # print(tbox_loader.get_all_parent_classes(
-    #     URIRef('http://dbpedia.org/ontology/StormSurge')))
-    store.encode_triplet(('User', 'is named', 'Florian'))
 
-    # Testing
+def choose_class(intent: str, classes: list[str], llm) -> str:
+    chain = LLMChain(
+        llm=llm,
+        prompt=CHOOSE_CLASS_PROMPT
+    )
 
-    # results = ["""<rdf:Description rdf:about="http://dbpedia.org/ontology/peopleName">
-    #     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
-    #     <rdfs:label>peopleName</rdfs:label>
-    #     <rdfs:comment>Name for the people inhabiting a place, eg Ankara->Ankariotes, Bulgaria->Bulgarians</rdfs:comment>
-    #     <rdfs:domain rdf:resource="http://dbpedia.org/ontology/PopulatedPlace"/>
-    #     <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"/>
-    # </rdf:Description>
-    # """]
-    # store.tbox._get_properties_from_embedding_strings(results)
-    # print('Test predicates:')
-    # # test_predicates = [
-    # #     'has sister', 'has friend', 'likes', 'is good at',
-    # #     'works on', 'has', 'lives in', 'owns', 'has birthday',
-    # #     'is named'
-    # # ]
-    # test_predicates = [
-    #     '(User, has sister, Shana): for predicate "has sister"'
-    # ]
-    # for p in test_predicates:
-    #     print(f'{p}: {store.query_predicates(p)[0]}\n')
+    chosen_class = chain.predict(
+        classes=classes,
+        intent=intent
+    )
 
-    # print('Test classes')
-    # test_classes = [
-    #     'person', 'place', 'city', 'concept',
-    #     'US Army', 'friend', 'brother'
-    # ]
-    # for c in test_classes:
-    #     print(f'{c}: {store.query_classes(c)[0]}\n')
+    return chosen_class

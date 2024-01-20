@@ -188,9 +188,9 @@ def generate_retrieval_query(input_query: str, llm: BaseLanguageModel) -> str:
 
 
 if __name__ == "__main__":
-    from langchain.llms import OpenAI
-    from langchain.vectorstores import Chroma
-    from langchain.embeddings import HuggingFaceEmbeddings
+    from langchain_openai import OpenAI
+    from langchain_community.vectorstores import Chroma
+    from langchain_community.embeddings import HuggingFaceEmbeddings
 
     with open('_work/example_conversation.txt', 'r') as f:
         test_text = f.read()
@@ -206,7 +206,7 @@ if __name__ == "__main__":
     embeddings = HuggingFaceEmbeddings()
 
     store = Chroma(
-        persist_directory='./_memories/landwehr_memories_db',
+        persist_directory='./database/_memories/landwehr_memories_db_0',
         embedding_function=embeddings
     )
 

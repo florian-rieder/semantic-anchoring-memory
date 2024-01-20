@@ -322,18 +322,20 @@ if __name__ == '__main__':
     with open('../_work/conversation_example.txt', 'r') as f:
         text = f.read()
     
-    chunk_context_pairs = split_chunk_context_pairs(text, llm, chunk_size=1024)
-
-    extracted_facts = []
-    #print(results)
-    for chunk, summary in chunk_context_pairs:
-        facts = extract_facts(chunk, summary, llm)
-        print(facts)
-        extracted_facts.append(facts)
+    memorize(text, llm, store)
     
-    f = extracted_facts[0]
+    # chunk_context_pairs = split_chunk_context_pairs(text, llm, chunk_size=1024)
 
-    results = extract_triplets_new(f, llm, store)
+    # extracted_facts = []
+    # #print(results)
+    # for chunk, summary in chunk_context_pairs:
+    #     facts = extract_facts(chunk, summary, llm)
+    #     print(facts)
+    #     extracted_facts.append(facts)
+    
+    # f = extracted_facts[0]
+
+    # results = extract_triplets_new(f, llm, store)
 
     # memorize(text, llm, store)
 

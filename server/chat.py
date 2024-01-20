@@ -1,7 +1,3 @@
-from langchain_openai import ChatOpenAI
-from langchain_openai import OpenAI
-from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
 from langchain.chains import ConversationChain
 from langchain.prompts import PromptTemplate
 from langchain.callbacks.manager import AsyncCallbackManager
@@ -10,7 +6,13 @@ from langchain.memory import (
     ConversationBufferWindowMemory
 )
 
-# from memory import SemanticLongTermMemory
+from langchain_community.vectorstores import Chroma
+
+from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAI
+from langchain_openai import OpenAIEmbeddings
+
+from server.memory.semantic.semantic_memory import SemanticLongTermMemory
 from server.memory.landwehr.landwehr import LandwehrMemory
 
 
@@ -77,29 +79,29 @@ def get_chain(stream_handler) -> ConversationChain:
         input_key='input'
     )
 
-    # long_term_memory = SemanticLongTermMemory(
-    #     llm=llm,
-    #     k=4,
-    #     human_prefix='User',
-    #     ai_prefix='Assistant',
-    #     memory_key='long_term_memory',
-    #     input_key='input'
-    # )
-
-    long_term_memory = LandwehrMemory(
+    long_term_memory = SemanticLongTermMemory(
         llm=background_llm,
-        db=Chroma(
-            persist_directory='./database/_memories/landwehr_memories_db',
-            embedding_function=OpenAIEmbeddings(
-                model='text-embedding-ada-002'
-            )
-        ),
-        k=8,
+        k=4,
         human_prefix='User',
         ai_prefix='Assistant',
         memory_key='long_term_memory',
         input_key='input'
     )
+
+    # long_term_memory = LandwehrMemory(
+    #     llm=background_llm,
+    #     db=Chroma(
+    #         persist_directory='./database/_memories/landwehr_memories_db',
+    #         embedding_function=OpenAIEmbeddings(
+    #             model='text-embedding-ada-002'
+    #         )
+    #     ),
+    #     k=8,
+    #     human_prefix='User',
+    #     ai_prefix='Assistant',
+    #     memory_key='long_term_memory',
+    #     input_key='input'
+    # )
 
     conversation = ConversationChain(
         llm=stream_llm,

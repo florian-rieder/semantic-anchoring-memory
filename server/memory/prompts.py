@@ -101,7 +101,7 @@ _TRIPLET_EXTRACTION_TEMPLATE = (
     "User: Oh huh. I know Descartes likes to drive antique scooters and play the mandolin.\n"
     f"Output: (Descartes, likes to drive, antique scooters){KG_TRIPLE_DELIMITER}(Descartes, plays, mandolin)\n"
     "END OF EXAMPLE\n\n"
-    "Conversation history (for reference only):\n"
+    "Conversation history:\n"
     "{history}"
     "\nLast line of conversation (for extraction):\n"
     "Human: {input}\n\n"
@@ -115,7 +115,7 @@ KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
 
 _DEFAULT_ENTITY_EXTRACTION_TEMPLATE = """You are an AI assistant reading the transcript of a conversation between an AI and a human. Extract all of the proper nouns from the last line of conversation. As a guideline, a proper noun is generally capitalized. You should definitely extract all names and places. "I" usually refers to the User.
 
-The conversation history is provided just in case of a coreference (e.g. "What do you know about him" where "him" is defined in a previous line) -- ignore items mentioned there that are not in the last line.
+Include all entities relevant to the last line of conversation.
 
 Return the output as a single comma-separated list, or NONE if there is nothing of note to return (e.g. the user is just issuing a greeting or having a simple conversation).
 
@@ -139,6 +139,14 @@ AI: "That sounds like a lot of work! What kind of things are you doing to make L
 Last line:
 User: i'm trying to improve Langchain's interfaces, the UX, its integrations with various products the user might want ... a lot of stuff. I'm working with Person #2.
 Output: User, Langchain, Person #2
+END OF EXAMPLE
+
+EXAMPLE
+User: Who was the first president of the united states ?
+AI: The first president of the United States was George Washington. He served from 1789 to 1797.\n"
+Last line:
+User: Who succeded him ?
+Output: User, United States, George Washington
 END OF EXAMPLE
 
 Conversation history (for reference only):
@@ -260,4 +268,40 @@ The user is named Florian. He has a cat.
 TRIPLET_ENCODER_PROMPT = PromptTemplate(
     input_variables=["entity_types", "relation_types", "information"],
     template=_TRIPLET_ENCODER_TEMPLATE
+)
+
+
+_CHOOSE_PREDICATE_TEMPLATE = """Choose the predicate from the list which corresponds best to the given intent.
+
+List of predicates:
+{predicates}
+
+Intent:
+{intent}
+
+Chosen predicate:
+
+"""
+
+CHOOSE_PREDICATE_PROMPT = PromptTemplate(
+    input_variables=['predicates', 'intent'],
+    template = _CHOOSE_PREDICATE_TEMPLATE
+)
+
+_CHOOSE_CLASS_TEMPLATE = """Choose the class from the list which corresponds best to the given intent.
+
+List of classes:
+http://www.w3.org/2002/07/owl#Thing
+{classes}
+
+Intent:
+{intent}
+
+Chosen predicate:
+
+"""
+
+CHOOSE_CLASS_PROMPT = PromptTemplate(
+    input_variables=['classes', 'intent'],
+    template = _CHOOSE_CLASS_TEMPLATE
 )
