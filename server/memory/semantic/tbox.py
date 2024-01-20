@@ -15,8 +15,17 @@ from langchain_core.language_models import BaseLanguageModel
 from langchain.chains import LLMChain
 
 from server.memory.prompts import CHOOSE_CLASS_PROMPT, CHOOSE_PREDICATE_PROMPT
+from server.memory.semantic.abox import ABox
 
 OWL = Namespace("http://www.w3.org/2002/07/owl#")
+EX = Namespace("http://example.com/")
+
+LITERAL_TYPES = (
+    'http://www.w3.org/2001/XMLSchema#string',
+    'http://www.w3.org/2000/01/rdf-schema#Literal',
+    'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
+    'Literal'
+)
 
 
 class TBox():
@@ -257,35 +266,20 @@ class TBox():
         return list(set(parents))
 
 
-class ABox():
-    def __init__(self, memory_path: str):
-        self.graph = Graph()
-        self.memory_base_path = 'ontologies/base_knowledge.ttl'
-
-        if os.path.exists(memory_path):
-            self.graph.parse(memory_path)
-        else:
-            # first time setting up the memory A-Box:
-            # set up the memory with a predefined base
-            self.graph.parse(self.memory_base_path)
-
-    def get_entities(query: str):
-        # return graph.objects()
-        return URIRef('http://example.org/' + urllib.parse.quote(query.strip()))
-
 
 class TBoxStorage():
     def __init__(self,
                  predicates_db: VectorStore,
                  classes_db: VectorStore,
                  tbox: TBox,
+                 abox: ABox,
                  encoder_llm: BaseLanguageModel
                  ):
         self.pred_db: VectorStore = predicates_db
         self.class_db: VectorStore = classes_db
         self.tbox: TBox = tbox
+        self.abox: ABox = abox
         self.encoder_llm: BaseLanguageModel = encoder_llm
-        # self.abox: ABox =
 
     def store_predicates(self,
                          predicates_embedding_strings: list[str]
@@ -320,6 +314,10 @@ class TBoxStorage():
     def encode_triplet(self,
                        triplet: tuple[str, str, str],
                        ) -> tuple[str, str, str]:
+        """Encode a triplet in natural language (ex. (User, is named, Bob))
+        into a dictionary that lists the RDF classes and predicate that
+        best represent the triple.
+        """
         # triplet[0] and triplet[2] -> Cast to class
         # triplet[1] -> Cast to predicate
         # 1st attempt: take the whole triplet, and find out which classes and predicates are chosen
@@ -329,23 +327,58 @@ class TBoxStorage():
         # object can be a DataProperty or an ObjectProperty
         # object_entities = abox.get_entities(triplet[2])
 
-
         subject_class = self.encode_class(triplet, role='subject')
         object_class = self.encode_class(triplet, role='object')
 
+        # Cases where the object is a literal
+        if object_class in LITERAL_TYPES:
+            object_class = RDF.Literal
+
         predicate = self.encode_predicate(triplet, subject_class, object_class)
 
-        encoded_triplet = ()
+        encoded_triplet = {
+            'subject': {
+                'type': subject_class,
+                'value': triplet[0]
+            },
+            'predicate': {
+                'type': predicate
+            },
+            'object': {
+                'type': object_class,
+                'value': triplet[2]
+            }
+        }
 
-        # for uri, properties in predicates_properties.items():
-        #     subject_objects = self.abox.graph.subject_objects(URIRef(uri))
-        #     print(uri)
+        return encoded_triplet
 
-        #     for subj, obj in subject_objects:
-        #         print(subj, obj)
-        #     # Check if there are similar entities in the graph ?
-        #     # Should we put every entity in the graph into a vector db
-        #     # for similarity search ?
+    def memorize_encoded_triplet(self, encoded_triplet: dict):
+        """ Takes in a dictionary from the encode_triplet method, and
+        saves it to the knowledge memory graph
+        """
+
+        # Step 3: Convert string values to URIRef objects
+        subject_uri = EX[encoded_triplet['subject']['value']]
+        predicate_uri = encoded_triplet['predicate']['type']
+        object_uri = EX[encoded_triplet['object']['value']]
+
+        # TODO: Check if there are similar entities in the graph ?
+        # Should we put every entity in the graph into a vector db
+        # for similarity search ?
+
+        # Cases where the object is a literal
+        if encoded_triplet['object']['type'] == RDF.Literal:
+            object_node = Literal(encoded_triplet['object']['value'])
+        else:
+            object_node = EX[encoded_triplet['object']['value']]
+
+        # Step 4: Add Triples to the Graph
+        self.abox.add(
+            (subject_uri, RDF.type, encoded_triplet['subject']['type']))
+        self.abox.add((subject_uri, predicate_uri, object_uri))
+        self.abox.add(
+            (subject_uri, RDF.type, encoded_triplet['subject']['type']))
+        self.abox.add((subject_uri, predicate_uri, object_node))
 
     def encode_class(self, triplet: tuple[str, str, str], role: str) -> URIRef:
         """Use an LLM to choose the best class to represent the subject
@@ -363,11 +396,13 @@ class TBoxStorage():
             query = f'{triplet_str}: RDF for subject "{subject}"'
             intent = f'Get the correct class for subject "{subject}" contained in the triplet {triplet_str}'
         else:
-            raise ValueError(f'Unexpected role {role}. Must be either "subject" or "object".')
+            raise ValueError(
+                f'Unexpected role {role}. Must be either "subject" or "object".')
 
         entity_classes = self.query_classes(query)
         class_properties = self.tbox._get_properties_from_embedding_strings(
-            entity_classes  # DEBUG: remove [0] to take all results into account
+            # DEBUG: remove [0] to take all results into account
+            entity_classes
         )
         print(class_properties)
 
@@ -377,7 +412,7 @@ class TBoxStorage():
             possible_classes.append(uriref)
             parents = self.tbox.get_all_parent_classes(uriref)
             possible_classes += parents
-        
+
         # remove duplicates
         possible_classes = list(set(possible_classes))
 
@@ -408,8 +443,10 @@ class TBoxStorage():
         possible_predicates = list()
         for uriref, properties in predicates_properties.items():
             # list to string
-            domain = ", ".join(str(p) for p in properties['domain']) if len(properties['domain']) > 0 else 'Any'
-            range_ = ", ".join(str(p) for p in properties['range']) if len(properties['range']) > 0 else 'Any'
+            domain = ", ".join(str(p) for p in properties['domain']) if len(
+                properties['domain']) > 0 else 'Any'
+            range_ = ", ".join(str(p) for p in properties['range']) if len(
+                properties['range']) > 0 else 'Any'
 
             pred_str = f'{str(uriref)} (domain: {domain}; range: {range_})'
             print(pred_str)
@@ -425,8 +462,6 @@ class TBoxStorage():
         print('Chosen predicate:')
         print(chosen_predicate)
         return URIRef(chosen_predicate)
-
-
 
 
 def generate_tbox_db(store: TBoxStorage):
