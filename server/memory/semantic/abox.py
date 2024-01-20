@@ -46,6 +46,31 @@ class ABox():
         matches = [d[0].page_content for d in results if d[1] > threshold]
         matches = [URIRef(m) for m in matches]
         return matches
+    
+    def get_entity_knowledge(self, entity: str) -> list[str]:
+        # Get similar entities using a similarity search in the entities database
+        similar_entities = self.query_entities(entity)
+        print('Similar entities')
+        print(similar_entities)
+        entity_node = URIRef(similar_entities[0])
+        print('Chosen Entity:')
+        print(entity_node)
+
+        # Get all the knowledge about this entity
+        # TODO: if more entities are revealed, gather knowledge about them also
+        knowledge = list()
+        for pred, obj in self.graph.predicate_objects(entity_node):
+            # Get the last bit of the URI
+            # ex. https://example.com/Bob -> Bob
+            pred = str(pred).split("/")[-1].split('#')[-1]
+            obj = str(obj).split("/")[-1].split('#')[-1]
+
+            knowledge_bit = f"{pred} {obj}"
+            knowledge.append(knowledge_bit)
+
+        # TODO: Filter knowledge to only what is relevant to the conversation
+
+        return knowledge
 
     def save_graph(self):
         """Save the ABox graph to file"""

@@ -50,7 +50,7 @@ class SemanticLongTermMemory(BaseChatMemory):
         # graph
         summary_strings = list()
         for entity in entities:
-            knowledge = self.get_entity_knowledge(entity)
+            knowledge = self.semantic_store.abox.get_entity_knowledge(entity)
             if knowledge:
                 entity_knowledge_summary = f"On {entity}: {'. '.join(knowledge)}."
                 summary_strings.append(entity_knowledge_summary)
@@ -106,27 +106,6 @@ class SemanticLongTermMemory(BaseChatMemory):
         """Get the current entities in the conversation."""
         prompt_input_key = self._get_prompt_input_key(inputs)
         return self.get_current_entities(inputs[prompt_input_key])
-
-    def get_entity_knowledge(self, entity: str) -> list[str]:
-        # Get similar entities using a similarity search in the entities database
-        similar_entities = self.semantic_store.abox.query_entities(entity)
-        entity_node = similar_entities[0]
-
-        # Get all the knowledge about this entity
-        # TODO: if more entities are revealed, gather knowledge about them also
-        knowledge = list()
-        for p, o in self.semantic_store.abox.graph.predicate_objects(entity_node):
-            # Get the last bit of the URI
-            # ex. https://example.com/Bob -> Bob
-            p = urlparse(str(p)).path.split("/")[-1]
-            o = urlparse(str(o)).path.split("/")[-1]
-
-            knowledge_bit = f"{p} {o}"
-            knowledge.append(knowledge_bit)
-
-        # TODO: Filter knowledge to only what is relevant to the conversation
-
-        return knowledge
 
     def save_context(self, inputs: Dict[str, Any], outputs: Dict[str, str]) -> None:
         """Save context from this conversation to buffer."""
