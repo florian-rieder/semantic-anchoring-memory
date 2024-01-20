@@ -197,7 +197,7 @@ class TBox():
                                                embedding_strings: list[str],
                                                properties_to_get: dict[str,
                                                                        URIRef] = None
-                                               ) -> dict[str, dict[str, URIRef]]:
+                                               ) -> dict[URIRef, dict[str, URIRef]]:
         """
         Convenience for first getting the URI from the embedding
         strings, and then getting the given properties for them in the
@@ -208,16 +208,17 @@ class TBox():
 
             # Grab the URI
             uri = self._get_uri_from_embedding_string(embedding_string)
+            reference = URIRef(uri)
 
             if properties_to_get:
                 properties = self.get_properties(
-                    URIRef(uri),
+                    reference,
                     properties_to_get
                 )
                 properties['priority'] = idx
-                subject_properties[uri] = properties
+                subject_properties[reference] = properties
             else:
-                subject_properties[uri] = None
+                subject_properties[reference] = None
         return subject_properties
 
     def get_parent_classes(self,
@@ -328,53 +329,11 @@ class TBoxStorage():
         # object can be a DataProperty or an ObjectProperty
         # object_entities = abox.get_entities(triplet[2])
 
-        triplet_str = str(triplet)
-        subject = triplet[0]
-        object_ = triplet[2]
 
-        subject_query = f'{triplet_str}: RDF for subject "{subject}"'
-        subject_intent = f'Get the correct class for subject "{subject}" contained in the triplet {triplet_str}'
-        subject_class = self.encode_class(
-            subject_query,
-            subject_intent
-        )
+        subject_class = self.encode_class(triplet, role='subject')
+        object_class = self.encode_class(triplet, role='object')
 
-        object_query = f'{triplet_str}: RDF for object "{object_}"'
-        object_intent = f'Get the correct class for object "{object_}" contained in the triplet {triplet_str}'
-        object_class = self.encode_class(
-            object_query,
-            object_intent
-        )
-
-        return
-
-        predicate_query = f'{str(triplet)}: RDF for predicate representing "{triplet[1]}"'
-        results = self.query_predicates(predicate_query)
-        predicates_properties = self.tbox._get_properties_from_embedding_strings(
-            [results][0],
-            {
-                'domain': RDFS.domain,
-                'range': RDFS.range,
-                'type': RDF.type
-            }
-        )
-
-        print('predicates properties\n\n')
-        print(predicates_properties)
-
-        # possible_domains = []
-        # possible_ranges = []
-
-        # # get all the possible domain and ranges of the predicate, by
-        # # collecting all parent classes
-        # for predicate_properties in predicates_properties:
-        #     domain_parents = self.tbox.get_all_parent_classes(
-        #         predicate_properties['domain'])
-        #     range_parents = self.tbox.get_all_parent_classes(
-        #         predicate_properties['range'])
-
-        #     possible_domains.append(domain_parents)
-        #     possible_ranges.append(range_parents)
+        predicate = self.encode_predicate(triplet, subject_class, object_class)
 
         encoded_triplet = ()
 
@@ -388,28 +347,44 @@ class TBoxStorage():
         #     # Should we put every entity in the graph into a vector db
         #     # for similarity search ?
 
-    def encode_class(self, query: str, intent: str) -> URIRef:
+    def encode_class(self, triplet: tuple[str, str, str], role: str) -> URIRef:
         """Use an LLM to choose the best class to represent the subject
         or object of a triple"""
 
-        entity_class = self.query_classes(query)
+        triplet_str = str(triplet)
+        subject = triplet[0]
+        object_ = triplet[2]
+
+        # Define class query and choice intent
+        if role == 'object':
+            query = f'{triplet_str}: RDF for object "{object_}"'
+            intent = f'Get the correct class for object "{object_}" contained in the triplet {triplet_str}'
+        elif role == 'subject':
+            query = f'{triplet_str}: RDF for subject "{subject}"'
+            intent = f'Get the correct class for subject "{subject}" contained in the triplet {triplet_str}'
+        else:
+            raise ValueError(f'Unexpected role {role}. Must be either "subject" or "object".')
+
+        entity_classes = self.query_classes(query)
         class_properties = self.tbox._get_properties_from_embedding_strings(
-            [entity_class[0]]  # DEBUG: remove [0] to take all results into account
+            entity_classes  # DEBUG: remove [0] to take all results into account
         )
         print(class_properties)
 
         possible_classes = list()
         # get all the parent classes
-        for uri, _ in class_properties.items():
-            reference = URIRef(uri)
-            possible_classes.append(reference)
-            parents = self.tbox.get_all_parent_classes(reference)
+        for uriref, _ in class_properties.items():
+            possible_classes.append(uriref)
+            parents = self.tbox.get_all_parent_classes(uriref)
             possible_classes += parents
+        
+        # remove duplicates
+        possible_classes = list(set(possible_classes))
 
         # Use LLM to choose the best class
         chosen_class = choose_class(
             intent=intent,
-            classes="\n".join([str(c) for c in possible_classes]),
+            classes=possible_classes,
             llm=self.encoder_llm
         )
 
@@ -418,8 +393,40 @@ class TBoxStorage():
 
         return URIRef(chosen_class)
 
-    def encode_predicate(triplet: tuple[str, str, str]) -> URIRef:
-        pass
+    def encode_predicate(self, triplet: tuple[str, str, str], subject_class: URIRef, object_class: URIRef) -> URIRef:
+        predicate_query = f'{str(triplet)}: RDF for predicate representing "{triplet[1]}"'
+        results = self.query_predicates(predicate_query)
+        predicates_properties = self.tbox._get_properties_from_embedding_strings(
+            [results][0],
+            {
+                'domain': RDFS.domain,
+                'range': RDFS.range,
+                'type': RDF.type
+            }
+        )
+
+        possible_predicates = list()
+        for uriref, properties in predicates_properties.items():
+            # list to string
+            domain = ", ".join(str(p) for p in properties['domain']) if len(properties['domain']) > 0 else 'Any'
+            range_ = ", ".join(str(p) for p in properties['range']) if len(properties['range']) > 0 else 'Any'
+
+            pred_str = f'{str(uriref)} (domain: {domain}; range: {range_})'
+            print(pred_str)
+            possible_predicates.append(pred_str)
+
+        intent = f'Get the correct predicate for "{triplet[1]}" contained in triplet {str(triplet)}. The subject class is {str(subject_class)}, and the object class is {str(object_class)}.'
+        chosen_predicate = choose_predicate(
+            intent=intent,
+            predicates=possible_predicates,
+            llm=self.encoder_llm
+        )
+
+        print('Chosen predicate:')
+        print(chosen_predicate)
+        return URIRef(chosen_predicate)
+
+
 
 
 def generate_tbox_db(store: TBoxStorage):
@@ -455,7 +462,7 @@ def choose_predicate(intent: str, predicates: list[str], llm) -> str:
     )
 
     chosen_predicate = chain.predict(
-        predicates=predicates,
+        predicates="\n".join([str(p) for p in predicates]),
         intent=intent
     )
 
@@ -470,7 +477,7 @@ def choose_class(intent: str, classes: list[str], llm) -> str:
     )
 
     chosen_class = chain.predict(
-        classes=classes,
+        classes="\n".join([str(c) for c in classes]),
         intent=intent,
     )
 
