@@ -185,7 +185,7 @@ class TBox():
             property_values = list(self.graph.objects(subject, property))
             properties[property_name] = property_values
         return properties
-    
+
     @staticmethod
     def _get_uri_from_embedding_string(embedding_string: str):
         """Quickly grab the URI from an embedding string"""
@@ -195,7 +195,8 @@ class TBox():
 
     def _get_properties_from_embedding_strings(self,
                                                embedding_strings: list[str],
-                                               properties_to_get: dict[str, URIRef] = None
+                                               properties_to_get: dict[str,
+                                                                       URIRef] = None
                                                ) -> dict[str, dict[str, URIRef]]:
         """
         Convenience for first getting the URI from the embedding
@@ -249,7 +250,7 @@ class TBox():
             for parent in self.get_parent_classes(node_to_check):
                 nodes_to_check.put(parent)
                 parents.append(parent)
-            
+
             depth += 1
 
         return list(set(parents))
@@ -276,12 +277,13 @@ class TBoxStorage():
     def __init__(self,
                  predicates_db: VectorStore,
                  classes_db: VectorStore,
-                 tbox: TBox
+                 tbox: TBox,
+                 encoder_llm: BaseLanguageModel
                  ):
         self.pred_db: VectorStore = predicates_db
         self.class_db: VectorStore = classes_db
         self.tbox: TBox = tbox
-        self.encoder_llm: BaseLangageModel
+        self.encoder_llm: BaseLanguageModel = encoder_llm
         # self.abox: ABox =
 
     def store_predicates(self,
@@ -321,37 +323,30 @@ class TBoxStorage():
         # triplet[1] -> Cast to predicate
         # 1st attempt: take the whole triplet, and find out which classes and predicates are chosen
 
-        subject_query = f'{str(triplet)}: RDF for subject "{triplet[0]}"'
-        subject = self.query_classes(subject_query)
-        subject_properties = self.tbox._get_properties_from_embedding_strings(
-            [subject[0]] ## DEBUG: remove [0] to take all results into account
-        )
-        print(subject_properties)
-
-        possible_subject_classes = list()
-        # get all the parent classes
-        for uri, _ in subject_properties.items():
-            parents = self.tbox.get_all_parent_classes(URIRef(uri))
-            possible_subject_classes += parents
-
-        print('subject properties\n\n')
-        print(possible_subject_classes)
-
-        return
-
-        object_query = f'{str(triplet)}: RDF for object "{triplet[2]}"'
-        object_ = self.query_classes(object_query)
-        object_properties = self.tbox._get_properties_from_embedding_strings(
-            [object_[0]] ## DEBUG: remove [0] to take all results into account
-        )
-
-        print('object properties\n\n')
-        print(object_properties)
-
         # subject is always an entity
         # subject_entities = abox.get_entities(triplet[0])
         # object can be a DataProperty or an ObjectProperty
         # object_entities = abox.get_entities(triplet[2])
+
+        triplet_str = str(triplet)
+        subject = triplet[0]
+        object_ = triplet[2]
+
+        subject_query = f'{triplet_str}: RDF for subject "{subject}"'
+        subject_intent = f'Get the correct class for subject "{subject}" contained in the triplet {triplet_str}'
+        subject_class = self.encode_class(
+            subject_query,
+            subject_intent
+        )
+
+        object_query = f'{triplet_str}: RDF for object "{object_}"'
+        object_intent = f'Get the correct class for object "{object_}" contained in the triplet {triplet_str}'
+        object_class = self.encode_class(
+            object_query,
+            object_intent
+        )
+
+        return
 
         predicate_query = f'{str(triplet)}: RDF for predicate representing "{triplet[1]}"'
         results = self.query_predicates(predicate_query)
@@ -383,7 +378,6 @@ class TBoxStorage():
 
         encoded_triplet = ()
 
-
         # for uri, properties in predicates_properties.items():
         #     subject_objects = self.abox.graph.subject_objects(URIRef(uri))
         #     print(uri)
@@ -393,6 +387,39 @@ class TBoxStorage():
         #     # Check if there are similar entities in the graph ?
         #     # Should we put every entity in the graph into a vector db
         #     # for similarity search ?
+
+    def encode_class(self, query: str, intent: str) -> URIRef:
+        """Use an LLM to choose the best class to represent the subject
+        or object of a triple"""
+
+        entity_class = self.query_classes(query)
+        class_properties = self.tbox._get_properties_from_embedding_strings(
+            [entity_class[0]]  # DEBUG: remove [0] to take all results into account
+        )
+        print(class_properties)
+
+        possible_classes = list()
+        # get all the parent classes
+        for uri, _ in class_properties.items():
+            reference = URIRef(uri)
+            possible_classes.append(reference)
+            parents = self.tbox.get_all_parent_classes(reference)
+            possible_classes += parents
+
+        # Use LLM to choose the best class
+        chosen_class = choose_class(
+            intent=intent,
+            classes="\n".join([str(c) for c in possible_classes]),
+            llm=self.encoder_llm
+        )
+
+        print('Chosen class:')
+        print(chosen_class)
+
+        return URIRef(chosen_class)
+
+    def encode_predicate(triplet: tuple[str, str, str]) -> URIRef:
+        pass
 
 
 def generate_tbox_db(store: TBoxStorage):
@@ -423,7 +450,8 @@ def generate_tbox_db(store: TBoxStorage):
 def choose_predicate(intent: str, predicates: list[str], llm) -> str:
     chain = LLMChain(
         llm=llm,
-        prompt=CHOOSE_PREDICATE_PROMPT
+        prompt=CHOOSE_PREDICATE_PROMPT,
+        verbose=True
     )
 
     chosen_predicate = chain.predict(
@@ -437,12 +465,13 @@ def choose_predicate(intent: str, predicates: list[str], llm) -> str:
 def choose_class(intent: str, classes: list[str], llm) -> str:
     chain = LLMChain(
         llm=llm,
-        prompt=CHOOSE_CLASS_PROMPT
+        prompt=CHOOSE_CLASS_PROMPT,
+        verbose=True
     )
 
     chosen_class = chain.predict(
         classes=classes,
-        intent=intent
+        intent=intent,
     )
 
     return chosen_class

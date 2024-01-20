@@ -289,15 +289,66 @@ CHOOSE_PREDICATE_PROMPT = PromptTemplate(
 )
 
 _CHOOSE_CLASS_TEMPLATE = """Choose the class from the list which corresponds best to the given intent.
+Additionnally, you can use "Literal" (which represents simply a string of test, not to be used on subjects, but can be used on objects in some cases), and "http://www.w3.org/2002/07/owl#Thing".
+Sometimes, if you can't describe the class using the provided classes, it's better to use Literal or Thing.
+
+EXAMPLE
+List of classes:
+http://dbpedia.org/ontology/Animal
+http://dbpedia.org/ontology/Eukaryote
+http://www.w3.org/2002/07/owl#Thing
+Literal
+
+Intent:
+Get the correct class for object "a cat" in the triple (User, has, a cat)
+
+Chosen class:
+http://dbpedia.org/ontology/Animal
+
+END OF EXAMPLE
+
+EXAMPLE
+List of classes:
+http://dbpedia.org/ontology/Scientist
+http://dbpedia.org/ontology/Person
+http://dbpedia.org/ontology/Animal
+http://dbpedia.org/ontology/Eukaryote
+http://www.w3.org/2002/07/owl#Thing
+Literal
+
+Intent:
+Get the correct class for subject "User" in the triple (User, has, a cat)
+
+Chosen class:
+http://dbpedia.org/ontology/Person
+
+END OF EXAMPLE
+
+EXAMPLE
+List of classes:
+http://dbpedia.org/ontology/Scientist
+http://dbpedia.org/ontology/Person
+http://dbpedia.org/ontology/Animal
+http://dbpedia.org/ontology/Eukaryote
+http://www.w3.org/2002/07/owl#Thing
+Literal
+
+Intent:
+Get the correct class for object "Florian" in the triple (User, is named, Florian)
+
+Chosen class:
+Literal
+
+END OF EXAMPLE
 
 List of classes:
-http://www.w3.org/2002/07/owl#Thing
 {classes}
+Literal
 
 Intent:
 {intent}
 
-Chosen predicate:
+Chosen class:
 
 """
 

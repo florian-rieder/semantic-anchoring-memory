@@ -241,11 +241,11 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
 
 
 class Relation(BaseModel):
-    head: str #= Field()#Field(description="The resource at the head of the relationship")
-    head_type: str #= Field()#Field(description="Type of the head resource")
-    relation: str #= Field()#Field(description="Type of the relation")
-    tail: str #= Field()#Field(description="The resource at the tail of the relationship")
-    tail_type: str #= Field()#Field(description="Type of the tail resource")
+    head: str = Field()#Field(description="The resource at the head of the relationship")
+    head_type: str = Field()#Field(description="Type of the head resource")
+    relation: str = Field()#Field(description="Type of the relation")
+    tail: str = Field()#Field(description="The resource at the tail of the relationship")
+    tail_type: str = Field()#Field(description="Type of the tail resource")
 
 def extract_triplets_new(text: str, llm, tbox: TBoxStorage):
     # Set up a parser + inject instructions into the prompt template.
