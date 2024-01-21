@@ -19,13 +19,11 @@ from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
 
 
-from server.memory.prompts import (
-    FACT_EXTRACTION_PROMPT,
+from memory.prompts import (
     NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
     TRIPLET_ENCODER_PROMPT
 )
-
-from server.memory.semantic.store import SemanticStore
+from memory.semantic.store import SemanticStore
 
 
 def memorize(conversation_history: str, llm: BaseLanguageModel, semantic_store: SemanticStore):

@@ -7,9 +7,9 @@ from rdflib import Namespace, URIRef, Literal, RDF, RDFS
 import traceback
 from urllib.parse import quote
 
-from server.memory.prompts import CHOOSE_CLASS_PROMPT, CHOOSE_PREDICATE_PROMPT
-from server.memory.semantic.abox import ABox
-from server.memory.semantic.tbox import TBox
+from memory.prompts import CHOOSE_CLASS_PROMPT, CHOOSE_PREDICATE_PROMPT
+from memory.semantic.abox import ABox
+from memory.semantic.tbox import TBox
 
 EX = Namespace("http://example.com/")
 

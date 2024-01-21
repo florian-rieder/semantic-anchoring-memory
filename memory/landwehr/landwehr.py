@@ -8,7 +8,7 @@ from langchain_core.language_models import BaseLanguageModel
 from langchain_core.vectorstores import VectorStore
 from langchain.memory.chat_memory import BaseChatMemory
 
-from server.memory.prompts import (
+from memory.prompts import (
     FACT_EXTRACTION_PROMPT, QUERY_CREATION_PROMPT
 )
 
@@ -170,7 +170,8 @@ def extract_facts(chunk: str, summary: str, llm: BaseLanguageModel) -> List[str]
     response = chain.predict(chunk=chunk, summary=summary)
 
     # TODO: Parse output
-    facts = [f.strip().strip('-').strip() for f in response.strip().split('\n')]
+    facts = [f.strip().strip('-').strip()
+             for f in response.strip().split('\n')]
 
     return facts
 
@@ -185,30 +186,3 @@ def generate_retrieval_query(input_query: str, llm: BaseLanguageModel) -> str:
     refined_query = chain.predict(history=input_query)
 
     return refined_query
-
-
-if __name__ == "__main__":
-    from langchain_openai import OpenAI
-    from langchain_community.vectorstores import Chroma
-    from langchain_community.embeddings import HuggingFaceEmbeddings
-
-    with open('_work/example_conversation.txt', 'r') as f:
-        test_text = f.read()
-
-    llm = OpenAI(
-        model='gpt-3.5-turbo-instruct',
-        temperature=0,
-        # frequency_penalty=0.2
-    )
-
-    print('Initializing embeddings...')
-    # here we choose a simple and cheap option
-    embeddings = HuggingFaceEmbeddings()
-
-    store = Chroma(
-        persist_directory='./database/_memories/landwehr_memories_db_0',
-        embedding_function=embeddings
-    )
-
-    # memorize(test_text, llm, store)
-    print(generate_retrieval_query('Do I have any siblings ?', llm))

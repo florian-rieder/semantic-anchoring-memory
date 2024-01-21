@@ -12,11 +12,11 @@ from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAI
 from langchain_openai import OpenAIEmbeddings
 
-from server.memory.semantic.semantic_memory import SemanticLongTermMemory
-from server.memory.semantic.abox import ABox
-from server.memory.semantic.tbox import TBox
-from server.memory.semantic.store import SemanticStore
-from server.memory.landwehr.landwehr import LandwehrMemory
+from memory.semantic.semantic_memory import SemanticLongTermMemory
+from memory.semantic.abox import ABox
+from memory.semantic.tbox import TBox
+from memory.semantic.store import SemanticStore
+from memory.landwehr.landwehr import LandwehrMemory
 
 
 # template = (
@@ -56,7 +56,7 @@ CONVERSATION_PROMPT = PromptTemplate(
 
 ONTOLOGIES_PATHS = [
     'ontologies/dbpedia.owl',  # General ontology
-    'ontologies/foaf.owl' # People ontology
+    'ontologies/foaf.owl'  # People ontology
     # 'http://xmlns.com/foaf/spec/index.rdf'  # People ontology
     # 'https://www.cirma.unito.it/drammar/drammar.owl' # Emotions ontology
 ]
@@ -150,7 +150,7 @@ def get_chain(stream_handler) -> ConversationChain:
                 long_term_memory
             ]
         ),
-        callback_manager=manager, # used for streaming
+        callback_manager=manager,  # used for streaming
         verbose=True
     )
 

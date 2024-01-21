@@ -10,12 +10,12 @@ from langchain.chains.llm import LLMChain
 from langchain.memory.chat_memory import BaseChatMemory
 from langchain.memory.utils import get_prompt_input_key
 
-from server.memory.prompts import (
+from memory.prompts import (
     ENTITY_EXTRACTION_PROMPT,
     KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
 )
-from server.memory.semantic.learn import memorize
-from server.memory.semantic.store import SemanticStore
+from memory.semantic.learn import memorize
+from memory.semantic.store import SemanticStore
 
 
 class SemanticLongTermMemory(BaseChatMemory):

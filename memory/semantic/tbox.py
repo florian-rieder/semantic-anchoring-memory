@@ -1,11 +1,9 @@
 """
 Purpose: get the predicate or class which most closely resembles our input
 """
-import os
 import queue
 import re
 from tqdm import tqdm
-import urllib
 
 from rdflib import Graph, URIRef, RDFS
 
