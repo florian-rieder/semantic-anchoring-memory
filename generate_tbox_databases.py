@@ -1,8 +1,6 @@
 
 
-from memory.semantic.store import SemanticStore
-from memory.semantic.abox import ABox
-from memory.semantic.tbox import TBox
+from memory.semantic.store import SemanticStore, ABox, TBox
 
 from config import (
     ONTOLOGIES_PATHS,

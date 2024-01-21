@@ -49,6 +49,12 @@ First off, you will need to populate the classes and predicates vector stores wi
 python generate_tbox_db.py
 ```
 
+### Ingest arbitrary files
+
+```bash
+python ingest.py -f file1.txt file2.txt
+``````
+
 ### Launch the chat in the command line
 ```bash
 python cli.py
