@@ -298,35 +298,6 @@ class SemanticStore():
             return None
 
 
-def generate_tbox_db(store: SemanticStore):
-    """Generate the T-Box vector database (databases containing all the
-    classes and predicates from the ontologies specified in the
-    SemanticStore)
-    """
-    # Load the classes and predicates into vector stores
-
-    print('Loading classes...')
-    classes = store.tbox.get_classes_embedding_strings()
-    print(f'Number of classes: {len(classes)}')
-    with open('ontologies/classes.owl', 'w') as f:
-        for c in classes:
-            f.write(c + '\n')
-
-    print('Loading predicates...')
-    predicates = store.tbox.get_predicates_embedding_strings()
-    print(f'Number of predicates: {len(predicates)}')
-    with open('ontologies/predicates.owl', 'w') as f:
-        for p in predicates:
-            f.write(p + '\n')
-
-    # Storage into vector databases
-    print('Storing classes...')
-    store.store_classes(classes)
-
-    print('Storing predicates...')
-    store.store_predicates(predicates)
-
-
 def choose_predicate(intent: str, predicates: list[str], llm) -> str:
     """Use an LLM to choose the predicate from a list of predicates, which is the
     most relevant to the intent"""
