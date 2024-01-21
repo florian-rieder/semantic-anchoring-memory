@@ -18,6 +18,13 @@ from memory.semantic.tbox import TBox
 from memory.semantic.store import SemanticStore
 from memory.landwehr.landwehr import LandwehrMemory
 
+from config import (
+    ONTOLOGIES_PATHS,
+    CLASS_DB_PATH,
+    PREDICATES_DB_PATH,
+    ENTITIES_DB_PATH
+)
+
 
 # template = (
 # """Assistant is a large language model (LLM).
@@ -54,15 +61,7 @@ CONVERSATION_PROMPT = PromptTemplate(
 )
 
 
-ONTOLOGIES_PATHS = [
-    'ontologies/dbpedia.owl',  # General ontology
-    'ontologies/foaf.owl'  # People ontology
-    # 'http://xmlns.com/foaf/spec/index.rdf'  # People ontology
-    # 'https://www.cirma.unito.it/drammar/drammar.owl' # Emotions ontology
-]
-
-
-def get_chain(stream_handler) -> ConversationChain:
+def get_chain(stream_handler, memory_model = 'semantic') -> ConversationChain:
     """Create a streaming ConversationChain for question/answering."""
 
     # Used for streaming
@@ -97,49 +96,55 @@ def get_chain(stream_handler) -> ConversationChain:
         input_key='input'
     )
 
-    semantic_store = SemanticStore(
-        predicates_db=Chroma(
-            persist_directory='./database/vector_db/oa_predicates_db',
-            embedding_function=embeddings
-        ),
-        classes_db=Chroma(
-            persist_directory='./database/vector_db/oa_classes_db',
-            embedding_function=embeddings
-        ),
-        encoder_llm=background_llm,
-        tbox=TBox(ONTOLOGIES_PATHS),
-        abox=ABox(
-            entities_store=Chroma(
-                persist_directory='./database/_memories/entities_db',
+    if memory_model == 'semantic':
+        semantic_store = SemanticStore(
+            predicates_db=Chroma(
+                persist_directory=PREDICATES_DB_PATH,
                 embedding_function=embeddings
+            ),
+            classes_db=Chroma(
+                persist_directory=CLASS_DB_PATH,
+                embedding_function=embeddings
+            ),
+            encoder_llm=background_llm,
+            tbox=TBox(ONTOLOGIES_PATHS),
+            abox=ABox(
+                entities_store=Chroma(
+                    persist_directory=ENTITIES_DB_PATH,
+                    embedding_function=embeddings
+                )
             )
         )
-    )
 
-    long_term_memory = SemanticLongTermMemory(
-        llm=background_llm,
-        semantic_store=semantic_store,
-        k=4,
-        human_prefix='User',
-        ai_prefix='Assistant',
-        memory_key='long_term_memory',
-        input_key='input'
-    )
+        long_term_memory = SemanticLongTermMemory(
+            llm=background_llm,
+            semantic_store=semantic_store,
+            k=4,
+            human_prefix='User',
+            ai_prefix='Assistant',
+            memory_key='long_term_memory',
+            input_key='input'
+        )
 
-    # long_term_memory = LandwehrMemory(
-    #     llm=background_llm,
-    #     db=Chroma(
-    #         persist_directory='./database/_memories/landwehr_memories_db',
-    #         embedding_function=OpenAIEmbeddings(
-    #             model='text-embedding-ada-002'
-    #         )
-    #     ),
-    #     k=8,
-    #     human_prefix='User',
-    #     ai_prefix='Assistant',
-    #     memory_key='long_term_memory',
-    #     input_key='input'
-    # )
+    elif memory_model == 'landwehr':
+        long_term_memory = LandwehrMemory(
+            llm=background_llm,
+            db=Chroma(
+                persist_directory='./database/_memories/landwehr_memories_db',
+                embedding_function=OpenAIEmbeddings(
+                    model='text-embedding-ada-002'
+                )
+            ),
+            k=8,
+            human_prefix='User',
+            ai_prefix='Assistant',
+            memory_key='long_term_memory',
+            input_key='input'
+        )
+    else:
+        raise ValueError(
+            f'Unexpected memory model: {memory_model}."'
+            ' Expected "semantic" or "landwehr".')
 
     conversation = ConversationChain(
         llm=stream_llm,

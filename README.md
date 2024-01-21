@@ -42,10 +42,13 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-### Generate classes and predicates vector stores
+### Configuration
+Start by configuring which ontologies T-Boxes should be used as a world model, by editing the `ONTOLOGIES_PATHS` list to include any T-Box you might want. Local files paths (in the `ontologies` directory) or http addresses of networked resources can be used.
 
+### Generate classes and predicates vector stores
+First off, you will need to populate the classes and predicates vector stores with the classes and predicates from your chosen ontologies T-Boxes.
 ```bash
-python tbox.py
+python generate_tbox_db.py
 ```
 
 ### Launch the chat in the command line

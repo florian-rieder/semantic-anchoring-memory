@@ -8,7 +8,6 @@ Process:
 """
 from typing import List
 import re
-import json
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import LLMChain
@@ -146,52 +145,6 @@ def extract_triplets(summary: str, llm: BaseLanguageModel) -> list[tuple[str, st
     )
 
     triplets = chain.predict(summary=summary)
-
-    return triplets
-
-# def resolve_coreferences(text: str):
-#     """
-#     Use SpaCy and NeuralCoref to resolve all
-#     User's dog is named grace. She is beautiful
-#     -> User's dog is named Grace. Grace is beautiful
-#     """
-#     # Load your usual SpaCy model (one of SpaCy English models)
-#     import spacy
-#     nlp = spacy.load("en_core_web_sm")
-
-#     # load NeuralCoref and add it to the pipe of SpaCy's model
-#     import neuralcoref
-#     coref = neuralcoref.NeuralCoref(nlp.vocab)
-#     nlp.add_pipe(coref, name='neuralcoref')
-
-#     # You're done. You can now use NeuralCoref the same way you usually manipulate a SpaCy document and it's annotations.
-#     doc = nlp(u'My sister has a dog. She loves him.')
-
-#     doc._.has_coref
-#     doc._.coref_clusters
-
-
-def extract_triplets_spacy(sentence):
-    import spacy
-
-    # Load spaCy model
-    nlp = spacy.load("en_core_web_sm")
-
-    # Parse the sentence with spaCy
-    doc = nlp(sentence)
-
-    triplets = []
-    for token in doc:
-        if "subj" in token.dep_:
-            subject = token.text
-            predicate = token.head.text
-            object_ = None
-            for child in token.children:
-                if child.dep_ == 'attr' or child.dep_ == 'prep':
-                    object_ = child.text
-                    break
-            if object_:
-                triplets.append(f'({subject}, {predicate}, {object_})')
 
     return triplets
 
