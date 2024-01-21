@@ -56,6 +56,25 @@ document.getElementById('end-conversation').addEventListener('click', (e) => {
     endConversation();
 });
 
+// Memory system selection
+const landwehrSelector = document.getElementById("landwehr-memory-selector")
+const semanticSelector = document.getElementById("semantic-memory-selector")
+
+landwehrSelector.addEventListener('click', (e) => {
+    if (landwehrSelector.classList.contains('active')) return
+    ws.send(JSON.stringify({"type": "memory_model", "value": "landwehr"}));
+    semanticSelector.classList.remove('active');
+    landwehrSelector.classList.add('active');
+});
+
+semanticSelector.addEventListener('click', (e) => {
+    if (semanticSelector.classList.contains('active')) return
+    ws.send(JSON.stringify({"type": "memory_model", "value": "semantic"}));
+    landwehrSelector.classList.remove('active');
+    semanticSelector.classList.add('active');
+});
+
+
 ws.onmessage = function (event) {
     let data = parseJSONrecursively(event.data);
 
@@ -82,8 +101,8 @@ function sendMessage(event) {
     ws.send(JSON.stringify({"type": "message", "value": input_value}));
     input.value = '';
 
-    const endConversationButton = document.getElementById("end-conversation");
-    endConversationButton.disabled = false;
+    document.getElementById("end-conversation").disabled = false;
+    document.getElementById("memory-system-selection").classList.add('hidden');
 
     enableForm(false);
     addHumanMessage({ message: input_value });
@@ -201,11 +220,15 @@ function hasUnclosedTripleBacktick(inputString) {
 function endConversation() {
     // Tell the server we want to end the conversation
     ws.send(JSON.stringify({"type": "end_conversation"}))
+
     // Delete messages display
-    messages.innerHTML = ''
+    while (messages.lastChild.id !== 'memory-system-selection') {
+        messages.removeChild(messages.lastChild);
+    }
 
     document.getElementById("send").disabled = true;
     document.getElementById("end-conversation").disabled = true;
+    document.getElementById("memory-system-selection").classList.remove('hidden')
 }
 
 /**

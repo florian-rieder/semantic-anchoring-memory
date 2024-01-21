@@ -22,16 +22,21 @@
             <header>
                 <h1>Memory Chat</h1>
             </header>
-            <ul id='messages'></ul>
+            <ul id='messages'>
+                <div id="memory-system-selection">
+                    <div class="memory-selector active" id="semantic-memory-selector">
+                        <h3>Semantic memory</h3>
+                    </div>
+                    <div class="memory-selector" id="landwehr-memory-selector">
+                        <h3>Landwehr et al. (2023)</h3>
+                    </div>
+                </div>
+            </ul>
         </div>
         <form action="" onsubmit="sendMessage(event)">
             <textarea name="messageText" id="messageText" class="textarea-expand" rows="1" placeholder="Message Memory Chat..."></textarea>
             <button class="send-btn" id="send" aria-label="Send message" disabled><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
             <button class="end-conversation-btn" id="end-conversation" aria-label="End conversation" disabled><i class="fa-solid fa-right-from-bracket"></i></button>
-            <!-- <select name="memory-system" id="memory-system">
-                <option value="landwehr">Landwehr et al.</option>
-                <option value="ours">Our memory system</option>
-            </select> -->
         </form>
     </main>
 
