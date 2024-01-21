@@ -37,6 +37,8 @@ document.querySelector('#messages').style.marginTop = sticky + 'px';
 
 let messagesContainer = document.getElementById("messages-container");
 let messages = document.getElementById("messages");
+let lastMessage = null;
+let currentMessage = "";
 let userScrolledDuringMessage = false;
 
 messages.addEventListener("scroll", () => {
@@ -73,16 +75,30 @@ function sendMessage(event) {
     event.preventDefault();
     const input = document.getElementById("messageText");
 
-    if (input.value.trim() === "") return;
+    input_value = input.value.trim();
+
+    if (input_value === "") return;
+
+    ws.send(input_value);
+    input.value = '';
 
     const endConversationButton = document.getElementById("end-conversation");
     endConversationButton.disabled = false;
 
     enableForm(false);
-    addHumanMessage({ message: input.value });
+    addHumanMessage({ message: input_value });
 
-    ws.send(input.value);
-    input.value = '';
+    // Create the next bot message in the DOM
+    lastMessage = createMessageElement();
+    currentMessage += "MemoryChat: ";
+    lastMessage.innerHTML = currentMessage;
+
+    // Add the cursor
+    let cursorMarker = document.createElement('span');
+    cursorMarker.classList.add('cursor-marker');
+    // Symbol for a thicker vertical bar
+    cursorMarker.innerHTML = '&#9612;'
+    lastMessage.appendChild(cursorMarker);
 }
 
 function createMessageElement() {
@@ -91,9 +107,6 @@ function createMessageElement() {
     messages.appendChild(messageElement);
     return messageElement;
 }
-
-let lastMessage = null;
-let currentMessage = "";
 
 function addHumanMessage(messageData) {
     let message = createMessageElement();
@@ -109,9 +122,6 @@ function addBotMessage(messageData) {
     // Start of message
     if (messageData.type === 'start') {
         userScrolledDuringMessage = false;
-        // Create the message in the DOM
-        lastMessage = createMessageElement();
-        currentMessage += "MemoryChat: ";
     }
     // End of message
     else if (messageData.type === 'end') {
