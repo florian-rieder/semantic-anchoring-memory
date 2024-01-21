@@ -3,6 +3,8 @@
 @prefix dbpedia: <http://dbpedia.org/ontology/> .
 @prefix ex: <http://example.com/> .
 
-ex:User rdfs:label "The user of this chat app, who talks with the AI." ;
-    rdfs:type foaf:Person .
+ex:User a dbpedia:Person;
+    rdfs:label "The user of this chat app, who talks with the AI." .
 
+ex:AI a dbpedia:Agent ;
+    rdfs:label "The AI who answers the user's questions" .

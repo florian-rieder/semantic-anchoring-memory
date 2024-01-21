@@ -232,7 +232,7 @@ class TBox():
 
         while not nodes_to_check.empty():
             if depth > max_depth:
-                print(f'Maximum recursion depth reached ({max_depth})')
+                #print(f'Maximum recursion depth reached ({max_depth})')
                 return list(set(parents))
 
             # get the next node to check from the queue

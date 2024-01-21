@@ -122,7 +122,9 @@ class SemanticLongTermMemory(BaseChatMemory):
         """Memorize the conversation. To be called at the end of the
         conversation."""
         print(self.chat_memory)
+        print('Start memorization')
         memorize(conversation_history, self.llm, self.semantic_store)
+        print('End memorization')
 
 
 def get_entities(entity_str: str) -> List[str]:

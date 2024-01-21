@@ -32,7 +32,7 @@ _CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = (
     " the predicate is the property of the subject being described, and the object is the value of the property."
 
     "\n\nExamples:\n"
-    "1. The user, named Florian, is a student.\n   Output: (O: User, is, O: student), (O: User, is named, D: Florian)"
+    "1. The user, named Florian, is a student.\n   Output: (User, is, student), (User, is named, Florian)"
     "\n2. The user, a student, received a job offer to work on a website in December.\n"
     "   Output: (User, received, job offer), (job offer, concerns the task of, working on a website), (job offer, received in, December)"
     "\n3. The user, a student, declined a job offer due to a busy schedule at the end of the semester.\n"

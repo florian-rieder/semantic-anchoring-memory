@@ -1,6 +1,7 @@
 import os
 
 from rdflib import Graph, URIRef
+from urllib.parse import unquote
 
 from langchain_core.vectorstores import VectorStore
 
@@ -65,8 +66,8 @@ class ABox():
         for pred, obj in self.graph.predicate_objects(entity_node):
             # Get the last bit of the URI
             # ex. https://example.com/Bob -> Bob
-            pred = str(pred).split("/")[-1].split('#')[-1]
-            obj = str(obj).split("/")[-1].split('#')[-1]
+            pred = unquote(str(pred)).split("/")[-1].split('#')[-1]
+            obj = unquote(str(obj)).split("/")[-1].split('#')[-1]
 
             knowledge_bit = f"{pred} {obj}"
             knowledge.append(knowledge_bit)

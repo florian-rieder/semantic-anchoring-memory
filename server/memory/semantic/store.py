@@ -38,12 +38,16 @@ class SemanticStore():
     def store_predicates(self,
                          predicates_embedding_strings: list[str]
                          ) -> None:
+        """Add the list of predicate embedding strings to the predicates
+        database"""
         self.pred_db.add_texts(predicates_embedding_strings)
         self.pred_db.persist()
 
     def store_classes(self,
                       classes_embedding_strings: list[str]
                       ) -> None:
+        """Add the list of class embedding strings to the classes
+        database"""
         self.class_db.add_texts(classes_embedding_strings)
         self.class_db.persist()
 
@@ -66,7 +70,8 @@ class SemanticStore():
         return [d.page_content for d in self.class_db.similarity_search(query, k)]
 
     def encode_triplets(self, triplets: list[tuple[str, str, str]]):
-        return (self._encode_triplet(t) for t in triplets)
+        """Encode all given triplets into RDF"""
+        return [self._encode_triplet(t) for t in triplets]
 
     def _encode_triplet(self,
                        triplet: tuple[str, str, str],
@@ -112,7 +117,12 @@ class SemanticStore():
         return encoded_triplet
     
     def memorize_encoded_triplets(self, encoded_triplets: list[dict]):
+        """Takes the output from the encode_triplets() method, and add
+        them to the knowledge graph, and save the knowledge graph."""
+        print('Memememememememememememmemrizing triplets')
+        print(encoded_triplets)
         for triplet in encoded_triplets:
+            print(f'Memorize triplet {str(triplet)}')
             try:
                 self._memorize_encoded_triplet(triplet)
             except Exception:
@@ -127,6 +137,7 @@ class SemanticStore():
         already in the memory graph, create a new node
         """
 
+        print('MEMORIZING TRIPLET')
         # Convert string values to URIRef objects
         predicate_uri = encoded_triplet['predicate']['type']
 
@@ -196,7 +207,6 @@ class SemanticStore():
             # DEBUG: remove [0] to take all results into account
             entity_classes
         )
-        print(class_properties)
 
         possible_classes = list()
         # get all the parent classes
@@ -215,9 +225,6 @@ class SemanticStore():
             llm=self.encoder_llm
         )
 
-        print('Chosen class:')
-        print(chosen_class)
-
         return URIRef(chosen_class)
 
     def encode_predicate(self,
@@ -226,6 +233,8 @@ class SemanticStore():
                          object_class: URIRef,
                          num_predicates_to_get: int = 8
                          ) -> URIRef:
+        """Returns the best predicate URI to represent the predicate in
+        the given triple"""
         # Build the query for the predicates vector database
         predicate_query = f'{str(triplet)}: RDF for predicate representing "{triplet[1]}"'
 
@@ -266,8 +275,6 @@ class SemanticStore():
             llm=self.encoder_llm
         )
 
-        print('Chosen predicate:')
-        print(chosen_predicate)
         return URIRef(chosen_predicate)
 
     def resolve_memorized_entity(self, new_entity) -> URIRef:
@@ -292,6 +299,10 @@ class SemanticStore():
 
 
 def generate_tbox_db(store: SemanticStore):
+    """Generate the T-Box vector database (databases containing all the
+    classes and predicates from the ontologies specified in the
+    SemanticStore)
+    """
     # Load the classes and predicates into vector stores
 
     print('Loading classes...')
@@ -317,10 +328,12 @@ def generate_tbox_db(store: SemanticStore):
 
 
 def choose_predicate(intent: str, predicates: list[str], llm) -> str:
+    """Use an LLM to choose the predicate from a list of predicates, which is the
+    most relevant to the intent"""
     chain = LLMChain(
         llm=llm,
         prompt=CHOOSE_PREDICATE_PROMPT,
-        verbose=True
+        #verbose=True
     )
 
     chosen_predicate = chain.predict(
@@ -332,10 +345,12 @@ def choose_predicate(intent: str, predicates: list[str], llm) -> str:
 
 
 def choose_class(intent: str, classes: list[str], llm) -> str:
+    """Use an LLM to choose a class from a list of classes, which is the
+    most relevant to the intent"""
     chain = LLMChain(
         llm=llm,
         prompt=CHOOSE_CLASS_PROMPT,
-        verbose=True
+        #verbose=True
     )
 
     chosen_class = chain.predict(
