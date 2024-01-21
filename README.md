@@ -1,7 +1,9 @@
 # Semantic Anchoring for Long-Term Conversational Memory
 
+
 ## Goal
 The goal of this project is to give a long-term memory to a conversational LLM. The aim is to reproduce the architecture outlined in Landwehr et al. (2023) [[1](#references)] to use as a baseline, and to create a new memory creation pipeline based on the storage of atomic facts in the form of semantic triplets, which could allow for a memory which captures the rich relationships between concepts and entities.
+
 
 ## Task list
 
@@ -22,10 +24,6 @@ The goal of this project is to give a long-term memory to a conversational LLM. 
 - [x] Store triplets in knowledge graph
 - [x] Recall entities based on a similarity search
 - [x] Recall triplets using Named Entity Recognition to do a graph search
-
-
-## Memory architecture
-![Memory architecture diagram](https://github.com/florian-rieder/semantic-anchoring-memory/assets/48287183/6b4d7ad1-5bbb-4457-bf50-16debba4e77d)
 
 
 ## Installation
@@ -60,6 +58,14 @@ python cli.py
 ```bash
 uvicorn main:app
 ```
+
+
+## Diagrams
+### Memory architecture
+![Memory architecture diagram](https://github.com/florian-rieder/semantic-anchoring-memory/assets/48287183/da1bdce8-6e7a-4716-9850-de72a3d3d5cf)
+### Memory creation pipeline
+![Memory creation pipeline](https://github.com/florian-rieder/semantic-anchoring-memory/assets/48287183/85e8fc77-131b-4202-9a26-217e6d133be5)
+
 
 ## References
 [[1](#goal)] Landwehr, Fabian, Erika Varis Doggett, and Romann M. Weber (Sept. 2023). “Memories for Virtual AI Characters”. In: *Proceedings of the 16th International Natural Language Generation Conference*. INLG-SIGDIAL 2023. Ed. by C. Maria Keet, Hung-Yi Lee, and Sina Zarrieß. Prague, Czechia: Association for Computational Linguistics, pp. 237–252. doi: 10.18653/v1/2023.inlg-main.17. url: [https://aclanthology.org/2023.inlg-main.17](https://aclanthology.org/2023.inlg-main.17) (visited on 11/28/2023)
