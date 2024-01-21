@@ -79,7 +79,7 @@ function sendMessage(event) {
 
     if (input_value === "") return;
 
-    ws.send(input_value);
+    ws.send(JSON.stringify({"type": "message", "value": input_value}));
     input.value = '';
 
     const endConversationButton = document.getElementById("end-conversation");
@@ -200,7 +200,7 @@ function hasUnclosedTripleBacktick(inputString) {
 
 function endConversation() {
     // Tell the server we want to end the conversation
-    ws.send("END_CONVERSATION");
+    ws.send(JSON.stringify({"type": "end_conversation"}))
     // Delete messages display
     messages.innerHTML = ''
 

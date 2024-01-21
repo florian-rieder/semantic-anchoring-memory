@@ -1,4 +1,6 @@
+import json
 import logging
+import traceback
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.responses import HTMLResponse
@@ -63,23 +65,37 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         """
         # Get the conversation history from the conversation memory
         chat_history = conversation.memory.memories[0].chat_memory
-        print(chat_history)
         # Memorize the conversation
         conversation.memory.memories[1].memorize(str(chat_history))
 
     while True:
         # Mostly lifted out of https://github.com/pors/langchain-chat-websockets
         try:
-            # Receive and send back the client message
-            user_msg = await websocket.receive_text()
+            message = await websocket.receive_text()
+            data = json.loads(message)
+            message_type = data.get("type")
+
+            # Handle setting the memory model
+            if message_type == "memory_model":
+                memory_model = data.get("value", None)
+                # Create new chain that uses the chosen memory model
+                conversation = get_chain(stream_handler, memory_model)
+                continue
 
             # Handle when the user pressed the "end conversation" button
-            if user_msg == 'END_CONVERSATION':
+            if message_type == "end_conversation":
                 logger.info('User ended the conversation')
                 end_conversation(conversation)
                 # reset conversation
                 conversation = get_chain(stream_handler)
                 continue
+
+            # Handle unknown message types
+            if message_type != 'message':
+                raise ValueError('Unknown type received: {message_type}')
+
+            # Receive and send back the client message
+            user_msg = data.get('value')
 
             resp = ChatResponse(
                 sender="human", message=user_msg, type="stream")
