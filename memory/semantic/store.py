@@ -119,14 +119,13 @@ class SemanticStore():
     def memorize_encoded_triplets(self, encoded_triplets: list[dict]):
         """Takes the output from the encode_triplets() method, and add
         them to the knowledge graph, and save the knowledge graph."""
-        print('Memememememememememememmemrizing triplets')
-        print(encoded_triplets)
+
         for triplet in encoded_triplets:
-            print(f'Memorize triplet {str(triplet)}')
             try:
                 self._memorize_encoded_triplet(triplet)
             except Exception:
-                # If an encoding fails, print the exception
+                # If an encoding fails, print the exception but continue
+                # with the rest anyway
                 traceback.print_exc()
         
         self.abox.save_graph()

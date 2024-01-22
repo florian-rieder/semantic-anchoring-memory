@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from websockets.exceptions import ConnectionClosedOK
 from langchain.chains import ConversationChain
 
-from server.chat import get_chain
+from chat import get_chain
 from server.callback import StreamingLLMCallbackHandler
 from server.schemas import ChatResponse
 

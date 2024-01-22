@@ -1,6 +1,6 @@
 from langchain.chains import ConversationChain
 
-from server.chat import get_chain
+from chat import get_chain
 
 
 def end_conversation(conversation: ConversationChain) -> None:
