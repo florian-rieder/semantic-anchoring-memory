@@ -1,4 +1,7 @@
+import argparse
+
 from langchain.chains import ConversationChain
+from langchain.callbacks import StdOutCallbackHandler
 
 from chat import get_chain
 
@@ -16,14 +19,22 @@ def end_conversation(conversation: ConversationChain) -> None:
 
 
 if __name__ == '__main__':
-    from langchain.callbacks import StdOutCallbackHandler
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(
+        description="Memory Chat's command line interface")
+    parser.add_argument('-m', '--memory',
+                        choices=['landwehr', 'semantic'],
+                        default='semantic',
+                        help="Choose memory model: 'landwehr' or 'semantic'")
+    args = parser.parse_args()
 
     stream_handler = StdOutCallbackHandler()
-    conversation = get_chain(stream_handler)
+    conversation = get_chain(stream_handler, memory_model=args.memory)
 
     print("Welcome to Memory Chat's command line interface !"
           " Type your message to start chatting."
           " Type 'exit' to end the conversation and memorize.")
+
     # Run the chat loop
     while True:
         user_input = input("User: ")
