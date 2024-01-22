@@ -18,8 +18,8 @@ logger.setLevel(logging.DEBUG)
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="server/static"), name="static")
+templates = Jinja2Templates(directory="server/templates")
 
 
 class ConnectionManager:
