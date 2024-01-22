@@ -12,14 +12,14 @@ from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAI
 from langchain_openai import OpenAIEmbeddings
 
-from memory.semantic.semantic_memory import SemanticLongTermMemory
-from memory.semantic.abox import ABox
-from memory.semantic.tbox import TBox
-from memory.semantic.store import SemanticStore
+from memory.semantic.memory import SemanticLongTermMemory
+from memory.semantic.store import SemanticStore, ABox, TBox
 from memory.landwehr.landwehr import LandwehrMemory
 
 from config import (
     ONTOLOGIES_PATHS,
+    BASE_KNOWLEDGE_PATH,
+    MEMORY_PATH,
     CLASS_DB_PATH,
     PREDICATES_DB_PATH,
     ENTITIES_DB_PATH
@@ -112,7 +112,9 @@ def get_chain(stream_handler, memory_model = 'semantic') -> ConversationChain:
                 entities_store=Chroma(
                     persist_directory=ENTITIES_DB_PATH,
                     embedding_function=embeddings
-                )
+                ),
+                memory_base_path=BASE_KNOWLEDGE_PATH,
+                memory_path=MEMORY_PATH
             )
         )
 

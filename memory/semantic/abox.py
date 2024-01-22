@@ -9,8 +9,8 @@ from langchain_core.vectorstores import VectorStore
 class ABox():
     def __init__(self,
                  entities_store: VectorStore,
-                 memory_base_path: str = 'ontologies/base_knowledge.ttl',
-                 memory_path: str = 'database/_memories/knowledge.ttl',
+                 memory_base_path: str,
+                 memory_path: str,
                  memory_format: str = 'turtle'
                  ):
         self.graph: Graph = Graph()
@@ -26,6 +26,12 @@ class ABox():
             # first time setting up the memory A-Box:
             # set up the memory with a predefined base
             self.graph.parse(self.memory_base_path)
+
+            # Add all entities present in the base knowledge to the entities
+            # database !
+            entities_in_base_knowledge = list(set(self.graph.subjects()))
+            self.store_entities(entities_in_base_knowledge)
+
             self.save_graph()
 
     def store_entities(self, entities: list[str]):
