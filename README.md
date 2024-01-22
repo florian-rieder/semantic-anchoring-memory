@@ -53,17 +53,64 @@ python generate_tbox_db.py
 
 ```bash
 python ingest.py -f file1.txt file2.txt
-``````
+```
 
 ### Launch the chat in the command line
 ```bash
 python cli.py
+
+# You can specify which memory module to use:
+python cli.py --memory landwehr
+# or
+python cli.py -m semantic
 ```
 
 ### Launch the chat with the web interface
 ```bash
 uvicorn main:app
 ```
+
+
+## Project structure
+
+- `config.py`: Configuration file, containing paths to databases and notably the list of ontologies to use as memory world model.
+- `chat.py`: The main conversation chain, which uses memory modules from the `memory` directory.
+- `cli.py`: Command-line interface for chatting with the model through the terminal.
+- `main.py`: Web interface for chatting with the model more comfortably. For testing purposes.
+- `generate_tbox_db.py`: Script used to precompute the T-Box vector databases. Needs to be run once after having configured the desired ontologies in `config.py`.
+- `ingest.py`: Script used to ingest an arbitrary text into the semantic memory.
+
+- `memory`: This directory contains code related to the memory logic of both the Landwehr et al. inspired memory, and the semantic memory.
+    - `landwehr`: Landwehr memory module
+        - `landwehr.py`: Contains the Langchain memory module and associated functions used to replicate the memory architecture outlined in their paper.
+    - `semantic`: Semantic memory module
+        - `abox.py`: ABox class, used to define the entity knowledge, which is essentially the long-term memory.
+        - `tbox.py`: TBox class, used to retrieve knowledge about the world model to use for the memory
+        - `memory.py`: Langchain memory module
+        - `store.py`: Interface used by the memory module to access, retrieve and update the memory
+        - `learn.py`: Collection of functions used to ingest a raw text and memorize it. Used by `memory.py`
+    - `forget.py`: Forgetting curve function, outlined in Landwehr et al., but remained unused in this project for time constraints.
+    - `prompts.py`: Prompts used by memory systems.
+- `database`: Directory containing T-Box vector databases and long term memories
+- `server`: Web interface directory
+    - `static`: Static files
+        - `css`
+            - `styles.css`: Styles of the client interface
+        - `js`
+            - `main.js`: Body of the client application
+            - `textarea.js`: Text input script
+    - `templates`
+        - `index.html`: Client interface
+    - `callbacks.py`: AsyncCallback used for response streaming
+    - `schemas.py`: Chat application internal data exchange formats
+- `ontologies`: Ontologies and other RDF data
+    - `base_knowledge.ttl`: Turtle file containing the base knowledge used when initiating a new memory graph, for first time use.
+    - `classes.owl`: (DEVELOPMENT) List of classes embedding strings obtained from the ontologies while generating the classes vector database
+    - `predicates.owl`: (DEVELOPMENT) List of predicates embedding strings obtained from the ontologies while generating the predicates vector database
+    - `foaf.owl`: Local copy of the foaf ontology T-Box
+    - `dbpedia.owl`: Local copy of the dbpedia ontology T-Box
+- `notebooks`: Exploratory analysis
+
 
 
 ## Diagrams
