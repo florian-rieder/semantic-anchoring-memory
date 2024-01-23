@@ -1,3 +1,5 @@
+"""Main conversation chain"""
+
 from langchain.chains import ConversationChain
 from langchain.prompts import PromptTemplate
 from langchain.callbacks.manager import AsyncCallbackManager

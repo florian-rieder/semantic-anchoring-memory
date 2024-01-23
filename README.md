@@ -43,6 +43,11 @@ pip install -r requirements.txt
 ### Configuration
 Start by configuring which ontologies T-Boxes should be used as a world model, by editing the `ONTOLOGIES_PATHS` list to include any T-Box you might want. Local files paths (in the `ontologies` directory) or http addresses of networked resources can be used.
 
+Add your OpenAI API key to the environment variables using:
+```bash
+export OPENAI_API_KEY=my-open-ai-key
+```
+
 ### Generate classes and predicates vector stores
 First off, you will need to populate the classes and predicates vector stores with the classes and predicates from your chosen ontologies T-Boxes.
 ```bash
