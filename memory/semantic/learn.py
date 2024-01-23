@@ -125,7 +125,7 @@ def summarize(text: str, llm: BaseLanguageModel) -> str:
     chain = LLMChain(
         llm=llm,
         prompt=summarizer_prompt,
-        verbose=True
+        #verbose=True
     )
 
     response = chain.predict(
@@ -157,24 +157,10 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     summary_splitter = RecursiveCharacterTextSplitter(
         chunk_size=512, chunk_overlap=64)
 
-    # import spacy
-    # import textacy
-    # nlp = spacy.load('en_core_web_sm')
-
-    # def extract_SVO(text):
-    #     tuples = textacy.extract.subject_verb_object_triples(nlp(text))
-    #     if tuples:
-    #         tuples_to_list = list(tuples)
-    #         return tuples_to_list
-
     print(f'Number of chunks: {len(chunks)}')
     triplets = []
     for chunk in chunks:
         summary = summarize(chunk, llm)
-
-        # for sentence in summary.split('. '):
-        #     sentence_triplets = extract_SVO(sentence)
-        #     triplets.append(sentence_triplets)
 
         summary_sentences = summary_splitter.split_text(summary)
         print(
@@ -186,48 +172,3 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
             triplets += list_sentence_triplets
 
     return triplets
-
-
-class Relation(BaseModel):
-    head: str = Field()  # Field(description="The resource at the head of the relationship")
-    head_type: str = Field()  # Field(description="Type of the head resource")
-    relation: str = Field()  # Field(description="Type of the relation")
-    tail: str = Field()  # Field(description="The resource at the tail of the relationship")
-    tail_type: str = Field()  # Field(description="Type of the tail resource")
-
-
-def extract_triplets_new(text: str, llm, semantic_store: SemanticStore):
-    # Set up a parser + inject instructions into the prompt template.
-    chain = LLMChain(
-        llm=llm,
-        prompt=TRIPLET_ENCODER_PROMPT,
-        # parser = JsonOutputParser(pydantic_object=Relation),
-        verbose=True
-    )
-
-    pattern = re.compile(r'<rdf:Description rdf:about="((?:.)+?)">')
-
-    entity_types = semantic_store.query_classes(text, k=8)
-    cleaned_entity_types = []
-    for t in entity_types:
-        uri = pattern.match(t).group(1)
-        entity_type = uri.split('/')[-1]
-        cleaned_entity_types.append(entity_type)
-
-    property_types = semantic_store.query_predicates(text, k=8)
-    cleaned_property_types = []
-    for t in property_types:
-        uri = pattern.match(t).group(1)
-        relation_type = uri.split('/')[-1]
-        cleaned_property_types.append(relation_type)
-
-    print(cleaned_entity_types)
-    print(cleaned_property_types)
-
-    json_object = chain.predict(
-        entity_types=",\n".join(cleaned_entity_types),
-        relation_types=",\n".join(cleaned_property_types),
-        information=text
-    )
-
-    return json_object

@@ -12,6 +12,8 @@ from memory.semantic.learn import memorize
 
 from config import (
     ONTOLOGIES_PATHS,
+    MEMORY_PATH,
+    BASE_KNOWLEDGE_PATH,
     CLASS_DB_PATH,
     PREDICATES_DB_PATH,
     ENTITIES_DB_PATH
@@ -35,7 +37,9 @@ def init():
         entities_store=Chroma(
             persist_directory=ENTITIES_DB_PATH,
             embedding_function=embeddings
-        )
+        ),
+        memory_base_path=BASE_KNOWLEDGE_PATH,
+        memory_path=MEMORY_PATH
     )
 
     print('Initializing vector stores...')
