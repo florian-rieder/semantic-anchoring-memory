@@ -25,24 +25,34 @@ FACT_EXTRACTION_PROMPT = PromptTemplate(
 )
 
 
-_CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = (
-    "You are a networked intelligence tasked with extracting knowledge triples"
-    " from a conversation summary. Ensure consistency in named entities, always using 'User' for the user."
-    " A knowledge triple consists of a subject, a predicate, and an object. The subject is the entity being described,"
-    " the predicate is the property of the subject being described, and the object is the value of the property."
+_CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = """You are a networked intelligence tasked with extracting knowledge triples from a summary.
+Ensure consistency in named entities.
+When naming the entity who is the locutor, use 'User' for the user in a conversation, or 'Author' in a written text.
+A knowledge triple consists of a subject, a predicate, and an object.
+The subject is the entity being described, the predicate is the property of the subject being described, and the object is the value of the property.
+Complex semantics may require intermediary nodes (also called blank nodes), that allow for multiple properties to be assigned to one concept.
 
-    "\n\nExamples:\n"
-    "1. The user, named Florian, is a student.\n   Output: (User, is, student), (User, is named, Florian)"
-    "\n2. The user, a student, received a job offer to work on a website in December.\n"
-    "   Output: (User, received, job offer), (job offer, concerns the task of, working on a website), (job offer, received in, December)"
-    "\n3. The user, a student, declined a job offer due to a busy schedule at the end of the semester.\n"
-    "   Output: (User, declined, job offer), (User, has, busy schedule), (busy schedule, is during time period, end of semester)"
-    "\n4. Paris is the capital of France. The user went to Paris in May 2022.\n"
-    "   Output: (Paris, is capital, France), (Paris, is, city), (User, has traveled to , Paris)"
-    "\nSummary of the last conversation:\n"
-    "{summary}"
-    "\nOutput:"
-)
+EXAMPLE
+Summary:
+Paris is the capital of France. The user went to Paris in May 2022.
+Output:
+(Paris, is capital of, France), (Paris, is, city), (User, has traveled, ParisTravel), (ParisTravel, took place in, May 2022), (ParisTravel, destination, Paris)
+
+EXAMPLE
+Summary:
+Descartes was a French philosopher, mathematician, and scientist who lived in the 17th century.
+Output:
+(Descartes, country of origin, France), (Descartes, is a, philosopher), (Descartes, is a, mathematician), (Descartes, is a, scientist) (Descartes, lived in, the 17th century)
+END OF EXAMPLE
+
+
+Summary:
+{history}
+
+Input:
+{input}
+
+"""
 
 
 NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
@@ -176,6 +186,7 @@ QUERY_CREATION_PROMPT = PromptTemplate(
 )
 
 
+# From Landwehr et al. 2023
 _RESPONSE_GENERATION_TEMPLATE = (
     "You are acting as a virtual character and you are having a conversation with a user."
     " The character you are simulating is named {name}."
@@ -272,6 +283,7 @@ TRIPLET_ENCODER_PROMPT = PromptTemplate(
 
 
 _CHOOSE_PREDICATE_TEMPLATE = """Choose the predicate from the list which corresponds best to the given intent.
+You can use predicates from common namespaces: RDF, RDFS, OWL.
 If no predicate in the list fits, create your own using the namespace http://example.com/.
 Only output the chosen predicate and nothing else.
 
@@ -293,6 +305,7 @@ CHOOSE_PREDICATE_PROMPT = PromptTemplate(
 _CHOOSE_CLASS_TEMPLATE = """Choose the class from the list which corresponds best to the given intent.
 Additionnally, you can use "Literal" (which represents simply a string of test, not to be used on subjects, but can be used on objects in some cases), and "http://www.w3.org/2002/07/owl#Thing".
 Sometimes, if you can't describe the class using the provided classes, it's better to use Literal or Thing.
+You can use common classes from common namespaces: RDF, RDFS, OWL.
 
 EXAMPLE
 List of classes:

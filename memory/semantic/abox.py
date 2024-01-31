@@ -23,6 +23,11 @@ class ABox():
         if os.path.exists(self.memory_path):
             self.graph.parse(self.memory_path)
         else:
+            # If no base knowledge is defined, simply don't create base
+            # knowledge
+            if not self.memory_base_path:
+                return
+
             # first time setting up the memory A-Box:
             # set up the memory with a predefined base
             self.graph.parse(self.memory_base_path)

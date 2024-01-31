@@ -1,4 +1,3 @@
-from langchain_core.vectorstores import VectorStore
 from langchain_core.language_models import BaseLanguageModel
 
 from langchain.chains import LLMChain
@@ -23,51 +22,13 @@ LITERAL_TYPES = (
 
 class SemanticStore():
     def __init__(self,
-                 predicates_db: VectorStore,
-                 classes_db: VectorStore,
                  tbox: TBox,
                  abox: ABox,
                  encoder_llm: BaseLanguageModel
                  ):
-        self.pred_db: VectorStore = predicates_db
-        self.class_db: VectorStore = classes_db
         self.tbox: TBox = tbox
         self.abox: ABox = abox
         self.encoder_llm: BaseLanguageModel = encoder_llm
-
-    def store_predicates(self,
-                         predicates_embedding_strings: list[str]
-                         ) -> None:
-        """Add the list of predicate embedding strings to the predicates
-        database"""
-        self.pred_db.add_texts(predicates_embedding_strings)
-        self.pred_db.persist()
-
-    def store_classes(self,
-                      classes_embedding_strings: list[str]
-                      ) -> None:
-        """Add the list of class embedding strings to the classes
-        database"""
-        self.class_db.add_texts(classes_embedding_strings)
-        self.class_db.persist()
-
-    def query_predicates(self,
-                         query: str,
-                         k: int = 4
-                         ) -> str:
-        """
-        Returns k predicates which are most similar to the input query.
-        """
-        return [d.page_content for d in self.pred_db.similarity_search(query, k=k)]
-
-    def query_classes(self,
-                      query: str,
-                      k: int = 4
-                      ) -> str:
-        """
-        Returns k predicates which are most similar to the input query.
-        """
-        return [d.page_content for d in self.class_db.similarity_search(query, k)]
 
     def encode_triplets(self, triplets: list[tuple[str, str, str]]):
         """Encode all given triplets into RDF"""
@@ -136,7 +97,6 @@ class SemanticStore():
         already in the memory graph, create a new node
         """
 
-        print('MEMORIZING TRIPLET')
         # Convert string values to URIRef objects
         predicate_uri = encoded_triplet['predicate']['type']
 
@@ -144,8 +104,7 @@ class SemanticStore():
         subject = quote(encoded_triplet['subject']['value'])
 
         # Check if there are similar entities in the graph ?
-        subject_node = self.resolve_memorized_entity(
-            subject)
+        subject_node = self.resolve_memorized_entity(quote(subject))
         if not subject_node:
             subject_node = EX[subject]
             # Add the new node to the graph
@@ -201,9 +160,8 @@ class SemanticStore():
             raise ValueError(
                 f'Unexpected role {role}. Must be either "subject" or "object".')
 
-        entity_classes = self.query_classes(query)
+        entity_classes = self.tbox.query_classes(query)
         class_properties = self.tbox._get_properties_from_embedding_strings(
-            # DEBUG: remove [0] to take all results into account
             entity_classes
         )
 
@@ -224,7 +182,7 @@ class SemanticStore():
             llm=self.encoder_llm
         )
 
-        return URIRef(chosen_class)
+        return URIRef(chosen_class.strip())
 
     def encode_predicate(self,
                          triplet: tuple[str, str, str],
@@ -238,7 +196,7 @@ class SemanticStore():
         predicate_query = f'{str(triplet)}: RDF for predicate representing "{triplet[1]}"'
 
         # Get k possibly relevant predicates
-        results = self.query_predicates(
+        results = self.tbox.query_predicates(
             predicate_query, k=num_predicates_to_get)
 
         # Get the domain and range of each predicate
@@ -274,7 +232,7 @@ class SemanticStore():
             llm=self.encoder_llm
         )
 
-        return URIRef(chosen_predicate)
+        return URIRef(chosen_predicate.strip())
 
     def resolve_memorized_entity(self, new_entity) -> URIRef:
         """Searches the memory to see if the new entity is already in memory.

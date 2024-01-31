@@ -25,7 +25,10 @@ from memory.prompts import (
 from memory.semantic.store import SemanticStore
 
 
-def memorize(conversation_history: str, llm: BaseLanguageModel, semantic_store: SemanticStore):
+def memorize(conversation_history: str,
+             llm: BaseLanguageModel,
+             semantic_store: SemanticStore
+             ):
     # Extract raw triplets from the conversation history
     raw_triplets = conversation_to_triplets(conversation_history, llm)
     print(list(raw_triplets))
@@ -49,7 +52,9 @@ def parse_triplet_string(triplets_string: str) -> tuple[str, str, str]:
     return triplets
 
 
-def split_chunk_context_pairs(text: str, llm: BaseLanguageModel) -> List[tuple]:
+def split_chunk_context_pairs(text: str,
+                              llm: BaseLanguageModel
+                              ) -> List[tuple]:
     """Split text into multiple chunks, and for each chunk create a summary
     that takes into account previous chunks."""
 
@@ -65,9 +70,9 @@ def split_chunk_context_pairs(text: str, llm: BaseLanguageModel) -> List[tuple]:
         chunks_before = chunks[:idx+1]
         context = "".join(chunks_before)
 
-        # context = 'There are no previous chunks. The chunk to summarize is the start of the conversation.'
-        # if idx > 0:
-        #     context = contexts[idx-1][1]
+        context = 'There are no previous chunks. The chunk to summarize is the start of the conversation.'
+        if idx > 0:
+            context = contexts[idx-1][1]
 
         # summary = summarize_chunk(context, chunk, llm)
         summary = summarize(context, llm)
@@ -150,8 +155,10 @@ def extract_triplets(summary: str, llm: BaseLanguageModel) -> list[tuple[str, st
 
 
 def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
+    """Converts a raw text to a list of triples in natural language"""
+    # Split the raw text into chunks
     conversation_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=3072, chunk_overlap=256)
+        chunk_size=12000, chunk_overlap=512)
     chunks = conversation_splitter.split_text(conversation)
 
     summary_splitter = RecursiveCharacterTextSplitter(
@@ -162,6 +169,7 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     for chunk in chunks:
         summary = summarize(chunk, llm)
 
+        # We split the resulting summary into smaller chunks
         summary_sentences = summary_splitter.split_text(summary)
         print(
             f'Number of chunks in the summary chunk: {len(summary_sentences)}')

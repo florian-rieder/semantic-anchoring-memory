@@ -7,12 +7,56 @@ from tqdm import tqdm
 
 from rdflib import Graph, URIRef, RDFS
 
+from langchain_core.vectorstores import VectorStore
+
 
 class TBox():
-    def __init__(self, ontologies_paths: list[str]):
+    def __init__(self,
+                 ontologies_paths: list[str],
+                 predicates_db: VectorStore,
+                 classes_db: VectorStore,
+                 ):
         self.graph = Graph()
+        self.pred_db: VectorStore = predicates_db
+        self.class_db: VectorStore = classes_db
+
         for path in ontologies_paths:
             self.graph.parse(path)
+
+    def store_predicates(self,
+                         predicates_embedding_strings: list[str]
+                         ) -> None:
+        """Add the list of predicate embedding strings to the predicates
+        database"""
+        self.pred_db.add_texts(predicates_embedding_strings)
+        self.pred_db.persist()
+
+    def store_classes(self,
+                      classes_embedding_strings: list[str]
+                      ) -> None:
+        """Add the list of class embedding strings to the classes
+        database"""
+        self.class_db.add_texts(classes_embedding_strings)
+        self.class_db.persist()
+
+    def query_predicates(self,
+                         query: str,
+                         k: int = 4
+                         ) -> str:
+        """
+        Returns k predicates which are most similar to the input query.
+        """
+        return [d.page_content for d in self.pred_db.similarity_search(query, k=k)]
+
+    def query_classes(self,
+                      query: str,
+                      k: int = 4
+                      ) -> str:
+        """
+        Returns k predicates which are most similar to the input query.
+        """
+        return [d.page_content for d in self.class_db.similarity_search(query, k)]
+
 
     def get_predicates_embedding_strings(self) -> list[str]:
         """

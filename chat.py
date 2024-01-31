@@ -100,16 +100,18 @@ def get_chain(stream_handler, memory_model = 'semantic') -> ConversationChain:
 
     if memory_model == 'semantic':
         semantic_store = SemanticStore(
-            predicates_db=Chroma(
-                persist_directory=PREDICATES_DB_PATH,
-                embedding_function=embeddings
-            ),
-            classes_db=Chroma(
-                persist_directory=CLASS_DB_PATH,
-                embedding_function=embeddings
-            ),
             encoder_llm=background_llm,
-            tbox=TBox(ONTOLOGIES_PATHS),
+            tbox=TBox(
+                ontologies_paths=ONTOLOGIES_PATHS,
+                predicates_db=Chroma(
+                    persist_directory=PREDICATES_DB_PATH,
+                    embedding_function=embeddings
+                ),
+                classes_db=Chroma(
+                    persist_directory=CLASS_DB_PATH,
+                    embedding_function=embeddings
+                ),
+            ),
             abox=ABox(
                 entities_store=Chroma(
                     persist_directory=ENTITIES_DB_PATH,
