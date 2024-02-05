@@ -23,7 +23,7 @@ from config import (
 def init(memory_path: str, base_knowledge: str):
     print('Initializing LLM...', end=' ', flush=True)
     llm = OpenAI(
-        model='gpt-3.5-turbo-1106',
+        model='gpt-3.5-turbo-instruct',
     )
     print('Done.')
 

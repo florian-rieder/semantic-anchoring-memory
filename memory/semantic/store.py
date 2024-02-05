@@ -6,7 +6,7 @@ from rdflib import Namespace, URIRef, Literal, RDF, RDFS
 import traceback
 from urllib.parse import quote
 
-from memory.prompts import CHOOSE_CLASS_PROMPT, CHOOSE_PREDICATE_PROMPT
+from memory.semantic.prompts import CHOOSE_CLASS_PROMPT, CHOOSE_PREDICATE_PROMPT
 from memory.semantic.abox import ABox
 from memory.semantic.tbox import TBox
 
@@ -266,8 +266,12 @@ def choose_predicate(intent: str, predicates: list[str], llm) -> str:
 
     chosen_predicate = chain.predict(
         predicates="\n".join([str(p) for p in predicates]),
-        intent=intent
+        intent=intent,
+        verbose=True
+
     )
+
+    print(chosen_predicate)
 
     return chosen_predicate
 
@@ -278,12 +282,14 @@ def choose_class(intent: str, classes: list[str], llm) -> str:
     chain = LLMChain(
         llm=llm,
         prompt=CHOOSE_CLASS_PROMPT,
-        #verbose=True
+        verbose=True
     )
 
     chosen_class = chain.predict(
         classes="\n".join([str(c) for c in classes]),
         intent=intent,
     )
+
+    print(chosen_class)
 
     return chosen_class

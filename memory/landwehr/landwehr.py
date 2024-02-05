@@ -8,8 +8,11 @@ from langchain_core.language_models import BaseLanguageModel
 from langchain_core.vectorstores import VectorStore
 from langchain.memory.chat_memory import BaseChatMemory
 
-from memory.prompts import (
-    FACT_EXTRACTION_PROMPT, QUERY_CREATION_PROMPT
+from memory.landwehr.prompts import (
+    FACT_EXTRACTION_PROMPT,
+    QUERY_CREATION_PROMPT,
+    SUMMARIZER_PROMPT,
+    CHUNK_SUMMARIZER_PROMPT
 )
 
 
@@ -103,25 +106,9 @@ def split_chunk_context_pairs(text: str, llm: BaseLanguageModel, chunk_size=2048
 
 def summarize(text: str, llm: BaseLanguageModel) -> str:
     # Define summarizer prompt
-    summarizer_prompt_template = (
-        "Generate a concise summary of the conversation transcript, focusing on key"
-        " facts and memorable details related to the user's life."
-        " Write sentences which are understandable in isolation. Always refer to named entities by their name. Prioritise proper name over generic names."
-        " Always refer to the user as User, and to the AI as Assistant."
-        " Highlight significant events, achievements, personal preferences, and any"
-        " noteworthy information that provides a comprehensive overview of the user's experiences and interests:\n\n"
-        "Conversation history:\n\n"
-        "{text}"
-        "\n\nSummary of the transcript:\n"
-    )
-    summarizer_prompt = PromptTemplate(
-        input_variables=['text'],
-        template=summarizer_prompt_template,
-    )
-
     chain = LLMChain(
         llm=llm,
-        prompt=summarizer_prompt,
+        prompt=SUMMARIZER_PROMPT,
         verbose=True
     )
 
@@ -134,23 +121,10 @@ def summarize(text: str, llm: BaseLanguageModel) -> str:
 
 
 def summarize_chunk(summary_of_previous_chunks, chunk, llm):
-    chunk_summarizer_prompt_template = (
-        'Generate a concise summary of the given chunk of conversation transcript, focusing on key'
-        " facts and memorable details related to the user's life and the conversation topic."
-        'Summary of previous chunks (for reference only):\n'
-        f'{summary_of_previous_chunks}'
-        'Chunk to summarize'
-        f'{chunk}'
-    )
-
-    summarizer_prompt = PromptTemplate(
-        input_variables=['summary_of_previous_chunks', 'chunk'],
-        template=chunk_summarizer_prompt_template,
-    )
-
+    """Summarize a chunk of text, taking into account the summary of all previous chunks"""
     chain = LLMChain(
         llm=llm,
-        prompt=summarizer_prompt
+        prompt=CHUNK_SUMMARIZER_PROMPT
     )
 
     response = chain.predict(
@@ -164,12 +138,13 @@ def extract_facts(chunk: str, summary: str, llm: BaseLanguageModel) -> List[str]
     # Define fact extraction prompt
     chain = LLMChain(
         llm=llm,
-        prompt=FACT_EXTRACTION_PROMPT
+        prompt=FACT_EXTRACTION_PROMPT,
+        verbose=True,
     )
 
     response = chain.predict(chunk=chunk, summary=summary)
 
-    # TODO: Parse output
+    # Parse output
     facts = [f.strip().strip('-').strip()
              for f in response.strip().split('\n')]
 

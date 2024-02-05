@@ -18,7 +18,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
 
 
-from memory.prompts import (
+from memory.semantic.prompts import (
     NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
     TRIPLET_ENCODER_PROMPT
 )
@@ -158,7 +158,7 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     """Converts a raw text to a list of triples in natural language"""
     # Split the raw text into chunks
     conversation_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=12000, chunk_overlap=512)
+        chunk_size=3000, chunk_overlap=512)
     chunks = conversation_splitter.split_text(conversation)
 
     summary_splitter = RecursiveCharacterTextSplitter(

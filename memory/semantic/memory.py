@@ -10,7 +10,7 @@ from langchain.chains.llm import LLMChain
 from langchain.memory.chat_memory import BaseChatMemory
 from langchain.memory.utils import get_prompt_input_key
 
-from memory.prompts import (
+from memory.semantic.prompts import (
     ENTITY_EXTRACTION_PROMPT,
     KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
 )
@@ -89,12 +89,14 @@ class SemanticLongTermMemory(BaseChatMemory):
             prompt=self.entity_extraction_prompt
         )
 
+        # Get the chat history as a string
         buffer_string = get_buffer_string(
             self.chat_memory.messages[-self.k * 2:],
             human_prefix=self.human_prefix,
             ai_prefix=self.ai_prefix,
         )
 
+        # Use LLM to determine entities relevant to the last message
         output = chain.predict(
             history=buffer_string,
             input=input_string,

@@ -55,6 +55,7 @@ async def index(request: Request):
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager.connect(websocket)
 
+    # Setup the chat streaming handler
     stream_handler = StreamingLLMCallbackHandler(websocket)
     conversation = get_chain(stream_handler)
 
