@@ -1,7 +1,6 @@
-# Define environment (alpine for lightweight image)
-#FROM python:3.11-alpine
-FROM python:3.10-slim-bullseye
-
+# Define environment
+# bookworm for compatibility with chromadb: https://docs.trychroma.com/troubleshooting#sqlite
+FROM python:3.11-slim-bookworm
 
 # Set the working directory
 WORKDIR "/semantic-anchoring-memory"
@@ -11,18 +10,15 @@ WORKDIR "/semantic-anchoring-memory"
 # specified in .dockerignore
 COPY . "/semantic-anchoring-memory"
 
-# RUN apk update && apk add python3-dev \
-#                         gcc \
-#                         libc-dev
+# Install poetry
+RUN pip install poetry
 
-# RUN apk update
-# RUN apk add make automake gcc g++ subversion python3-dev
-
-# Install necessary dependencies
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Use poetry to install dependencies
+RUN poetry install --no-root
 
 # Expose port
 EXPOSE 8000
 
-# Launch the gunicorn server and bind it to the right port
-CMD ["uvicorn", "main:app"]
+
+# Launch the uvicorn server
+CMD ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

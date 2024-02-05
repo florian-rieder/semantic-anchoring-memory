@@ -37,7 +37,19 @@ python -m venv venv
 ```
 
 ```bash
-pip install -r requirements.txt
+# Install poetry
+pip install poetry
+
+# Use poetry to resolve dependencies
+poetry install --no-root
+```
+
+### Docker build
+
+```bash
+docker build . -t myimage
+
+docker run -p 8000:8000 -e OPENAI_API_KEY=$OPENAI_API_KEY myimage
 ```
 
 ### Configuration

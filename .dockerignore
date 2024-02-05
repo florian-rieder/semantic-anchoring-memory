@@ -1,3 +1,4 @@
 _*/
 venv/
-notebooks/
+env/
+.gitignore
