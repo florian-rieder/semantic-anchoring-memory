@@ -44,13 +44,6 @@ pip install poetry
 poetry install --no-root
 ```
 
-### Docker build
-
-```bash
-docker build . -t myimage
-
-docker run -p 8000:8000 -e OPENAI_API_KEY=$OPENAI_API_KEY myimage
-```
 
 ### Configuration
 Start by configuring which ontologies T-Boxes should be used as a world model, by editing the `ONTOLOGIES_PATHS` list to include any T-Box you might want. Local files paths (in the `ontologies` directory) or http addresses of networked resources can be used.
@@ -87,6 +80,15 @@ python cli.py -m semantic
 uvicorn main:app
 ```
 
+### Docker build
+For enhanced reproduceability, a dockerfile helps with installation and launching of the fastapi chat app
+
+```bash
+docker build . -t myimage
+
+docker run -p 8000:8000 -e OPENAI_API_KEY=$OPENAI_API_KEY myimage
+```
+
 
 ## Project structure
 
@@ -100,10 +102,12 @@ uvicorn main:app
 - `memory`: This directory contains code related to the memory logic of both the Landwehr et al. inspired memory, and the semantic memory.
     - `landwehr`: Landwehr memory module
         - `landwehr.py`: Contains the Langchain memory module and associated functions used to replicate the memory architecture outlined in their paper.
+        - `prompts.py`: Prompts used by the memory system
     - `semantic`: Semantic memory module
         - `abox.py`: ABox class, used to define the entity knowledge, which is essentially the long-term memory.
         - `tbox.py`: TBox class, used to retrieve knowledge about the world model to use for the memory
         - `memory.py`: Langchain memory module
+        - `prompts.py`: Prompts used by the memory system
         - `store.py`: Interface used by the memory module to access, retrieve and update the memory
         - `learn.py`: Collection of functions used to ingest a raw text and memorize it. Used by `memory.py`
     - `forget.py`: Forgetting curve function, outlined in Landwehr et al., but remained unused in this project for time constraints.
@@ -126,8 +130,6 @@ uvicorn main:app
     - `predicates.owl`: (DEVELOPMENT) List of predicates embedding strings obtained from the ontologies while generating the predicates vector database
     - `foaf.owl`: Local copy of the foaf ontology T-Box
     - `dbpedia.owl`: Local copy of the dbpedia ontology T-Box
-- `notebooks`: Exploratory analysis
-
 
 
 ## Diagrams
