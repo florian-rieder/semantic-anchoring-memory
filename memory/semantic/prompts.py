@@ -302,7 +302,6 @@ http://dbpedia.org/ontology/Person
 http://dbpedia.org/ontology/Animal
 http://dbpedia.org/ontology/Eukaryote
 http://www.w3.org/2002/07/owl#Thing
-Literal
 
 Intent:
 Get the correct class for subject "User" in the triple (User, has, a cat)
@@ -331,7 +330,6 @@ END OF EXAMPLE
 
 List of classes:
 {classes}
-Literal
 
 Intent:
 {intent}

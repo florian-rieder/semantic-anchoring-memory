@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 from langchain_community.vectorstores import Chroma
 
-from langchain_openai import OpenAI
+from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 
 from memory.semantic.store import SemanticStore, TBox, ABox
@@ -22,8 +22,9 @@ from config import (
 
 def init(memory_path: str, base_knowledge: str):
     print('Initializing LLM...', end=' ', flush=True)
-    llm = OpenAI(
-        model='gpt-3.5-turbo-instruct',
+    llm = ChatOpenAI(
+        model='gpt-3.5-turbo-1106',
+        temperature=0
     )
     print('Done.')
 

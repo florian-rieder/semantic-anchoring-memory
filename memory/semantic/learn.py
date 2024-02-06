@@ -12,10 +12,7 @@ import re
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import LLMChain
 from langchain_core.language_models import BaseLanguageModel
-from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from langchain_core.output_parsers import JsonOutputParser
-from pydantic import BaseModel, Field
 
 
 from memory.semantic.prompts import (

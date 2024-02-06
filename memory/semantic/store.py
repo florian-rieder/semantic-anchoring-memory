@@ -111,8 +111,12 @@ class SemanticStore():
 
         # Check if there are similar entities in the graph ?
         subject_node = self.resolve_memorized_entity(quote(subject))
+
+        print(f'Is subject already in memory ? {subject_node}')
+
         if not subject_node:
             subject_node = EX[subject]
+            print(f'Create new entity in memory: {subject_node}')
             # Add the new node to the graph
             self.abox.graph.add(
                 (subject_node, RDF.type, encoded_triplet['subject']['type']))
@@ -141,9 +145,12 @@ class SemanticStore():
             # such an entity in memory
             object_node = self.resolve_memorized_entity(quote(object_))
 
+            print(f'Is object already in memory ? {object_node}')
+
             # If the entity doesn't already exist, create a new one
             if not object_node:
                 object_node = EX[quote(object_)]
+                print(f'Create new entity in memory: {object_node}')
 
                 # Add the new node to the graph
                 self.abox.graph.add(
@@ -182,19 +189,23 @@ class SemanticStore():
         entity_classes = self.tbox.query_classes(
             query, k=self.k_similar_classes)
 
-        # Get the
+        # Get the URIs of the similar classes
         class_properties = self.tbox._get_properties_from_embedding_strings(
             entity_classes
         )
 
         possible_classes = list()
-        # get all the parent classes
+        # Get all the parent classes
         for uriref, _ in class_properties.items():
             possible_classes.append(uriref)
             parents = self.tbox.get_all_parent_classes(uriref)
             possible_classes += parents
 
-        # remove duplicates
+        # The object of a triple can be a literal value
+        if role == 'object':
+            possible_classes.append('Literal')
+
+        # Remove duplicates
         possible_classes = list(set(possible_classes))
 
         # Use LLM to choose the best class
@@ -257,7 +268,7 @@ class SemanticStore():
             # Format the string describing this predicate
             pred_str = f'{str(uriref)} (domain: {domain}; range: {range_})'
             possible_predicates.append(pred_str)
-        
+
         # Shortcut for appartenance to categories
         # 'is' is a common relationship that can be described by rdf:type
         if 'is' in triplet[1].split(' '):
@@ -302,6 +313,9 @@ class SemanticStore():
             return URIRef(similar_objects_in_memory[0])
         elif len(similar_objects_in_memory) > 1:
             # TODO: Ask the user to clarify ?
+            # Maybe store incoherences in an "interrogations" db, which the
+            # chatbot will try to satisfy by asking the user to clarify
+
             # But for now do exactly the same
             return URIRef(similar_objects_in_memory[0])
         else:
