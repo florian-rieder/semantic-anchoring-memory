@@ -44,100 +44,46 @@ SUMMARIZER_PROMPT = PromptTemplate(
     template=_SUMMARIZER_TEMPLATE,
 )
 
-_CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = """You are a networked intelligence tasked with extracting knowledge triples from a summary.
+
+KG_TRIPLE_DELIMITER = '|'
+_CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = (
+"""You are a networked intelligence tasked with extracting knowledge triples from a summary.
 Ensure consistency in named entities.
 When naming the entity who is the locutor, use 'User' for the user in a conversation, or 'Author' in a written text.
 A knowledge triple consists of a subject, a predicate, and an object.
 The subject is the entity being described, the predicate is the property of the subject being described, and the object is the value of the property.
 Complex semantics may require intermediary nodes (also called blank nodes), that allow for multiple properties to be assigned to one concept.
-
+"""
+f"Triples must be in the form (subject{KG_TRIPLE_DELIMITER} predicate{KG_TRIPLE_DELIMITER} object)"
+"""
 EXAMPLE
 Summary:
 Paris is the capital of France. The user went to Paris in May 2022.
 Output:
-(Paris, is capital of, France), (Paris, is, city), (User, has traveled, ParisTravel), (ParisTravel, took place in, May 2022), (ParisTravel, destination, Paris)
-
+"""
+f"(Paris{KG_TRIPLE_DELIMITER} is capital of{KG_TRIPLE_DELIMITER} France), (Paris{KG_TRIPLE_DELIMITER} is{KG_TRIPLE_DELIMITER} city), (User{KG_TRIPLE_DELIMITER} has traveled{KG_TRIPLE_DELIMITER} ParisTravel), (ParisTravel{KG_TRIPLE_DELIMITER} took place in{KG_TRIPLE_DELIMITER} May 2022), (ParisTravel{KG_TRIPLE_DELIMITER} destination{KG_TRIPLE_DELIMITER} Paris)"
+"""
 EXAMPLE
 Summary:
 Descartes was a French philosopher, mathematician, and scientist who lived in the 17th century.
 Output:
-(Descartes, country of origin, France), (Descartes, is a, philosopher), (Descartes, is a, mathematician), (Descartes, is a, scientist) (Descartes, lived in, the 17th century)
+"""
+f"(Descartes{KG_TRIPLE_DELIMITER} country of origin{KG_TRIPLE_DELIMITER} France), (Descartes{KG_TRIPLE_DELIMITER} is a{KG_TRIPLE_DELIMITER} philosopher){KG_TRIPLE_DELIMITER} (Descartes{KG_TRIPLE_DELIMITER} is a{KG_TRIPLE_DELIMITER} mathematician){KG_TRIPLE_DELIMITER} (Descartes{KG_TRIPLE_DELIMITER} is a{KG_TRIPLE_DELIMITER} scientist){KG_TRIPLE_DELIMITER} (Descartes{KG_TRIPLE_DELIMITER} lived in{KG_TRIPLE_DELIMITER} the 17th century)"
+"""
 END OF EXAMPLE
 
 
 Summary:
 {summary}
 
+Output:
 
 """
-
+)
 
 NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
     input_variables=["summary"],
     template=_CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE,
-)
-
-
-KG_TRIPLE_DELIMITER = ', '
-_TRIPLET_EXTRACTION_TEMPLATE = (
-    "You are a networked intelligence helping a human track knowledge triples"
-    " about all relevant people, things, concepts, etc. and integrating"
-    " them with your knowledge stored within your weights"
-    " as well as that stored in a knowledge graph."
-    " Extract all of the knowledge triples from the last line of conversation."
-    " A knowledge triple is a clause that contains a subject, a predicate,"
-    " and an object. The subject is the entity being described,"
-    " the predicate is the property of the subject that is being"
-    " described, and the object is the value of the property."
-    " When information about the user is to be recorded, always use 'User' as the entity name.\n\n"
-    "EXAMPLE\n"
-    "Conversation history:\n"
-    "User: Hello, my name is Gemini !\n"
-    "AI: Hello Gemini! It's nice to meet you. I'm an AI assistant trained"
-    " to help with various topics. How can I assist you today?\n"
-    f"Output: (User, is named, Gemini)\n"
-    "END OF EXAMPLE\n\n"
-    "EXAMPLE\n"
-    "Conversation history:\n"
-    "User: Did you hear aliens landed in Area 51?\n"
-    "AI: No, I didn't hear that. What do you know about Area 51?\n"
-    "User: It's a secret military base in Nevada.\n"
-    "AI: What do you know about Nevada?\n"
-    "Last line of conversation:\n"
-    "User: It's a state in the US. It's also the number 1 producer of gold in the US.\n\n"
-    f"Output: (Nevada, is a, state){KG_TRIPLE_DELIMITER}(Nevada, is in, US)"
-    f"{KG_TRIPLE_DELIMITER}(Nevada, is the number 1 producer of, gold)\n"
-    "END OF EXAMPLE\n\n"
-    "EXAMPLE\n"
-    "Conversation history:\n"
-    "User: Hello.\n"
-    "AI: Hi! How are you?\n"
-    "User: I'm good. How are you?\n"
-    "AI: I'm good too.\n"
-    "Last line of conversation:\n"
-    "User: I'm going to the store.\n\n"
-    "Output: NONE\n"
-    "END OF EXAMPLE\n\n"
-    "EXAMPLE\n"
-    "Conversation history:\n"
-    "User: What do you know about Descartes?\n"
-    "AI: Descartes was a French philosopher, mathematician, and scientist who lived in the 17th century.\n"
-    "User: The Descartes I'm referring to is a standup comedian and interior designer from Montreal.\n"
-    "AI: Oh yes, He is a comedian and an interior designer. He has been in the industry for 30 years. His favorite food is baked bean pie.\n"
-    "Last line of conversation:\n"
-    "User: Oh huh. I know Descartes likes to drive antique scooters and play the mandolin.\n"
-    f"Output: (Descartes, likes to drive, antique scooters){KG_TRIPLE_DELIMITER}(Descartes, plays, mandolin)\n"
-    "END OF EXAMPLE\n\n"
-    "Conversation history:\n"
-    "{history}"
-    "\nLast line of conversation (for extraction):\n"
-    "Human: {input}\n\n"
-    "Output:"
-)
-
-KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
-    input_variables=["history", "input"],
-    template=_TRIPLET_EXTRACTION_TEMPLATE,
 )
 
 

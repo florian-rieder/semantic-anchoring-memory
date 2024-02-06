@@ -20,7 +20,14 @@ from config import (
     ENTITIES_DB_PATH
 )
 
-def init(memory_path: str, base_knowledge: str):
+
+def init(memory_path: str,
+         base_knowledge: str,
+         ontologies_paths: str = ONTOLOGIES_PATHS,
+         predicates_db_path: str = PREDICATES_DB_PATH,
+         class_db_path: str = CLASS_DB_PATH,
+         entities_db_path: str = ENTITIES_DB_PATH
+         ):
     print('Initializing LLM...', end=' ', flush=True)
     llm = ChatOpenAI(
         model='gpt-3.5-turbo-1106',
@@ -36,13 +43,13 @@ def init(memory_path: str, base_knowledge: str):
 
     print('Initializing T-Box...', end=' ', flush=True)
     tbox = TBox(
-        ontologies_paths=ONTOLOGIES_PATHS,
+        ontologies_paths=ontologies_paths,
         predicates_db=Chroma(
-            persist_directory=PREDICATES_DB_PATH,
+            persist_directory=predicates_db_path,
             embedding_function=embeddings
         ),
         classes_db=Chroma(
-            persist_directory=CLASS_DB_PATH,
+            persist_directory=class_db_path,
             embedding_function=embeddings
         )
     )
@@ -51,14 +58,13 @@ def init(memory_path: str, base_knowledge: str):
     print('Initializing A-Box...', end=' ', flush=True)
     abox = ABox(
         entities_store=Chroma(
-            persist_directory=ENTITIES_DB_PATH,
+            persist_directory=entities_db_path,
             embedding_function=embeddings
         ),
         memory_base_path=base_knowledge,
         memory_path=memory_path
     )
     print('Done.')
-
 
     print('Initializing Semantic Store...', end=' ', flush=True)
     store = SemanticStore(

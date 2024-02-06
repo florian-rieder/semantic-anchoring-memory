@@ -42,8 +42,10 @@ def memorize(conversation_history: str,
 def parse_triplet_string(triplets_string: str) -> tuple[str, str, str]:
     """
     Parse a string containing multiple triplets into a list of tuples
+    Gets rid of malformed triples, by only capturing triples in the form
+    (object| predicate| subject)
     """
-    TRIPLET_PARSING_PATTERN = re.compile(r'\((?:([^,]+?),)\s*(?:([^,]+?),)\s*([^,]+?)\)')
+    TRIPLET_PARSING_PATTERN = re.compile(r'\((?:([^\|]+?)\|)\s*(?:([^\|]+?)\|)\s*([^\|]+?)\)')
     # split triplets apart
     triplets = TRIPLET_PARSING_PATTERN.findall(triplets_string)
 
@@ -83,7 +85,8 @@ def split_chunk_context_pairs(text: str,
 def summarize_chunk(summary_of_previous_chunks, chunk, llm):
     chain = LLMChain(
         llm=llm,
-        prompt=CHUNK_SUMMARIZER_PROMPT
+        prompt=CHUNK_SUMMARIZER_PROMPT,
+        verbose=True
     )
 
     response = chain.predict(
@@ -113,7 +116,7 @@ def extract_triplets(summary: str, llm: BaseLanguageModel) -> list[tuple[str, st
         # prompt=KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
         prompt=NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
         llm=llm,
-        # verbose=True
+        verbose=True
     )
 
     triplets = chain.predict(summary=summary)
@@ -146,7 +149,9 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
 
         for sentence in summary_sentences:
             sentence_triplets = extract_triplets(sentence, llm)
+            print(sentence_triplets)
             list_sentence_triplets = parse_triplet_string(sentence_triplets)
+            print(list_sentence_triplets)
             triplets += list_sentence_triplets
 
     # Remove any duplicate triplets
