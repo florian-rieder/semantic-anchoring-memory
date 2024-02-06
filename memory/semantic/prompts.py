@@ -3,6 +3,37 @@ Prompts
 """
 from langchain.prompts import PromptTemplate
 
+_CHUNK_SUMMARIZER_TEMPLATE = (
+    'Generate a concise summary of the given chunk of conversation transcript, focusing on key'
+    " facts and memorable details related to the user's life and the conversation topic."
+    'Summary of previous chunks (for reference only):\n'
+    '{summary_of_previous_chunks}'
+    'Chunk to summarize'
+    '{chunk}'
+)
+
+CHUNK_SUMMARIZER_PROMPT = PromptTemplate(
+    input_variables=['summary_of_previous_chunks', 'chunk'],
+    template=_CHUNK_SUMMARIZER_TEMPLATE,
+)
+
+
+# Define summarizer prompt
+_SUMMARIZER_TEMPLATE = (
+    "Generate a concise summary of the conversation transcript, focusing on key"
+    " facts and memorable details related to the user's life."
+    " Write sentences which are understandable in isolation. Always refer to named entities by their name. Prioritise proper name over generic names."
+    " Always refer to the user as User, and to the AI as Assistant."
+    " Highlight significant events, achievements, personal preferences, and any"
+    " noteworthy information that provides a comprehensive overview of the user's experiences and interests:\n\n"
+    "Conversation history:\n\n"
+    "{text}"
+    "\n\nSummary of the transcript:\n"
+)
+SUMMARIZER_PROMPT = PromptTemplate(
+    input_variables=['text'],
+    template=_SUMMARIZER_TEMPLATE,
+)
 
 _CONVERSATION_SUMMARY_TRIPLET_EXTRACTION_TEMPLATE = """You are a networked intelligence tasked with extracting knowledge triples from a summary.
 Ensure consistency in named entities.
@@ -94,13 +125,14 @@ _TRIPLET_EXTRACTION_TEMPLATE = (
     "Human: {input}\n\n"
     "Output:"
 )
+
 KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT = PromptTemplate(
     input_variables=["history", "input"],
     template=_TRIPLET_EXTRACTION_TEMPLATE,
 )
 
 
-_DEFAULT_ENTITY_EXTRACTION_TEMPLATE = """You are an AI assistant reading the transcript of a conversation between an AI and a human. Extract all of the proper nouns from the last line of conversation. As a guideline, a proper noun is generally capitalized. You should definitely extract all names and places. "I" usually refers to the User.
+_ENTITY_EXTRACTION_TEMPLATE = """You are an AI assistant reading the transcript of a conversation between an AI and a human. Extract all of the proper nouns from the last line of conversation. As a guideline, a proper noun is generally capitalized. You should definitely extract all names and places. "I" usually refers to the User.
 
 Include all entities relevant to the last line of conversation.
 
@@ -144,13 +176,14 @@ User: {input}
 Output:"""
 ENTITY_EXTRACTION_PROMPT = PromptTemplate(
     input_variables=["history", "input"],
-    template=_DEFAULT_ENTITY_EXTRACTION_TEMPLATE
+    template=_ENTITY_EXTRACTION_TEMPLATE
 )
 
 
 
 
-
+# Unused
+# See 
 _TRIPLET_ENCODER_TEMPLATE = (
     """You are an expert agent specialized in analyzing product specifications in an online retail store.
 Your task is to identify the entities and relations requested with the user prompt, from a given product specification.
@@ -236,7 +269,7 @@ CHOOSE_PREDICATE_PROMPT = PromptTemplate(
 _CHOOSE_CLASS_TEMPLATE = """Choose the class from the list which corresponds best to the given intent.
 Additionnally, you can use "Literal" (which represents simply a string of test, not to be used on subjects, but can be used on objects in some cases), and "http://www.w3.org/2002/07/owl#Thing".
 Sometimes, if you can't describe the class using the provided classes, it's better to use Literal or Thing.
-You can use common classes from common namespaces: RDF, RDFS, OWL.
+You can use common classes from common namespaces: RDF, RDFS, OWL, SKOS.
 
 EXAMPLE
 List of classes:

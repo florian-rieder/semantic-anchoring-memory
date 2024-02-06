@@ -72,15 +72,15 @@ def get_chain(stream_handler, memory_model = 'semantic') -> ConversationChain:
 
     # ChatLLM whose responses are streamed to the client
     stream_llm = ChatOpenAI(
-        model='gpt-3.5-turbo',
+        model='gpt-3.5-turbo-1106',
         temperature=0.05,
         streaming=True,
         callback_manager=stream_manager
     )
 
     # Workhorse LLM
-    background_llm = OpenAI(
-        model='gpt-3.5-turbo-instruct',
+    background_llm = ChatOpenAI(
+        model='gpt-3.5-turbo-1106',
         temperature=0
     )
 

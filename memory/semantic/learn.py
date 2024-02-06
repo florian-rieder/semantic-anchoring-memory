@@ -20,7 +20,8 @@ from pydantic import BaseModel, Field
 
 from memory.semantic.prompts import (
     NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
-    TRIPLET_ENCODER_PROMPT
+    CHUNK_SUMMARIZER_PROMPT,
+    SUMMARIZER_PROMPT
 )
 from memory.semantic.store import SemanticStore
 
@@ -83,23 +84,9 @@ def split_chunk_context_pairs(text: str,
 
 
 def summarize_chunk(summary_of_previous_chunks, chunk, llm):
-    chunk_summarizer_prompt_template = (
-        'Generate a concise summary of the given chunk of conversation transcript, focusing on key'
-        " facts and memorable details related to the user's life and the conversation topic."
-        'Summary of previous chunks (for reference only):\n'
-        f'{summary_of_previous_chunks}'
-        'Chunk to summarize'
-        f'{chunk}'
-    )
-
-    summarizer_prompt = PromptTemplate(
-        input_variables=['summary_of_previous_chunks', 'chunk'],
-        template=chunk_summarizer_prompt_template,
-    )
-
     chain = LLMChain(
         llm=llm,
-        prompt=summarizer_prompt
+        prompt=CHUNK_SUMMARIZER_PROMPT
     )
 
     response = chain.predict(
@@ -110,26 +97,9 @@ def summarize_chunk(summary_of_previous_chunks, chunk, llm):
 
 
 def summarize(text: str, llm: BaseLanguageModel) -> str:
-    # Define summarizer prompt
-    summarizer_prompt_template = (
-        "Generate a concise summary of the conversation transcript, focusing on key"
-        " facts and memorable details related to the user's life."
-        " Write sentences which are understandable in isolation. Always refer to named entities by their name. Prioritise proper name over generic names."
-        " Always refer to the user as User, and to the AI as Assistant."
-        " Highlight significant events, achievements, personal preferences, and any"
-        " noteworthy information that provides a comprehensive overview of the user's experiences and interests:\n\n"
-        "Conversation history:\n\n"
-        "{text}"
-        "\n\nSummary of the transcript:\n"
-    )
-    summarizer_prompt = PromptTemplate(
-        input_variables=['text'],
-        template=summarizer_prompt_template,
-    )
-
     chain = LLMChain(
         llm=llm,
-        prompt=summarizer_prompt,
+        prompt=SUMMARIZER_PROMPT,
         #verbose=True
     )
 

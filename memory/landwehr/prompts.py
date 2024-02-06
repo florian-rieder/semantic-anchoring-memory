@@ -70,6 +70,7 @@ CHUNK_SUMMARIZER_PROMPT = PromptTemplate(
 )
 
 
+# Unused
 # From Landwehr et al. 2023
 _RESPONSE_GENERATION_TEMPLATE = (
     "You are acting as a virtual character and you are having a conversation with a user."
