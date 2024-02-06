@@ -5,27 +5,6 @@
 The goal of this project is to give a long-term memory to a conversational LLM. The aim is to reproduce the architecture outlined in Landwehr et al. (2023) [[1](#references)] to use as a baseline, and to create a new memory creation pipeline based on the storage of atomic facts in the form of semantic triplets, which could allow for a memory which captures the rich relationships between concepts and entities.
 
 
-## Task list
-
-### General
-- [x] Chat with the user in the command line
-- [x] Chat in a web interface
-
-### Reproducing Landwehr et al.
-- [x] Extract facts from texts
-- [x] Store facts as memories in a persistent vector store
-- [x] Recall relevant stored facts during a conversation
-- [x] Generate responses using these facts
-
-### Semantic Memory
-- [x] Create a custom Memory module
-- [x] Extract triplets from conversation
-- [x] Encode triplets into RDF
-- [x] Store triplets in knowledge graph
-- [x] Recall entities based on a similarity search
-- [x] Recall triplets using Named Entity Recognition to do a graph search
-
-
 ## Installation
 
 ```bash
@@ -40,13 +19,13 @@ python -m venv venv
 # Install poetry
 pip install poetry
 
-# Use poetry to resolve dependencies
+# Use poetry to resolve and install dependencies
 poetry install --no-root
 ```
 
 
 ### Configuration
-Start by configuring which ontologies T-Boxes should be used as a world model, by editing the `ONTOLOGIES_PATHS` list to include any T-Box you might want. Local files paths (in the `ontologies` directory) or http addresses of networked resources can be used.
+Start by configuring which ontologies T-Boxes should be used as a world model, by editing the `ONTOLOGIES_PATHS` list to include any T-Box you might want. Local files paths (in the `ontologies` directory) or URLs of networked resources can be used.
 
 Add your OpenAI API key to the environment variables using:
 ```bash
@@ -59,12 +38,8 @@ First off, you will need to populate the classes and predicates vector stores wi
 python generate_tbox_db.py
 ```
 
-### Ingest arbitrary files
 
-```bash
-python ingest.py -f file1.txt file2.txt
-```
-
+## Using the chat application
 ### Launch the chat in the command line
 ```bash
 python cli.py
@@ -87,6 +62,20 @@ For enhanced reproduceability, a dockerfile helps with installation and launchin
 docker build . -t myimage
 
 docker run -p 8000:8000 -e OPENAI_API_KEY=$OPENAI_API_KEY myimage
+```
+
+## Ingest arbitrary files
+
+```bash
+python ingest.py --files file1.txt file2.txt
+                 --output mygraph.ttl
+                 --base-knowledge path/to/my/base_knowledge.ttl
+```
+
+## Validation pipeline
+Place raw text files in newly created directories within the `validation/subjects` directory. Then, execute the following command to commence batch processing. Upon completion, you will find the output knowledge graph and statistics in the newly created directory.
+```bash
+python validate.py
 ```
 
 

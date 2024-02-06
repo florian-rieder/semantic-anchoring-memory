@@ -128,13 +128,13 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     """Converts a raw text to a list of triples in natural language"""
     # Split the raw text into large chunks
     conversation_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=14000, chunk_overlap=512)
+        chunk_size=14000, chunk_overlap=1024)
     chunks = conversation_splitter.split_text(conversation)
 
     # Split the resulting summaries in smaller chunks for triplet extraction.
     # Trying to extract too many triplets at a time causes hallucinations
     summary_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=512, chunk_overlap=64)
+        chunk_size=1024, chunk_overlap=0)
 
     print(f'Number of chunks: {len(chunks)}')
     triplets = []
@@ -149,7 +149,6 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
 
         for sentence in summary_sentences:
             sentence_triplets = extract_triplets(sentence, llm)
-            print(sentence_triplets)
             list_sentence_triplets = parse_triplet_string(sentence_triplets)
             print(list_sentence_triplets)
             triplets += list_sentence_triplets
