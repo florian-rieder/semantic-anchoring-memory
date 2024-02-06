@@ -24,19 +24,29 @@ class SemanticStore():
     def __init__(self,
                  tbox: TBox,
                  abox: ABox,
-                 encoder_llm: BaseLanguageModel
+                 encoder_llm: BaseLanguageModel,
+                 k_similar_classes: int = 8,
+                 k_similar_predicates: int = 8,
+                 entity_similarity_threshold: float = 0.75
                  ):
         self.tbox: TBox = tbox
         self.abox: ABox = abox
         self.encoder_llm: BaseLanguageModel = encoder_llm
+        # How many similar classes to retrieve when trying to cast a class
+        self.k_similar_classes = k_similar_classes
+        # How many similar predicates to retrieve when trying to cast a predicate
+        self.k_similar_predicates = k_similar_predicates
+        # Normalized cosine similarity score over which the input similar enough
+        # to the output that we'll consider they represent the same entity.
+        self.entity_similarity_threshold = entity_similarity_threshold
 
     def encode_triplets(self, triplets: list[tuple[str, str, str]]):
         """Encode all given triplets into RDF"""
         return [self._encode_triplet(t) for t in triplets]
 
     def _encode_triplet(self,
-                       triplet: tuple[str, str, str],
-                       ) -> dict:
+                        triplet: tuple[str, str, str],
+                        ) -> dict:
         """Encode a triplet in natural language (ex. (User, is named, Bob))
         into a dictionary that lists the RDF classes and predicate that
         best represent the triple.
@@ -45,10 +55,8 @@ class SemanticStore():
         # triplet[1] -> Cast to predicate
         # 1st attempt: take the whole triplet, and find out which classes and predicates are chosen
 
-        # subject is always an entity
-        # subject_entities = abox.get_entities(triplet[0])
-        # object can be a DataProperty or an ObjectProperty
-        # object_entities = abox.get_entities(triplet[2])
+        # Subject is always an entity
+        # Object can be a DataProperty or an ObjectProperty
 
         subject_class = self.encode_class(triplet, role='subject')
         object_class = self.encode_class(triplet, role='object')
@@ -58,8 +66,6 @@ class SemanticStore():
             object_class = 'Literal'
 
         predicate = self.encode_predicate(triplet, subject_class, object_class)
-        # If there is a space, that means it's the end of the predicate.
-        predicate = URIRef(predicate.split(' ')[0])
 
         encoded_triplet = {
             'subject': {
@@ -76,7 +82,7 @@ class SemanticStore():
         }
 
         return encoded_triplet
-    
+
     def memorize_encoded_triplets(self, encoded_triplets: list[dict]):
         """Takes the output from the encode_triplets() method, and add
         them to the knowledge graph, and save the knowledge graph."""
@@ -88,7 +94,7 @@ class SemanticStore():
                 # If an encoding fails, print the exception but continue
                 # with the rest anyway
                 traceback.print_exc()
-        
+
         self.abox.save_graph()
 
     def _memorize_encoded_triplet(self, encoded_triplet: dict):
@@ -100,7 +106,7 @@ class SemanticStore():
         # Convert string values to URIRef objects
         predicate_uri = encoded_triplet['predicate']['type']
 
-        ## SUBJECT
+        # SUBJECT
         subject = quote(encoded_triplet['subject']['value'])
 
         # Check if there are similar entities in the graph ?
@@ -114,29 +120,41 @@ class SemanticStore():
                 (subject_node, RDFS.label, Literal(encoded_triplet['subject']['value'])))
             # Store the new entity in the entities database
             self.abox.store_entities([str(subject_node)])
-        
-        ## OBJECT
+
+        # OBJECT
         object_ = encoded_triplet['object']['value']
+        object_type = encoded_triplet['object']['type']
+        object_node = None
 
         # Cases where the object is a Literal
-        if str(encoded_triplet['object']['type']) == 'Literal':
+        if str(object_type) == 'Literal':
             object_node = Literal(object_)
+
+        # If the predicate is RDF.type, the object is not an entity but an
+        # abstract category (like Artist, or Scientist)
+        elif predicate_uri == RDF.type:
+            object_node = object_type
+
+        # Otherwise, the object is an ObjectProperty
         else:
-            # Cases where the object is an ObjectProperty
-            # Look in the memory
+            # First look in the entities DB to see if we already have
+            # such an entity in memory
             object_node = self.resolve_memorized_entity(quote(object_))
+
             # If the entity doesn't already exist, create a new one
             if not object_node:
                 object_node = EX[quote(object_)]
+
                 # Add the new node to the graph
                 self.abox.graph.add(
                     (object_node, RDF.type, encoded_triplet['object']['type']))
+
                 self.abox.graph.add(
                     (object_node, RDFS.label, Literal(encoded_triplet['object']['value'])))
                 # Store the new entity in the entities database
                 self.abox.store_entities([str(object_node)])
 
-        ## PREDICATE
+        # PREDICATE
         # Add the triple to the Graph
         print((str(subject_node), str(predicate_uri), str(object_node)))
         self.abox.graph.add((subject_node, predicate_uri, object_node))
@@ -160,7 +178,11 @@ class SemanticStore():
             raise ValueError(
                 f'Unexpected role {role}. Must be either "subject" or "object".')
 
-        entity_classes = self.tbox.query_classes(query)
+        # Query the Classes DB for similar classes
+        entity_classes = self.tbox.query_classes(
+            query, k=self.k_similar_classes)
+
+        # Get the
         class_properties = self.tbox._get_properties_from_embedding_strings(
             entity_classes
         )
@@ -182,22 +204,35 @@ class SemanticStore():
             llm=self.encoder_llm
         )
 
-        return URIRef(chosen_class.strip())
+        # If the LLM added stuff after the URI, cut off anything after the
+        # first space and hope for the best
+        chosen_class = chosen_class.strip().split(' ')[0].strip()
+
+        # Print important info used by the LLM to reason
+        print('Encoding class')
+        print(query)
+        print('Possible classes:')
+        print('\n'.join(possible_classes))
+        print('Chosen class:')
+        print(chosen_class)
+        print()
+
+        return URIRef(chosen_class)
 
     def encode_predicate(self,
                          triplet: tuple[str, str, str],
                          subject_class: URIRef,
-                         object_class: URIRef,
-                         num_predicates_to_get: int = 8
+                         object_class: URIRef
                          ) -> URIRef:
         """Returns the best predicate URI to represent the predicate in
         the given triple"""
+
         # Build the query for the predicates vector database
         predicate_query = f'{str(triplet)}: RDF for predicate representing "{triplet[1]}"'
 
         # Get k possibly relevant predicates
         results = self.tbox.query_predicates(
-            predicate_query, k=num_predicates_to_get)
+            predicate_query, k=self.k_similar_predicates)
 
         # Get the domain and range of each predicate
         predicates_properties = self.tbox._get_properties_from_embedding_strings(
@@ -222,6 +257,11 @@ class SemanticStore():
             # Format the string describing this predicate
             pred_str = f'{str(uriref)} (domain: {domain}; range: {range_})'
             possible_predicates.append(pred_str)
+        
+        # Shortcut for appartenance to categories
+        # 'is' is a common relationship that can be described by rdf:type
+        if 'is' in triplet[1].split(' '):
+            possible_predicates.append(RDF.type)
 
         # Use an LLM to choose the best predicate to use to represent the
         # relationship between the subject and object.
@@ -232,7 +272,20 @@ class SemanticStore():
             llm=self.encoder_llm
         )
 
-        return URIRef(chosen_predicate.strip())
+        # If the LLM added stuff after the URI, cut off anything after the
+        # first space and hope for the best
+        chosen_predicate = chosen_predicate.strip().split(' ')[0].strip()
+
+        # Print important info used by the LLM to reason
+        print('Encoding predicate:')
+        print(predicate_query)
+        print('Possible predicates:')
+        print('\n'.join(possible_predicates))
+        print('Chosen predicate:')
+        print(chosen_predicate)
+        print()
+
+        return URIRef(chosen_predicate)
 
     def resolve_memorized_entity(self, new_entity) -> URIRef:
         """Searches the memory to see if the new entity is already in memory.
@@ -241,7 +294,7 @@ class SemanticStore():
         # Verify if the object is an entity that's already in memory
         subject_entity_query = f"{new_entity}"
         similar_objects_in_memory = self.abox.query_entities_with_score(
-            subject_entity_query)
+            subject_entity_query, threshold=self.entity_similarity_threshold)
 
         # If there is exactly one match, then we're probably talking about the
         # same entity
@@ -261,17 +314,12 @@ def choose_predicate(intent: str, predicates: list[str], llm) -> str:
     chain = LLMChain(
         llm=llm,
         prompt=CHOOSE_PREDICATE_PROMPT,
-        #verbose=True
     )
 
     chosen_predicate = chain.predict(
         predicates="\n".join([str(p) for p in predicates]),
         intent=intent,
-        verbose=True
-
     )
-
-    print(chosen_predicate)
 
     return chosen_predicate
 
@@ -282,14 +330,11 @@ def choose_class(intent: str, classes: list[str], llm) -> str:
     chain = LLMChain(
         llm=llm,
         prompt=CHOOSE_CLASS_PROMPT,
-        verbose=True
     )
 
     chosen_class = chain.predict(
         classes="\n".join([str(c) for c in classes]),
         intent=intent,
     )
-
-    print(chosen_class)
 
     return chosen_class

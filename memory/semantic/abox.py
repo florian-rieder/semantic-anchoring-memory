@@ -72,16 +72,22 @@ class ABox():
         print(entity_node)
 
         # Get all the knowledge about this entity
-        # TODO: if more entities are revealed, gather knowledge about them also
+        
+        # There is significant improvement opportunity in how we navigate the
+        # graph here. Using reasoners and using various strategies for graph
+        # navigation could allow for getting the most relevant information to
+        # the conversation at hand.
         knowledge = list()
         for pred, obj in self.graph.predicate_objects(entity_node):
             # Get the last bit of the URI
             # ex. https://example.com/Bob -> Bob
             pred = unquote(str(pred)).split("/")[-1].split('#')[-1]
             obj = unquote(str(obj)).split("/")[-1].split('#')[-1]
+            # TODO: if more entities are revealed, gather knowledge about them also
 
             knowledge_bit = f"{pred} {obj}"
             knowledge.append(knowledge_bit)
+            
 
         # TODO: Filter knowledge to only what is relevant to the conversation
 

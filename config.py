@@ -22,8 +22,8 @@ _ONTOLOGY_DBS_PATH = './database/vector_db/'
 _MEMORIES_PATH = './database/_memories/'
 
 # Paths of the vector databases we'll need
-CLASS_DB_PATH = _ONTOLOGY_DBS_PATH + 'oa_predicates_db'
-PREDICATES_DB_PATH = _ONTOLOGY_DBS_PATH + 'oa_classes_db'
+CLASS_DB_PATH = _ONTOLOGY_DBS_PATH + 'oa_classes_db'
+PREDICATES_DB_PATH = _ONTOLOGY_DBS_PATH + 'oa_predicates_db'
 ENTITIES_DB_PATH = _MEMORIES_PATH + 'entities_db'
 
 # Path of RDF memory graph

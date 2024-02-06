@@ -19,17 +19,26 @@ CHUNK_SUMMARIZER_PROMPT = PromptTemplate(
 
 
 # Define summarizer prompt
-_SUMMARIZER_TEMPLATE = (
-    "Generate a concise summary of the conversation transcript, focusing on key"
-    " facts and memorable details related to the user's life."
-    " Write sentences which are understandable in isolation. Always refer to named entities by their name. Prioritise proper name over generic names."
-    " Always refer to the user as User, and to the AI as Assistant."
-    " Highlight significant events, achievements, personal preferences, and any"
-    " noteworthy information that provides a comprehensive overview of the user's experiences and interests:\n\n"
-    "Conversation history:\n\n"
-    "{text}"
-    "\n\nSummary of the transcript:\n"
-)
+_SUMMARIZER_TEMPLATE = """
+You are an AI memory entity tasked with extracting key insights and notable details from the provided text
+to capture the most important information to remember about the topic.
+Craft concise sentences focusing on significant events, achievements,
+preferences, and memorable aspects of the subject's experiences.
+Ensure these sentences are understandable in isolation.
+Prioritize unique and impactful information over mundane details.
+Always refer to named entities by their name, emphasizing proper names over generics.
+When the text is authored by a specific individual, refer to them as "Author".
+In a conversation, address the subject as "User" and the AI as "Assistant".
+
+Input text:
+
+{text}
+
+
+Summary of the Input:
+
+"""
+
 SUMMARIZER_PROMPT = PromptTemplate(
     input_variables=['text'],
     template=_SUMMARIZER_TEMPLATE,

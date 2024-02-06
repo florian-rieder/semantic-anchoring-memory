@@ -130,7 +130,7 @@ class TBox():
 
             predicates_rdf.append(predicate_rdf)
 
-        return set(predicates_rdf)
+        return list(set(predicates_rdf))
 
     def get_classes_embedding_strings(self) -> list[str]:
         """
@@ -204,7 +204,7 @@ class TBox():
 
             rdf_descriptions.append(class_rdf_description)
 
-        return set(rdf_descriptions)
+        return list(set(rdf_descriptions))
 
     def get_properties(self,
                        subject: URIRef,

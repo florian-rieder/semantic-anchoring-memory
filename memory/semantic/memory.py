@@ -39,11 +39,10 @@ class SemanticLongTermMemory(BaseChatMemory):
     def load_memory_variables(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         """Return history buffer."""
 
-        # recent_messages = self.chat_memory.messages[-self.k:]
-        # user_input = inputs[self.input_key]
-
         # Do named entity recognition on the last k messages.
         entities = self._get_current_entities(inputs)
+
+        print('Entities found in last k messages:')
         print(entities)
 
         # Get all knowledge about the entities from the memory knowledge
@@ -112,9 +111,7 @@ class SemanticLongTermMemory(BaseChatMemory):
     def save_context(self, inputs: Dict[str, Any], outputs: Dict[str, str]) -> None:
         """Save context from this conversation to buffer."""
         super().save_context(inputs, outputs)
-        # self._get_and_update_kg(inputs)
-        # self.kg.write_to_gml("knowledge.gml")
-        self.semantic_store.abox.save_graph()
+        #self.semantic_store.abox.save_graph()
 
     def clear(self) -> None:
         """Clear memory contents."""

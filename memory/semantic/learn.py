@@ -100,7 +100,7 @@ def summarize(text: str, llm: BaseLanguageModel) -> str:
     chain = LLMChain(
         llm=llm,
         prompt=SUMMARIZER_PROMPT,
-        #verbose=True
+        verbose=True
     )
 
     response = chain.predict(
@@ -126,11 +126,13 @@ def extract_triplets(summary: str, llm: BaseLanguageModel) -> list[tuple[str, st
 
 def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     """Converts a raw text to a list of triples in natural language"""
-    # Split the raw text into chunks
+    # Split the raw text into large chunks
     conversation_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=3000, chunk_overlap=512)
+        chunk_size=14000, chunk_overlap=512)
     chunks = conversation_splitter.split_text(conversation)
 
+    # Split the resulting summaries in smaller chunks for triplet extraction.
+    # Trying to extract too many triplets at a time causes hallucinations
     summary_splitter = RecursiveCharacterTextSplitter(
         chunk_size=512, chunk_overlap=64)
 
@@ -138,6 +140,7 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
     triplets = []
     for chunk in chunks:
         summary = summarize(chunk, llm)
+        print(summary)
 
         # We split the resulting summary into smaller chunks
         summary_sentences = summary_splitter.split_text(summary)
@@ -149,4 +152,6 @@ def conversation_to_triplets(conversation: str, llm: BaseLanguageModel):
             list_sentence_triplets = parse_triplet_string(sentence_triplets)
             triplets += list_sentence_triplets
 
+    # Remove any duplicate triplets
+    triplets = list(set(triplets))
     return triplets
