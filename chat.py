@@ -24,10 +24,14 @@ from config import (
     MEMORY_PATH,
     CLASS_DB_PATH,
     PREDICATES_DB_PATH,
-    ENTITIES_DB_PATH
+    ENTITIES_DB_PATH,
+    WORKHORSE_MODEL_NAME,
+    CHAT_MODEL_NAME,
+    EMBEDDING_MODEL_NAME
 )
 
 
+# Longer system prompt supposed to be similar to ChatGPT's
 # template = (
 # """Assistant is a large language model (LLM).
 # Assistant is designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, Assistant is able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand. If Assistant does not know the answer to a question, it truthfully says it does not know.
@@ -72,7 +76,7 @@ def get_chain(stream_handler, memory_model = 'semantic') -> ConversationChain:
 
     # ChatLLM whose responses are streamed to the client
     stream_llm = ChatOpenAI(
-        model='gpt-3.5-turbo-1106',
+        model=CHAT_MODEL_NAME,
         temperature=0.05,
         streaming=True,
         callback_manager=stream_manager
@@ -80,13 +84,13 @@ def get_chain(stream_handler, memory_model = 'semantic') -> ConversationChain:
 
     # Workhorse LLM
     background_llm = ChatOpenAI(
-        model='gpt-3.5-turbo-1106',
+        model=WORKHORSE_MODEL_NAME,
         temperature=0
     )
 
     # Embedding function to be used by vector stores
     embeddings = OpenAIEmbeddings(
-        model='text-embedding-ada-002',
+        model=EMBEDDING_MODEL_NAME,
         show_progress_bar=False
     )
 
@@ -138,7 +142,7 @@ def get_chain(stream_handler, memory_model = 'semantic') -> ConversationChain:
             db=Chroma(
                 persist_directory='./database/_memories/landwehr_memories_db',
                 embedding_function=OpenAIEmbeddings(
-                    model='text-embedding-ada-002'
+                    model=EMBEDDING_MODEL_NAME
                 )
             ),
             k=8,

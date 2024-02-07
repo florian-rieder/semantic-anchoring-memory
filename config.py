@@ -2,6 +2,9 @@
 
 import os
 
+WORKHORSE_MODEL_NAME = 'gpt-3.5-turbo-1106'
+CHAT_MODEL_NAME = 'gpt-3.5-turbo-1106'
+EMBEDDING_MODEL_NAME = 'text-embedding-ada-002'
 
 # List of ontologies T-Box which will serve as our conversational agent's
 # world model

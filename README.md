@@ -25,7 +25,7 @@ poetry install --no-root
 
 
 ### Configuration
-Start by configuring which ontologies T-Boxes should be used as a world model, by editing the `ONTOLOGIES_PATHS` list to include any T-Box you might want. Local files paths (in the `ontologies` directory) or URLs of networked resources can be used.
+Start by configuring which ontologies T-Boxes should be used as a world model, by editing the `ONTOLOGIES_PATHS` list in `config.py` to include any T-Box you might want. Local files paths (in the `ontologies` directory) or URLs of networked resources can be used.
 
 Add your OpenAI API key to the environment variables using:
 ```bash
@@ -73,9 +73,16 @@ python ingest.py --files file1.txt file2.txt
 ```
 
 ## Validation pipeline
-Place raw text files in newly created directories within the `validation/subjects` directory. Then, execute the following command to commence batch processing. Upon completion, you will find the output knowledge graph and statistics in the newly created directory.
+Place raw text files in newly created directories within the `validation/topics` directory. Then, execute the following command to commence batch processing. Upon completion, you will find the output knowledge graph and statistics in the newly created directory.
+
 ```bash
 python validate.py
+```
+
+To specifically validate only certain folders within the `validation/topics` directory, use the following argument, specifying the name of the folder:
+
+```bash
+python validate.py --topics mytopic1 mytopic2 ...
 ```
 
 

@@ -2,6 +2,8 @@
 Validation pipeline for the knowledge graph extraction
 """
 
+import argparse
+import json
 import logging
 import os
 import shutil
@@ -16,7 +18,7 @@ from memory.semantic.learn import memorize
 logger = logging.getLogger(__name__)
 
 
-def main():
+def main(args):
 
     # Define the directory containing the topic directories
     topics_dir = f'{os.getcwd()}/validation/topics/'
@@ -24,18 +26,26 @@ def main():
     # Get a list of all directories in the topics directory
     topic_directories = sorted(os.listdir(topics_dir))
 
+    if args.topics:
+        topic_directories = sorted(args.topics)
+    else:
+        topic_directories = sorted(os.listdir(topics_dir))
+
     # Loop through each topic directory
     for topic_directory in tqdm(topic_directories):
         print(f'Processing {topic_directory}...')
-    
+
         # Construct full paths
         topic_dir_path = os.path.join(topics_dir, topic_directory)
         output_kg_path = os.path.join(topic_dir_path, 'output.ttl')
         entities_db_path = os.path.join(topic_dir_path, 'entities_db')
+        stats_file_path = os.path.join(topic_dir_path, 'statistics.json')
 
         # Delete knowledge graph and/or entities db if they already exist
         if os.path.exists(output_kg_path):
             os.remove(output_kg_path)
+        if os.path.exists(stats_file_path):
+            os.remove(stats_file_path)
         if os.path.exists(entities_db_path):
             shutil.rmtree(entities_db_path)
 
@@ -63,7 +73,10 @@ def main():
 
         # 3. Compute statistics over the resulting knowledge graph
         stats = get_statistics(output_kg_path)
-        print(stats)
+
+        # Write stats JSON to the topic directory
+        with open(stats_file_path, 'w') as f:
+            f.write(json.dumps(stats))
 
         # 4. Look for information in dbpedia about the topic
 
@@ -91,7 +104,8 @@ def read_text_file(directory):
         return text
 
 
-def get_statistics(kg_path: str):
+def get_statistics(kg_path: str) -> dict:
+    """Compute general statistics about a given knowledge graph"""
     # Create an RDF graph
     graph = Graph()
 
@@ -108,4 +122,10 @@ def get_statistics(kg_path: str):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        description="Validation pipeline for knowledge graph extraction")
+    parser.add_argument("--topics", "-t",
+                        nargs="+",
+                        help="Specify folders inside validation/topics to process")
+    args = parser.parse_args()
+    main(args)

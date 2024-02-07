@@ -1,21 +1,23 @@
 @prefix ns1: <http://dbpedia.org/ontology/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<http://example.com/%22Michael%22%20biopic> a ns1:Film ;
-    rdfs:label "\"Michael\" biopic" ;
-    ns1:director <http://example.com/Antoine%20Fuqua> ;
-    ns1:movie <http://example.com/Michael%20Jackson> ;
-    ns1:productionStartDate "22 January" ;
-    ns1:releaseDate <http://example.com/18%20April%202025> ;
-    ns1:starring <http://example.com/Michael%20Jackson> .
+<http://example.com/Production> a ns1:Activity ;
+    rdfs:label "Production" ;
+    ns1:productionStartDate "22 January" .
 
-<http://example.com/18%20April%202025> a ns1:TimePeriod ;
+<http://example.com/18%20April%202025> a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
     rdfs:label "18 April 2025" .
 
 <http://example.com/Antoine%20Fuqua> a ns1:MovieDirector ;
     rdfs:label "Antoine Fuqua" .
 
-<http://example.com/Michael%20Jackson> a ns1:Person ;
+<http://example.com/Michael%20Jackson> a ns1:MusicalArtist ;
     rdfs:label "Michael Jackson" ;
-    ns1:uncle <http://example.com/Michael%20Jackson> .
+    ns1:starring <http://example.com/biopic> .
+
+<http://example.com/biopic> a ns1:Film ;
+    rdfs:label "biopic" ;
+    ns1:director <http://example.com/Antoine%20Fuqua> ;
+    ns1:releaseDate <http://example.com/18%20April%202025> ;
+    ns1:starring <http://example.com/Michael%20Jackson> .
 
