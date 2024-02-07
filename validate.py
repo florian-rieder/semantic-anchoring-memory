@@ -18,23 +18,20 @@ logger = logging.getLogger(__name__)
 
 def main():
 
-    # Define the directory containing the subject directories
-    subjects_dir = f'{os.getcwd()}/validation/subjects/'
+    # Define the directory containing the topic directories
+    topics_dir = f'{os.getcwd()}/validation/topics/'
 
-    # Get a list of all directories in the subjects directory
-    subject_directories = sorted(os.listdir(subjects_dir))
+    # Get a list of all directories in the topics directory
+    topic_directories = sorted(os.listdir(topics_dir))
 
-    print(subject_directories)
-
-    # Loop through each subject directory
-    for subject_directory in tqdm(subject_directories):
-        print(subject_directory)
+    # Loop through each topic directory
+    for topic_directory in tqdm(topic_directories):
+        print(f'Processing {topic_directory}...')
     
-
         # Construct full paths
-        subject_dir_path = os.path.join(subjects_dir, subject_directory)
-        output_kg_path = os.path.join(subject_dir_path, 'output.ttl')
-        entities_db_path = os.path.join(subject_dir_path, 'entities_db')
+        topic_dir_path = os.path.join(topics_dir, topic_directory)
+        output_kg_path = os.path.join(topic_dir_path, 'output.ttl')
+        entities_db_path = os.path.join(topic_dir_path, 'entities_db')
 
         # Delete knowledge graph and/or entities db if they already exist
         if os.path.exists(output_kg_path):
@@ -44,9 +41,9 @@ def main():
 
         # 0. Initialize memory
         llm, store = init(
-            # Save the output graph in the subject directory
+            # Save the output graph in the topic directory
             memory_path=output_kg_path,
-            # Save the entities db associated to the graph in the subject directory
+            # Save the entities db associated to the graph in the topic directory
             entities_db_path=entities_db_path,
             # Use no prior knowledge
             base_knowledge=None
@@ -54,12 +51,12 @@ def main():
 
         # 1. Get the text file
         # Check if the path is a directory
-        if not os.path.isdir(subject_dir_path):
-            logger.warning(f'Not a valid directory {subject_dir_path}')
+        if not os.path.isdir(topic_dir_path):
+            logger.warning(f'Not a valid directory {topic_dir_path}')
             continue
 
-        # Call the function to read text files within the subject directory
-        text = read_text_file(subject_dir_path)
+        # Call the function to read the first text file within the topic directory
+        text = read_text_file(topic_dir_path)
 
         # 2. Process the text file and output a knowledge graph
         memorize(text, llm, store)
@@ -68,9 +65,9 @@ def main():
         stats = get_statistics(output_kg_path)
         print(stats)
 
-        # 4. Look for information in dbpedia about the subject
+        # 4. Look for information in dbpedia about the topic
 
-        # 5. Compute statistics from the dbpedia knowledge graph about the subject
+        # 5. Compute statistics from the dbpedia knowledge graph about the topic
 
 
 def read_text_file(directory):
@@ -105,7 +102,9 @@ def get_statistics(kg_path: str):
     num_triples = len(graph)
 
     # Return the number of triples
-    return num_triples
+    return {
+        "num_triples": num_triples,
+    }
 
 
 if __name__ == '__main__':

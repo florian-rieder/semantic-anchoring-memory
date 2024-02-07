@@ -1,0 +1,32 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.com/Goldman%20Sachs%20Group%2C%20Inc.> a ns1:Company ;
+    rdfs:label "Goldman Sachs Group, Inc." ;
+    ns1:formationYear <http://example.com/1869> ;
+    ns1:headquarter <http://example.com/New%20York> ;
+    ns1:internationally <http://example.com/financial%20institutions> ;
+    ns1:office <http://example.com/financial%20institutions> ;
+    ns1:service <http://example.com/corporations>,
+        <http://example.com/financial%20institutions>,
+        <http://example.com/governments>,
+        <http://example.com/individuals> .
+
+<http://example.com/1869> a ns1:Year ;
+    rdfs:label "1869" .
+
+<http://example.com/New%20York> a ns1:City ;
+    rdfs:label "New York" .
+
+<http://example.com/corporations> a ns1:Company ;
+    rdfs:label "corporations" .
+
+<http://example.com/governments> a ns1:GovernmentAgency ;
+    rdfs:label "governments" .
+
+<http://example.com/individuals> a ns1:Person ;
+    rdfs:label "individuals" .
+
+<http://example.com/financial%20institutions> a ns1:Company ;
+    rdfs:label "financial institutions" .
+
