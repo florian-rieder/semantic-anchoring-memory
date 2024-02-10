@@ -1,0 +1,65 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:President%20Emmanuel%20Macron a ns1:President ;
+    rdfs:label "President Emmanuel Macron" ;
+    ns2:announced ns2:announcement%20of%20social%20measures .
+
+ns2:17%20November%202018 a ns1:TimePeriod ;
+    rdfs:label "17 November 2018" .
+
+ns2:France a ns1:Country ;
+    rdfs:label "France" .
+
+ns2:announcement%20of%20social%20measures a ns1:SocietalEvent ;
+    rdfs:label "announcement of social measures" ;
+    ns2:ledTo ns2:movement%27s%20demands .
+
+ns2:citizens%27%20initiative%20referendums a owl:Thing ;
+    rdfs:label "citizens' initiative referendums" .
+
+ns2:economic%20injustice a ns1:PoliticalConcept ;
+    rdfs:label "economic injustice" .
+
+ns2:international%20attention a owl:Thing ;
+    rdfs:label "international attention" .
+
+ns2:lower%20fuel%20taxes a ns1:Tax ;
+    rdfs:label "lower fuel taxes" .
+
+ns2:minimum%20wage%20increase a ns1:Activity ;
+    rdfs:label "minimum wage increase" .
+
+ns2:movement%27s%20demands a ns1:SocietalEvent ;
+    rdfs:label "movement's demands" ;
+    ns1:participatingIn ns2:minimum%20wage%20increase ;
+    ns2:criticizedFor ns2:major%20riots ;
+    ns2:includedIn ns2:lower%20fuel%20taxes,
+        ns2:reintroduction%20of%20the%20solidarity%20tax%20on%20wealth ;
+    ns2:receivedSupportFrom "protesters around the world" ;
+    foaf:focus ns2:citizens%27%20initiative%20referendums .
+
+ns2:political%20reforms a ns1:PoliticalConcept ;
+    rdfs:label "political reforms" .
+
+ns2:reintroduction%20of%20the%20solidarity%20tax%20on%20wealth a ns1:PoliticalConcept ;
+    rdfs:label "reintroduction of the solidarity tax on wealth" .
+
+ns2:Yellow%20Vests%20Protests a ns1:SocietalEvent ;
+    rdfs:label "Yellow Vests Protests" ;
+    ns1:knownFor ns2:Yellow%20Vests%20Protests ;
+    ns1:namedAfter ns2:Yellow%20Vests%20Protests ;
+    ns1:result ns2:international%20attention ;
+    ns2:beganIn ns2:France ;
+    ns2:beganOnDate ns2:17%20November%202018 ;
+    ns2:calledFor ns2:political%20reforms ;
+    ns2:involvedIn "blocking roads and fuel depots" ;
+    ns2:motivatedBy ns2:economic%20injustice ;
+    ns2:sometimesEscalatedInto ns2:major%20riots .
+
+ns2:major%20riots a ns1:SocietalEvent ;
+    rdfs:label "major riots" .
+
