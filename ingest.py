@@ -17,7 +17,11 @@ from config import (
     BASE_KNOWLEDGE_PATH,
     CLASS_DB_PATH,
     PREDICATES_DB_PATH,
-    ENTITIES_DB_PATH
+    ENTITIES_DB_PATH,
+    WORKHORSE_MODEL_NAME,
+    EMBEDDING_MODEL_NAME,
+    K_CLASSES_TO_RETRIEVE,
+    K_PREDICATES_TO_RETRIEVE
 )
 
 
@@ -30,14 +34,14 @@ def init(memory_path: str,
          ):
     print('Initializing LLM...', end=' ', flush=True)
     llm = ChatOpenAI(
-        model='gpt-3.5-turbo-1106',
+        model=WORKHORSE_MODEL_NAME,
         temperature=0
     )
     print('Done.')
 
     print('Initializing embeddings...', end=' ', flush=True)
     embeddings = OpenAIEmbeddings(
-        model='text-embedding-ada-002',
+        model=EMBEDDING_MODEL_NAME,
     )
     print('Done.')
 
@@ -70,7 +74,9 @@ def init(memory_path: str,
     store = SemanticStore(
         encoder_llm=llm,
         tbox=tbox,
-        abox=abox
+        abox=abox,
+        k_similar_classes=K_CLASSES_TO_RETRIEVE,
+        k_similar_predicates=K_PREDICATES_TO_RETRIEVE
     )
     print('Done.')
 

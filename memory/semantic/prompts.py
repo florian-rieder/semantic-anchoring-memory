@@ -202,8 +202,9 @@ TRIPLET_ENCODER_PROMPT = PromptTemplate(
 
 
 _CHOOSE_PREDICATE_TEMPLATE = """Choose the predicate from the list which corresponds best to the given intent.
-You can use predicates from common namespaces: RDF, RDFS, OWL.
-If no predicate in the list fits, create your own using the namespace http://example.com/.
+You can also use predicates from common namespaces present in your weights: RDF, RDFS, OWL, SKOS, FOAF.
+If no predicate in the list fits, create your own.
+If you create a new predicate, only use the namespace http://example.com/.
 Only output the chosen predicate and nothing else.
 
 List of predicates:

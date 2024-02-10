@@ -42,7 +42,8 @@ class SemanticStore():
 
     def encode_triplets(self, triplets: list[tuple[str, str, str]]):
         """Encode all given triplets into RDF"""
-        return [self._encode_triplet(t) for t in triplets]
+        encoded_triplets = [self._encode_triplet(t) for t in triplets]
+        return encoded_triplets
 
     def _encode_triplet(self,
                         triplet: tuple[str, str, str],

@@ -12,7 +12,7 @@ from langchain.memory.utils import get_prompt_input_key
 
 from memory.semantic.prompts import (
     ENTITY_EXTRACTION_PROMPT,
-    KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
+    NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
 )
 from memory.semantic.learn import memorize
 from memory.semantic.store import SemanticStore
@@ -28,7 +28,7 @@ class SemanticLongTermMemory(BaseChatMemory):
     semantic_store: SemanticStore
     llm: BaseLanguageModel
 
-    knowledge_extraction_prompt: BasePromptTemplate = KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT
+    knowledge_extraction_prompt: BasePromptTemplate = NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT
     entity_extraction_prompt: BasePromptTemplate = ENTITY_EXTRACTION_PROMPT
 
     k: int = 4

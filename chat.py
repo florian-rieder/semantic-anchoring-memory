@@ -27,7 +27,9 @@ from config import (
     ENTITIES_DB_PATH,
     WORKHORSE_MODEL_NAME,
     CHAT_MODEL_NAME,
-    EMBEDDING_MODEL_NAME
+    EMBEDDING_MODEL_NAME,
+    K_PREDICATES_TO_RETRIEVE,
+    K_CLASSES_TO_RETRIEVE
 )
 
 
@@ -123,7 +125,9 @@ def get_chain(stream_handler, memory_model = 'semantic') -> ConversationChain:
                 ),
                 memory_base_path=BASE_KNOWLEDGE_PATH,
                 memory_path=MEMORY_PATH
-            )
+            ),
+            k_similar_classes=K_CLASSES_TO_RETRIEVE,
+            k_similar_predicates=K_PREDICATES_TO_RETRIEVE
         )
 
         long_term_memory = SemanticLongTermMemory(
