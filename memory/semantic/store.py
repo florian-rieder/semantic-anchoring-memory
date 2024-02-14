@@ -7,7 +7,7 @@ import traceback
 from urllib.parse import quote
 
 from memory.semantic.prompts import CHOOSE_CLASS_PROMPT, CHOOSE_PREDICATE_PROMPT
-from memory.semantic.abox import ABox
+from memory.semantic.abox import ABox, encode_entity_uri, decode_entity_uri
 from memory.semantic.tbox import TBox
 
 EX = Namespace("http://example.com/")
@@ -108,26 +108,35 @@ class SemanticStore():
         predicate_uri = encoded_triplet['predicate']['type']
 
         # SUBJECT
-        subject = quote(encoded_triplet['subject']['value'])
+        subject = encoded_triplet['subject']['value']
+        subject_uri = encode_entity_uri(subject)
 
-        # Check if there are similar entities in the graph ?
-        subject_node = self.resolve_memorized_entity(quote(subject))
+        # Check if there is a sufficiently similar entity in entities db, and
+        # therefore in the graph.
+        existing_subject = self.resolve_memorized_entity(subject)
 
-        print(f'Is subject already in memory ? {subject_node}')
+        print(f'Is subject already in memory ? {existing_subject}')
 
-        if not subject_node:
-            subject_node = EX[subject]
+        # If there isn't such an entity, we consider this is a new entity, and
+        # add it to the graph and entities db.
+        if not existing_subject:
+            subject_node = EX[subject_uri]
             print(f'Create new entity in memory: {subject_node}')
             # Add the new node to the graph
             self.abox.graph.add(
                 (subject_node, RDF.type, encoded_triplet['subject']['type']))
+            
+            # Add the entity string as a label
             self.abox.graph.add(
-                (subject_node, RDFS.label, Literal(encoded_triplet['subject']['value'])))
+                (subject_node, RDFS.label, Literal(subject)))
             # Store the new entity in the entities database
-            self.abox.store_entities([str(subject_node)])
+            self.abox.store_entities([subject])
+        else:
+            subject_node = EX[existing_subject]
 
         # OBJECT
         object_ = encoded_triplet['object']['value']
+        object_uri = encode_entity_uri(object_)
         object_type = encoded_triplet['object']['type']
         object_node = None
 
@@ -144,13 +153,13 @@ class SemanticStore():
         else:
             # First look in the entities DB to see if we already have
             # such an entity in memory
-            object_node = self.resolve_memorized_entity(quote(object_))
+            existing_object = self.resolve_memorized_entity(object_)
 
             print(f'Is object already in memory ? {object_node}')
 
             # If the entity doesn't already exist, create a new one
-            if not object_node:
-                object_node = EX[quote(object_)]
+            if not existing_object:
+                object_node = EX[object_uri]
                 print(f'Create new entity in memory: {object_node}')
 
                 # Add the new node to the graph
@@ -158,9 +167,11 @@ class SemanticStore():
                     (object_node, RDF.type, encoded_triplet['object']['type']))
 
                 self.abox.graph.add(
-                    (object_node, RDFS.label, Literal(encoded_triplet['object']['value'])))
+                    (object_node, RDFS.label, Literal(object_)))
                 # Store the new entity in the entities database
-                self.abox.store_entities([str(object_node)])
+                self.abox.store_entities([object_])
+            else:
+                object_node = EX[existing_object]
 
         # PREDICATE
         # Add the triple to the Graph
@@ -311,14 +322,14 @@ class SemanticStore():
         # If there is exactly one match, then we're probably talking about the
         # same entity
         if len(similar_objects_in_memory) == 1:
-            return URIRef(similar_objects_in_memory[0])
+            return URIRef(encode_entity_uri(similar_objects_in_memory[0]))
         elif len(similar_objects_in_memory) > 1:
             # TODO: Ask the user to clarify ?
             # Maybe store incoherences in an "interrogations" db, which the
             # chatbot will try to satisfy by asking the user to clarify
 
             # But for now do exactly the same
-            return URIRef(similar_objects_in_memory[0])
+            return URIRef(encode_entity_uri(similar_objects_in_memory[0]))
         else:
             return None
 

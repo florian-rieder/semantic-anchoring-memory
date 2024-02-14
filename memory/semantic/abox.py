@@ -1,7 +1,8 @@
 import os
 
 from rdflib import Graph, URIRef
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
+#from owlrl import DeductiveClosure, OWLRL_Semantics, interpret_owl_imports
 
 from langchain_core.vectorstores import VectorStore
 
@@ -40,6 +41,18 @@ class ABox():
             self.save_graph()
 
     def store_entities(self, entities: list[str]):
+        """
+        Summary
+        -------
+        Store a list of entity strings in the entities db. An entity string is
+        a string in natural language used as the descriptor of an entity
+        in memory. For example "Yellow vests protests"
+
+        Usage
+        -----
+        my_abox = Abox(...)
+        abox.store_entities(["Yellow vests protests"])
+        """
         self.entities_db.add_texts(entities)
         self.entities_db.persist()
 
@@ -67,27 +80,36 @@ class ABox():
         similar_entities = self.query_entities(entity)
         print('Similar entities')
         print(similar_entities)
-        entity_node = URIRef(similar_entities[0])
+        entity_node = URIRef(encode_entity_uri(similar_entities[0]))
         print('Chosen Entity:')
         print(entity_node)
 
         # Get all the knowledge about this entity
-        
+
+        # First, let's use OWL-RL reasoner to infer additional properties,
+        # semantically expanding the graph.
+        # Get the vocabularies imported in the A-Box graph (dbpedia, foaf, etc)
+        # interpret_owl_imports("AUTO", self.graph)
+        # # Reason and expand the graph
+        # DeductiveClosure(OWLRL_Semantics).expand(self.graph)
+
         # There is significant improvement opportunity in how we navigate the
         # graph here. Using reasoners and using various strategies for graph
         # navigation could allow for getting the most relevant information to
         # the conversation at hand.
         knowledge = list()
         for pred, obj in self.graph.predicate_objects(entity_node):
-            # Get the last bit of the URI
-            # ex. https://example.com/Bob -> Bob
-            pred = unquote(str(pred)).split("/")[-1].split('#')[-1]
-            obj = unquote(str(obj)).split("/")[-1].split('#')[-1]
-            # TODO: if more entities are revealed, gather knowledge about them also
+            # Transform relationship to a string akin to natural language, to
+            # improve results when used in the prompt with the LLM.
+            # Get the last bit of the URI: ex. https://example.com/Bob -> Bob
+            pred = decode_entity_uri(str(pred)).split("/")[-1].split('#')[-1]
+            obj = decode_entity_uri(str(obj)).split("/")[-1].split('#')[-1]
+
+            # TODO: navigate the graph in order to retrieve the most
+            # pertinent information
 
             knowledge_bit = f"{pred} {obj}"
             knowledge.append(knowledge_bit)
-            
 
         # TODO: Filter knowledge to only what is relevant to the conversation
 
@@ -99,3 +121,11 @@ class ABox():
             destination=self.memory_path,
             format=self.memory_format
         )
+
+
+def encode_entity_uri(entity_string: str) -> str:
+    return quote(entity_string.replace(' ', '_'))
+
+
+def decode_entity_uri(entity_uri: str) -> str:
+    return unquote(entity_uri).replace('_', ' ')

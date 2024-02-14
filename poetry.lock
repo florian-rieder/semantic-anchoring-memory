@@ -1894,6 +1894,20 @@ files = [
 ]
 
 [[package]]
+name = "owlrl"
+version = "6.0.2"
+description = "OWL-RL and RDFS based RDF Closure inferencing for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "owlrl-6.0.2-py3-none-any.whl", hash = "sha256:57eca06b221edbbc682376c8d42e2ddffc99f61e82c0da02e26735592f08bacc"},
+    {file = "owlrl-6.0.2.tar.gz", hash = "sha256:904e3310ff4df15101475776693d2427d1f8244ee9a6a9f9e13c3c57fae90b74"},
+]
+
+[package.dependencies]
+rdflib = ">=6.0.2"
+
+[[package]]
 name = "packaging"
 version = "23.2"
 description = "Core utilities for Python packages"
@@ -3324,4 +3338,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a4656c7831e70d9cc5fa5199a49847f1f0b20743cfc81aa9d89959f2fc098703"
+content-hash = "2c0d1c51d92dfcee44d83c690dcb7606582a4d76b8ff2f36e9a2ae133cc64db3"
