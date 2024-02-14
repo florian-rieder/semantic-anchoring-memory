@@ -1,65 +1,63 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix ns1: <http://dbpedia.org/ontology/> .
-@prefix ns2: <http://example.com/> .
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://dbpedia.org/ontology/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-ns2:President%20Emmanuel%20Macron a ns1:President ;
-    rdfs:label "President Emmanuel Macron" ;
-    ns2:announced ns2:announcement%20of%20social%20measures .
+<cancellation_of_fuel_tax_increase> ns1:ledTo ns1:shift_in_movement%27s_focus .
 
-ns2:17%20November%202018 a ns1:TimePeriod ;
+ns1:President_Emmanuel_Macron a ns2:Politician ;
+    rdfs:label "President Emmanuel Macron" ;
+    ns2:president ns1:cancellation_of_fuel_tax_increase .
+
+ns1:Yellow_Vests_Protests a ns2:SocietalEvent ;
+    rdfs:label "Yellow Vests Protests" ;
+    ns2:knownFor <Yellow_Vests_Protests> .
+
+<shift_in_movement%27s_focus> ns2:participatingIn ns1:international_attention ;
+    ns1:adoptedAsSymbolBy "protesters in other countries" ;
+    ns1:calledFor ns1:minimum_wage_increase,
+        ns1:other_social_and_fiscal_reforms,
+        "lower fuel taxes" ;
+    ns1:involvedInPopulation "around 3 million people" ;
+    foaf:focus ns1:citizens%27_initiative_referendums .
+
+<Yellow_Vests_Protests> ns2:pandemic <President_Emmanuel_Macron> ;
+    ns2:startDateTime ns1:17_November_2018 ;
+    ns1:beganIn <President_Emmanuel_Macron> ;
+    ns1:involvedIn "blocking roads and fuel depots" ;
+    ns1:motivatedBy ns1:economic_injustice,
+        "rising fuel prices" ;
+    ns1:resumedAfter ns1:health_restrictions_were_lifted ;
+    ns1:sometimesEscalatedInto ns1:major_riots .
+
+ns1:17_November_2018 a ns2:TimePeriod ;
     rdfs:label "17 November 2018" .
 
-ns2:France a ns1:Country ;
-    rdfs:label "France" .
+ns1:cancellation_of_fuel_tax_increase a owl:Thing ;
+    rdfs:label "cancellation of fuel tax increase" .
 
-ns2:announcement%20of%20social%20measures a ns1:SocietalEvent ;
-    rdfs:label "announcement of social measures" ;
-    ns2:ledTo ns2:movement%27s%20demands .
-
-ns2:citizens%27%20initiative%20referendums a owl:Thing ;
+ns1:citizens%27_initiative_referendums a owl:Thing ;
     rdfs:label "citizens' initiative referendums" .
 
-ns2:economic%20injustice a ns1:PoliticalConcept ;
+ns1:economic_injustice a ns2:PoliticalConcept ;
     rdfs:label "economic injustice" .
 
-ns2:international%20attention a owl:Thing ;
+ns1:health_restrictions_were_lifted a ns2:SocietalEvent ;
+    rdfs:label "health restrictions were lifted" .
+
+ns1:international_attention a ns2:SocietalEvent ;
     rdfs:label "international attention" .
 
-ns2:lower%20fuel%20taxes a ns1:Tax ;
-    rdfs:label "lower fuel taxes" .
+ns1:major_riots a ns2:SocietalEvent ;
+    rdfs:label "major riots" .
 
-ns2:minimum%20wage%20increase a ns1:Activity ;
+ns1:minimum_wage_increase a ns2:Work ;
     rdfs:label "minimum wage increase" .
 
-ns2:movement%27s%20demands a ns1:SocietalEvent ;
-    rdfs:label "movement's demands" ;
-    ns1:participatingIn ns2:minimum%20wage%20increase ;
-    ns2:criticizedFor ns2:major%20riots ;
-    ns2:includedIn ns2:lower%20fuel%20taxes,
-        ns2:reintroduction%20of%20the%20solidarity%20tax%20on%20wealth ;
-    ns2:receivedSupportFrom "protesters around the world" ;
-    foaf:focus ns2:citizens%27%20initiative%20referendums .
+ns1:other_social_and_fiscal_reforms a owl:Thing ;
+    rdfs:label "other social and fiscal reforms" .
 
-ns2:political%20reforms a ns1:PoliticalConcept ;
-    rdfs:label "political reforms" .
-
-ns2:reintroduction%20of%20the%20solidarity%20tax%20on%20wealth a ns1:PoliticalConcept ;
-    rdfs:label "reintroduction of the solidarity tax on wealth" .
-
-ns2:Yellow%20Vests%20Protests a ns1:SocietalEvent ;
-    rdfs:label "Yellow Vests Protests" ;
-    ns1:knownFor ns2:Yellow%20Vests%20Protests ;
-    ns1:namedAfter ns2:Yellow%20Vests%20Protests ;
-    ns1:result ns2:international%20attention ;
-    ns2:beganIn ns2:France ;
-    ns2:beganOnDate ns2:17%20November%202018 ;
-    ns2:calledFor ns2:political%20reforms ;
-    ns2:involvedIn "blocking roads and fuel depots" ;
-    ns2:motivatedBy ns2:economic%20injustice ;
-    ns2:sometimesEscalatedInto ns2:major%20riots .
-
-ns2:major%20riots a ns1:SocietalEvent ;
-    rdfs:label "major riots" .
+ns1:shift_in_movement%27s_focus a owl:Thing ;
+    rdfs:label "shift in movement's focus" .
 

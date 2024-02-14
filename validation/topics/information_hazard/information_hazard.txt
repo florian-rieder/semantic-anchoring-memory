@@ -1,0 +1,50 @@
+Information Hazard
+
+From Wikipedia, the free encyclopedia
+
+An information hazard, or infohazard,[1] is "a risk that arises from the dissemination of (true) information that may cause harm or enable some agent to cause harm", as defined by philosopher Nick Bostrom in 2011, or contained in information sensitivity. It is an idea that contradicts the idea of Freedom of information as it states that some types of information is too dangerous for every single person to have access to, as they could either be harmed by it or harm others.[2] This is sometimes the reason information being classified of importance to information sensitivity. One example would be instructions for creating a thermonuclear weapon[3] as following the instructions could cause massive amounts of harm to others, and limiting or at least controlling who has access to that information would be a way to avoid that harm.
+Classification[edit source]
+
+There are two defined major categories of information hazard. The first is the "adversarial hazard"[3] which is where some information can be purposefully used by a bad actor to hurt others. The other category is where the harm is not purposeful, but is merely an unintended consequence that harms the person who learns it.[3]
+
+Bostrom also proposes several subsets of these major categories, including the following types:[3]
+
+    Data hazards: A piece of data that can be used to harm others, such as the DNA sequence of a lethal pathogen.[3]
+    Idea hazards: General ideas that can harm others if fulfilled. One example is the idea of "using a fission reaction to create a bomb". Knowing this idea alone can be enough for a well-resourced team to develop a nuclear bomb.[3]: 3 
+    Knowing-too-much hazards: Information that if known, can cause danger to the person who knows it. For example, in the 1600s, women who knew about arithmetic were at a higher risk of being accused of witchcraft.[3]: 9 [4]
+
+In biotechnology[edit source]
+
+Data hazards are of particular interest to the fields of biology and pathology. Knowledge of potentially dangerous strains of disease can cause widespread panic if picked up by media or third parties through fearmongering or improper analysis of disease outbreaks by untrained people.[5] Some experts in these fields want to improve the peer review process in order to avoid these issues by stopping the release of unverified information.
+
+Additionally, the availability of information on DNA sequences of diseases or the chemical makeup of toxins could lead to adversarial hazards, as bad actors could use this information in order to recreate these biohazards on their own.[6]
+In information security[edit source]
+
+The concept of information hazards is also relevant to information security. Many government, public, and private entities have information that could be classified as a data hazard that could harm others if leaked. This could be the result of an adversarial hazard or an idea hazard. To avoid this, many organizations implement security controls depending on their own needs or the needs laid out by regulatory bodies.[7]
+
+An example of this Health Insurance Portability and Accountability Act which in part works to avoid the loss of information about medical patients in the United States which could result in adversarial hazards. Part of this act is designed to create a standardized means of concealing information that could be used to harm others by keeping the information available only to those who have to know it.[8]
+In law[edit source]
+
+Willful blindness is an attempt to avoid obscuring or misleading a case by avoiding the idea that a fact is true if it cannot be proven from the knowledge. This is an attempt to avoid information hazards that could harm a legal case by putting false or assumed information in the mind of the jury.[9]
+In literature[edit source]
+
+The idea of forbidden knowledge that can harm the person who knows it is found in many stories in the 16th and 17th centuries. In it, these stories imply or explicitly state that some knowledge is dangerous for the viewer or for others and is better left hidden.[10]
+In popular culture[edit source]
+
+The idea of an information hazard overlaps with the idea of a harmful trend or social contagion. In it, knowledge of certain trends can result in their replication, such as in the case of certain viral trends that can be physically dangerous to those who attempt them.[11] 
+
+See also
+
+    Censorship
+    Classified information
+    The Game (mind game)
+    Information security
+    Inquisition
+    Jury nullification
+    Knowledge (legal construct)
+    Roko's basilisk
+    Social media
+    BLIT (short story)
+    Suffering risks
+    Mass shooting contagion
+    Infinite Jest, "The Entertainment" therein
