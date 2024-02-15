@@ -1,0 +1,45 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.com/%22Oceania%22> a ns2:GeopoliticalOrganisation ;
+    rdfs:label "\"Oceania\"" ;
+    ns2:leader ns1:Big_Brother .
+
+<http://example.com/%22novel%22> a ns2:Novel ;
+    rdfs:label "\"novel\"" ;
+    ns2:literaryGenre ns1:mass_surveillance ;
+    ns2:locatedInArea <http://example.com/%22Oceania%22> ;
+    ns2:work <http://example.com/%22Winston_Smith%22> ;
+    ns1:hasPopularizedTermsAs ns1:Big_Brother ;
+    ns1:popularizedTerm <http://example.com/%22Winston_Smith%22> ;
+    ns1:recognizedAs <http://example.com/%22Winston_Smith%22> ;
+    foaf:theme ns1:psychological_manipulation .
+
+ns1:mass_surveillance a ns2:TopicalConcept ;
+    rdfs:label "mass surveillance" .
+
+ns1:the_Party a ns2:PoliticalParty ;
+    rdfs:label "the Party" .
+
+ns1:the_future a owl:Thing ;
+    rdfs:label "the future" .
+
+ns1:Big_Brother a ns2:Person ;
+    rdfs:label "Big Brother" .
+
+ns1:psychological_manipulation a ns2:PhilosophicalConcept ;
+    rdfs:label "psychological manipulation" .
+
+<http://example.com/%22Winston_Smith%22> a ns2:Novel,
+        ns2:Person ;
+    rdfs:label "\"Winston Smith\"" ;
+    ns2:believedThat ns1:the_future ;
+    ns2:publicationDate "1949" ;
+    ns2:quote <http://example.com/%22novel%22> ;
+    ns2:writer <http://example.com/%22Winston_Smith%22> ;
+    ns1:isSubjectedTo ns1:psychological_manipulation ;
+    ns1:rebelsAgainst ns1:the_Party .
+

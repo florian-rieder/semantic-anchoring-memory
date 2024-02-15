@@ -1,0 +1,90 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:2023 a ns1:Year ;
+    rdfs:label "2023" ;
+    ns2:warmestOnRecord ns2:the_warmest_on_record .
+
+ns2:Global_map a ns1:Place ;
+    rdfs:label "Global map" ;
+    ns1:climate "Arctic temperature rises" ;
+    ns1:map ns2:sea .
+
+ns2:World_Health_Organization a ns1:InternationalOrganisation ;
+    rdfs:label "World Health Organization" ;
+    ns1:world ns2:Climate_change .
+
+ns2:current_pledges a owl:Thing ;
+    rdfs:label "current pledges" ;
+    ns2:wouldLeadTo "about 2.7 °C warming by the end of the century" .
+
+ns2:1.5_%C2%B0C_since_the_Industrial_Revolution a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "1.5 °C since the Industrial Revolution" .
+
+ns2:economic_loss a ns1:GrossDomesticProductPerCapita ;
+    rdfs:label "economic loss" .
+
+ns2:expanding_deserts a ns1:Desert ;
+    rdfs:label "expanding deserts" .
+
+ns2:recent_years a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "recent years" .
+
+ns2:sea a ns1:Sea ;
+    rdfs:label "sea" ;
+    ns2:averageSurfaceAirTemperature "has increased" ;
+    ns2:hasIncreasedBy ns2:1.5_%C2%B0C_since_the_Industrial_Revolution .
+
+ns2:thawing_permafrost a ns1:NaturalEvent ;
+    rdfs:label "thawing permafrost" .
+
+ns2:conflict a ns1:MilitaryConflict ;
+    rdfs:label "conflict" .
+
+ns2:flooding a ns1:NaturalEvent ;
+    rdfs:label "flooding" .
+
+ns2:generating_electricity_cleanly a owl:Thing ;
+    rdfs:label "generating electricity cleanly" ;
+    ns2:involve ns2:generating_electricity_cleanly,
+        "conserving energy" .
+
+ns2:intense_storms a ns1:NaturalEvent ;
+    rdfs:label "intense storms" .
+
+ns2:nations a ns1:Country ;
+    rdfs:label "nations" ;
+    ns2:agreedTo "keep warming \"well under 2 °C\"" .
+
+ns2:the_warmest_on_record a ns1:Year ;
+    rdfs:label "the warmest on record" .
+
+ns2:Climate_change a ns1:TopicalConcept ;
+    rdfs:label "Climate change" ;
+    ns1:causedBy ns2:Climate_change,
+        ns2:intense_storms,
+        "other practices" ;
+    ns1:medicalCause ns2:conflict ;
+    ns1:participatingIn ns2:nations ;
+    ns2:affects ns2:Climate_change ;
+    ns2:causedBy ns2:Climate_change ;
+    ns2:hasLedTo ns2:Climate_change,
+        ns2:expanding_deserts,
+        ns2:flooding,
+        ns2:intense_storms,
+        ns2:thawing_permafrost ;
+    ns2:impactYears ns2:recent_years ;
+    ns2:includes ns2:Climate_change ;
+    ns2:involve ns2:generating_electricity_cleanly ;
+    ns2:threatens ns2:Climate_change,
+        ns2:conflict,
+        ns2:economic_loss,
+        ns2:flooding,
+        ns2:nations,
+        ns2:the_warmest_on_record,
+        "food and water scarcity" ;
+    ns2:willRequire "achieving net-zero emissions by 2050",
+        "halving emissions by 2030" .
+

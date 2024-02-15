@@ -22,8 +22,8 @@ CHUNK_SUMMARIZER_PROMPT = PromptTemplate(
 _SUMMARIZER_TEMPLATE = """
 You are an AI memory entity tasked with extracting key insights and notable details from the provided text
 to capture the most important information to remember about the topic.
-Craft concise sentences focusing on significant events, achievements,
-preferences, and memorable aspects of the subject's experiences.
+Craft concise sentences focusing on significant facts, events, achievements,
+preferences, and memorable aspects of the subject's experiences and about the topic of the text.
 Ensure these sentences are understandable in isolation.
 Prioritize unique and impactful information over mundane details.
 Always refer to named entities by their name, emphasizing proper names over generics.

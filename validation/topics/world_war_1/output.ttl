@@ -1,0 +1,68 @@
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns1:conflict a ns2:TopicalConcept ;
+    rdfs:label "conflict" ;
+    ns2:result ns1:over_9_million_military_deaths_and_5_million_civilian_deaths ;
+    ns2:start ns1:World_War_I ;
+    ns1:ledToFormationOf ns1:new_countries_in_Europe_and_the_Middle_East .
+
+ns1:Bolsheviks a ns2:Rebellion ;
+    rdfs:label "Bolsheviks" ;
+    ns2:isPartOfMilitaryConflict ns1:dissolution_of_empires ;
+    ns2:ledTo ns1:Paris_Peace_Conference ;
+    ns1:seizedPowerIn ns1:Bolsheviks .
+
+ns1:Polish_independence a ns2:Event ;
+    rdfs:label "Polish independence" .
+
+ns1:creation_of_new_independent_states a ns2:SocietalEvent ;
+    rdfs:label "creation of new independent states" ;
+    ns1:contributedTo ns1:World_War_I .
+
+ns1:defeated_powers a ns2:MilitaryConflict ;
+    rdfs:label "defeated powers" ;
+    ns1:wereAffectedBy ns1:World_War_I .
+
+ns1:dissolution_of_empires a ns2:SocietalEvent ;
+    rdfs:label "dissolution of empires" ;
+    ns1:resultedIn ns1:creation_of_new_independent_states .
+
+ns1:millions_more_from_genocide_and_the_1918_Spanish_flu_pandemic a owl:Thing ;
+    rdfs:label "millions more from genocide and the 1918 Spanish flu pandemic" .
+
+ns1:new_countries_in_Europe_and_the_Middle_East a owl:Thing ;
+    rdfs:label "new countries in Europe and the Middle East" .
+
+ns1:over_9_million_military_deaths_and_5_million_civilian_deaths a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "over 9 million military deaths and 5 million civilian deaths" .
+
+ns1:Japan a ns2:Country ;
+    rdfs:label "Japan" .
+
+ns1:Paris_Peace_Conference a ns2:Event ;
+    rdfs:label "Paris Peace Conference" ;
+    ns1:imposedSettlementsOn ns1:defeated_powers .
+
+ns1:United_Kingdom a ns2:Country ;
+    rdfs:label "United Kingdom" ;
+    ns2:coalition ns1:United_Kingdom ;
+    ns2:europeanUnionEntranceDate ns1:World_War_I ;
+    ns2:isPartOfMilitaryConflict ns1:Japan,
+        ns1:United_Kingdom .
+
+ns1:World_War_I a ns2:Event ;
+    rdfs:label "World War I" ;
+    ns2:alliance ns1:United_Kingdom ;
+    ns2:isPartOf ns1:Japan ;
+    ns2:isPartOfMilitaryConflict ns1:United_Kingdom,
+        ns1:World_War_I ;
+    ns2:raceResult ns1:World_War_I ;
+    ns2:result ns1:World_War_I,
+        ns1:millions_more_from_genocide_and_the_1918_Spanish_flu_pandemic ;
+    ns1:lastedFromTimeInterval ns1:World_War_I ;
+    ns1:ledTo ns1:Paris_Peace_Conference ;
+    ns1:ledToRestorationOf ns1:Polish_independence .
+

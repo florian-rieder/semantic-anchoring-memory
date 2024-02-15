@@ -1,0 +1,58 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:2024_Summer_Olympics a ns1:Olympics ;
+    rdfs:label "2024 Summer Olympics" ;
+    ns2:willTakePlaceIn "Paris" .
+
+<http://example.com/%C3%8Ele-de-France_region> a ns1:GovernmentalAdministrativeRegion ;
+    rdfs:label "Île-de-France region" ;
+    ns1:populationTotal ns2:2%2C102%2C650_residents .
+
+ns2:European_Union_in_2021 a ns1:GrossDomesticProduct ;
+    rdfs:label "European Union in 2021" .
+
+ns2:commerce a ns1:Activity ;
+    rdfs:label "commerce" .
+
+ns2:diplomacy a owl:Thing ;
+    rdfs:label "diplomacy" .
+
+ns2:international_organizations a ns1:InternationalOrganisation ;
+    rdfs:label "international organizations" .
+
+ns2:sports_events a ns1:SportsEvent ;
+    rdfs:label "sports events" ;
+    ns1:rolandGarrosSingle "Paris" .
+
+ns2:Paris a ns1:City ;
+    rdfs:label "Paris" ;
+    ns1:capitalCountry ns2:Paris ;
+    ns1:capitalRegion <http://example.com/%C3%8Ele-de-France_region> ;
+    ns1:city ns2:Paris ;
+    ns1:grossDomesticProductRank ns2:European_Union_in_2021 ;
+    ns1:hosts ns2:sports_events ;
+    ns1:importantStation ns2:major_transportation_hub ;
+    ns1:museumType ns2:architectural_landmarks ;
+    ns1:population ns2:major_transportation_hub ;
+    ns1:populationTotal ns2:2%2C102%2C650_residents ;
+    ns1:regionServed ns2:major_transportation_hub ;
+    ns1:relatedPlaces ns2:architectural_landmarks ;
+    ns1:service ns2:major_transportation_hub ;
+    ns1:significantBuilding ns2:architectural_landmarks ;
+    ns2:hasBeenCentreOf ns2:commerce,
+        ns2:diplomacy ;
+    ns2:hosts ns2:international_organizations ;
+    ns2:isDenselyPopulatedCity ns2:2%2C102%2C650_residents .
+
+ns2:2%2C102%2C650_residents a ns1:Population ;
+    rdfs:label "2,102,650 residents" .
+
+ns2:architectural_landmarks a <http://schema.org/LandmarksOrHistoricalBuildings> ;
+    rdfs:label "architectural landmarks" .
+
+ns2:major_transportation_hub a ns1:Station ;
+    rdfs:label "major transportation hub" .
+

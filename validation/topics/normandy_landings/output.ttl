@@ -1,0 +1,47 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:landings a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "landings" ;
+    ns2:precededBy ns2:airborne_assault,
+        "extensive aerial and naval bombardment" .
+
+ns2:Allies a ns1:Person ;
+    rdfs:label "Allies" ;
+    ns1:causalties "4,414 dead" ;
+    ns1:usedInWar ns2:substantial_military_deception ;
+    ns2:failedToAchieve "goals on the first day" ;
+    ns2:gainedFoothold ns2:foothold .
+
+ns2:June_6%2C_1944 a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "June 6, 1944" .
+
+ns2:airborne_assault a ns1:Attack ;
+    rdfs:label "airborne assault" .
+
+ns2:foothold a ns1:Place ;
+    rdfs:label "foothold" .
+
+ns2:largest_seaborne_invasion_in_history a ns1:SocietalEvent ;
+    rdfs:label "largest seaborne invasion in history" .
+
+ns2:liberation_of_France a ns1:MilitaryConflict ;
+    rdfs:label "liberation of France" .
+
+ns2:substantial_military_deception a owl:Thing ;
+    rdfs:label "substantial military deception" .
+
+ns2:Normandy_coast a ns1:Beach ;
+    rdfs:label "Normandy coast" ;
+    ns1:foundation ns2:Allies ;
+    ns1:historicalName ns2:Normandy_coast ;
+    ns1:largestSeaborneInvasion ns2:largest_seaborne_invasion_in_history ;
+    ns1:launchDate ns2:June_6%2C_1944 ;
+    ns1:participatingIn ns2:Normandy_coast ;
+    ns2:began ns2:liberation_of_France ;
+    ns2:dividedInto "five sectors: Utah, Omaha, Gold, Juno, and Sword" ;
+    ns2:documentedFor "at least 10,000" ;
+    ns2:estimatedAt "4,000 to 9,000 men" .
+

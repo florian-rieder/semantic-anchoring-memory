@@ -1,0 +1,34 @@
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns1:biological_functions_such_as_gravitropism_and_fluid_circulation_in_organisms a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#InformationObject> ;
+    rdfs:label "biological functions such as gravitropism and fluid circulation in organisms" .
+
+ns1:current_models_of_particle_physics a ns2:ScientificConcept ;
+    rdfs:label "current models of particle physics" ;
+    ns1:suggests ns1:gravity .
+
+ns1:scientists a ns2:Scientist ;
+    rdfs:label "scientists" ;
+    ns2:currentWork ns1:current_models_of_particle_physics .
+
+ns1:significant_influence_at_the_macroscopic_scale a ns2:ScientificConcept ;
+    rdfs:label "significant influence at the macroscopic scale" .
+
+ns1:formation_of_stars_and_galaxies a owl:Thing ;
+    rdfs:label "formation of stars and galaxies" .
+
+ns1:gravity a owl:Thing,
+        "weakest of the four fundamental interactions" ;
+    rdfs:label "gravity" ;
+    ns1:causes ns1:gravity ;
+    ns1:describes ns1:gravity ;
+    ns1:determines ns1:formation_of_stars_and_galaxies ;
+    ns1:givesWeight ns1:gravity ;
+    ns1:hasSignificantInfluence ns1:significant_influence_at_the_macroscopic_scale ;
+    ns1:influences ns1:biological_functions_such_as_gravitropism_and_fluid_circulation_in_organisms ;
+    ns1:proposedBy ns1:scientists ;
+    ns1:responsibleFor ns1:formation_of_stars_and_galaxies .
+

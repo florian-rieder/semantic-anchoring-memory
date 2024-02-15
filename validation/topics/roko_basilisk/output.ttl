@@ -1,0 +1,38 @@
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns1:Users a owl:Thing ;
+    rdfs:label "Users" ;
+    owl:reportedExperiencing "nightmares and mental breakdowns" .
+
+ns1:ban a ns2:Person ;
+    rdfs:label "ban" ;
+    ns1:placedOnDiscussing ns1:Roko%27s_basilisk .
+
+ns1:2010_post_on_LessWrong_discussion_board a ns2:Event ;
+    rdfs:label "2010 post on LessWrong discussion board" .
+
+ns1:Pascal%27s_wager a ns2:PhilosophicalConcept ;
+    rdfs:label "Pascal's wager" .
+
+ns1:Roko%27s_basilisk a ns2:PhilosophicalConcept,
+        ns2:TopicalConcept ;
+    rdfs:label "Roko's basilisk" ;
+    ns2:related ns1:benevolent_AI .
+
+ns1:benevolent_AI a ns2:Robot ;
+    rdfs:label "benevolent AI" ;
+    ns1:tortures "those who knew of its potential existence but did not contribute to its advancement" .
+
+ns1:example_of_principles_such_as_Bayesian_probability_and_implicit_religion a ns2:ScientificConcept ;
+    rdfs:label "example of principles such as Bayesian probability and implicit religion" .
+
+ns1:theory a ns2:PhilosophicalConcept ;
+    rdfs:label "theory" ;
+    ns2:comparable ns1:Pascal%27s_wager ;
+    ns2:currentlyUsedFor ns1:example_of_principles_such_as_Bayesian_probability_and_implicit_religion ;
+    ns2:originallyUsedFor ns1:2010_post_on_LessWrong_discussion_board ;
+    ns1:dismissedAs ns1:theory .
+

@@ -1,0 +1,61 @@
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns1:conspiracy a ns2:PoliticalConcept ;
+    rdfs:label "conspiracy" ;
+    ns1:aimedTo ns1:election_fraud_allegations .
+
+ns1:individuals a ns2:Person ;
+    rdfs:label "individuals" ;
+    ns2:criminalCharge "Mark Meadows and David Shafer" ;
+    ns1:facingCharges ns1:include_Rudy_Giuliani_and_John_Eastman .
+
+ns1:Fulton_County%2C_Georgia a ns2:GovernmentalAdministrativeRegion ;
+    rdfs:label "Fulton County, Georgia" .
+
+ns1:findings a owl:Thing ;
+    rdfs:label "findings" .
+
+ns1:include_Rudy_Giuliani_and_John_Eastman a ns2:Person ;
+    rdfs:label "include Rudy Giuliani and John Eastman" .
+
+ns1:outcome_of_the_2020_presidential_election a ns2:Event ;
+    rdfs:label "outcome of the 2020 presidential election" ;
+    ns2:firstPopularVote ns1:Trump_and_his_associates .
+
+ns1:violating_the_Georgia_Racketeer_Influenced_and_Corrupt_Organizations_Act a ns2:Law ;
+    rdfs:label "violating the Georgia Racketeer Influenced and Corrupt Organizations Act" .
+
+ns1:41_counts a owl:Thing ;
+    rdfs:label "41 counts" ;
+    ns1:includesCrime ns1:violating_the_Georgia_Racketeer_Influenced_and_Corrupt_Organizations_Act .
+
+ns1:Trump_and_his_associates a ns2:Person ;
+    rdfs:label "Trump and his associates" ;
+    ns2:attorneyGeneral ns1:regular_grand_jury ;
+    ns2:created "false accusations against election worker Ruby Freeman" ;
+    ns1:attemptedToPersuade ns1:state_officials ;
+    ns1:indictedOn ns1:41_counts ;
+    ns1:madeClaim "false claims of election fraud" .
+
+ns1:election_fraud_allegations a ns2:SocietalEvent ;
+    rdfs:label "election fraud allegations" .
+
+ns1:state_officials a ns2:Politician ;
+    rdfs:label "state officials" ;
+    ns2:specialTrial ns1:regular_grand_jury ;
+    ns1:interfereWith ns1:outcome_of_the_2020_presidential_election ;
+    ns1:presentedIn ns1:election_fraud_allegations .
+
+ns1:regular_grand_jury a ns2:LegalCase ;
+    rdfs:label "regular grand jury" ;
+    ns2:considers ns1:regular_grand_jury ;
+    ns2:countySeat ns1:Fulton_County%2C_Georgia ;
+    ns2:hears ns1:findings ;
+    ns2:legalArticle ns1:Trump_and_his_associates ;
+    ns2:solicitorGeneral ns1:state_officials ;
+    ns1:forInvestigations ns1:regular_grand_jury ;
+    ns1:mentions ns1:41_counts .
+

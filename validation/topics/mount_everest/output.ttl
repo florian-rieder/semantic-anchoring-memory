@@ -1,0 +1,26 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:8%2C848.86_meters a ns1:Altitude ;
+    rdfs:label "8,848.86 meters" .
+
+ns2:China a ns1:Country ;
+    rdfs:label "China" .
+
+ns2:Chomolungma a ns1:Mountain ;
+    rdfs:label "Chomolungma" .
+
+ns2:First_recorded_ascent_of_Mount_Everest a ns1:MountainPass ;
+    rdfs:label "First recorded ascent of Mount Everest" ;
+    ns1:alias ns2:Chomolungma ;
+    ns1:altName ns2:Chomolungma ;
+    ns1:elevation ns2:8%2C848.86_meters ;
+    ns1:firstAscentPerson ns2:First_recorded_ascent_of_Mount_Everest ;
+    ns1:firstPlace "1953" ;
+    ns1:highestMountain ns2:First_recorded_ascent_of_Mount_Everest ;
+    ns1:locatedInArea ns2:China,
+        ns2:First_recorded_ascent_of_Mount_Everest ;
+    ns1:route ns2:First_recorded_ascent_of_Mount_Everest ;
+    ns2:attractsClimbers ns2:First_recorded_ascent_of_Mount_Everest .
+

@@ -1,0 +1,68 @@
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns1:public a ns2:TopicalConcept ;
+    rdfs:label "public" ;
+    ns2:influenced ns1:Impressionists .
+
+ns1:style a ns2:TopicalConcept ;
+    rdfs:label "style" ;
+    ns2:style ns1:intense_color_vibration ;
+    ns1:characterizedBy ns1:candid_poses,
+        ns1:movement,
+        "immediacy" ;
+    ns1:influencedBy ns1:music_and_literature .
+
+ns1:1870s_and_1880s a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "1870s and 1880s" .
+
+ns1:candid_poses a owl:Thing ;
+    rdfs:label "candid poses" .
+
+ns1:momentary_effects_of_sunlight a owl:Thing ;
+    rdfs:label "momentary effects of sunlight" .
+
+ns1:movement a ns2:Genre ;
+    rdfs:label "movement" .
+
+ns1:music_and_literature a ns2:TopicalConcept ;
+    rdfs:label "music and literature" .
+
+ns1:open_composition a ns2:WrittenWork ;
+    rdfs:label "open composition" .
+
+ns1:outdoors a owl:Thing ;
+    rdfs:label "outdoors" .
+
+ns1:rules_of_academic_painting a ns2:TopicalConcept ;
+    rdfs:label "rules of academic painting" .
+
+ns1:short_%22broken%22_brush_strokes a ns2:TopicalConcept ;
+    rdfs:label "short \"broken\" brush strokes" .
+
+ns1:intense_color_vibration a ns2:Colour ;
+    rdfs:label "intense color vibration" .
+
+ns1:realistic_scenes_of_modern_life a ns2:Genre ;
+    rdfs:label "realistic scenes of modern life" .
+
+ns1:Impressionists a ns2:Artist ;
+    rdfs:label "Impressionists" ;
+    ns2:characterizedBy ns1:open_composition ;
+    ns2:depictionDescription ns1:realistic_scenes_of_modern_life ;
+    ns2:influencedBy ns1:Impressionists ;
+    ns2:mainInterest ns1:momentary_effects_of_sunlight ;
+    ns2:movement ns1:Impressionists,
+        ns1:outdoors ;
+    ns2:namedAfter ns1:Impressionists ;
+    ns2:opponent ns1:Impressionists ;
+    ns2:originallyUsedFor ns1:intense_color_vibration ;
+    ns2:painted ns1:realistic_scenes_of_modern_life ;
+    ns2:stylisticOrigin ns1:Impressionists ;
+    ns2:technique ns1:Impressionists ;
+    ns2:usedBy ns1:short_%22broken%22_brush_strokes ;
+    ns1:originatedIn ns1:1870s_and_1880s ;
+    ns1:violatedBy ns1:rules_of_academic_painting .
+

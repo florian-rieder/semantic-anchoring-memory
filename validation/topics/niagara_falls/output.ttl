@@ -1,0 +1,52 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:during_peak_daytime_tourist_hours a owl:Thing ;
+    rdfs:label "during peak daytime tourist hours" ;
+    ns1:discharge "crest of the falls every minute" .
+
+ns2:falls a ns1:NaturalPlace ;
+    rdfs:label "falls" ;
+    ns2:formedAtEndOf ns2:last_ice_age ;
+    ns2:hasFlowRateOf "highest flow rate of any waterfall in North America" .
+
+ns2:water_from_Great_Lakes a ns1:BodyOfWater ;
+    rdfs:label "water from Great Lakes" ;
+    ns2:carvedPathOverAndThrough ns2:Horseshoe_Falls .
+
+ns2:hydroelectric_power a ns1:PowerStation ;
+    rdfs:label "hydroelectric power" .
+
+ns2:international_border a ns1:Infrastructure ;
+    rdfs:label "international border" .
+
+ns2:its_beauty a owl:Thing ;
+    rdfs:label "its beauty" .
+
+ns2:last_ice_age a ns1:TimePeriod ;
+    rdfs:label "last ice age" .
+
+ns2:vertical_drop_of_more_than_50_m a ns1:Altitude ;
+    rdfs:label "vertical drop of more than 50 m" .
+
+ns2:Buffalo%2C_New_York a ns1:City ;
+    rdfs:label "Buffalo, New York" .
+
+ns2:United_States a ns1:Country ;
+    rdfs:label "United States" .
+
+ns2:Horseshoe_Falls a ns1:NaturalPlace ;
+    rdfs:label "Horseshoe Falls" ;
+    ns1:border ns2:United_States,
+        ns2:international_border ;
+    ns1:hasInsidePlace ns2:vertical_drop_of_more_than_50_m ;
+    ns1:knownFor ns2:its_beauty ;
+    ns1:locatedInArea ns2:Horseshoe_Falls,
+        ns2:United_States ;
+    ns1:namedAfter ns2:Horseshoe_Falls ;
+    ns1:northWestPlace ns2:Buffalo%2C_New_York ;
+    ns1:southEastPlace ns2:Buffalo%2C_New_York ;
+    ns2:valuableSourceOf ns2:hydroelectric_power .
+

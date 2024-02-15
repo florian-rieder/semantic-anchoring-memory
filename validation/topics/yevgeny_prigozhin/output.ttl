@@ -1,0 +1,49 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:Prigozhin%27s_companies a ns1:Organisation,
+        owl:Thing ;
+    rdfs:label "Prigozhin's companies" ;
+    ns1:commander ns2:the_Kremlin ;
+    ns1:criminalCharge "economic sanctions and criminal charges in the United States, the United Kingdom, and the European Union" ;
+    ns1:deadInFightPlace ns2:the_Kremlin ;
+    ns1:foundedBy ns2:Wagner_Group_in_2014 ;
+    ns1:killedBy "airplane crash" ;
+    ns1:leadTeam ns2:Wagner_Group_in_2014 ;
+    ns1:playRole ns2:the_Kremlin ;
+    ns2:agreedToRelocateTo ns2:the_Kremlin ;
+    ns2:closeConfidantOf ns2:the_Kremlin ;
+    ns2:launchedIn ns2:rebellion_against_the_Russian_military_leadership_in_June_2023 ;
+    ns2:openlyCriticizedBy "Russian Defense Ministry for corruption and mishandling the war against Ukraine" ;
+    ns2:ownedBy ns2:restaurants_and_catering_businesses ;
+    ns2:referredAs "\"Putin's chef\"" ;
+    ns2:supportedBy ns2:the_Kremlin ;
+    ns2:wantedBy ns2:FBI_for_electoral_interference .
+
+ns2:airplane_crash a ns1:Event ;
+    rdfs:label "airplane crash" ;
+    ns2:tookPlaceInTimeInterval ns2:rebellion_against_the_Russian_military_leadership_in_June_2023 .
+
+ns2:speculation a owl:Thing ;
+    rdfs:label "speculation" ;
+    ns2:suggests "crash was caused by bomb or sabotage" .
+
+ns2:FBI_for_electoral_interference a ns1:Event ;
+    rdfs:label "FBI for electoral interference" .
+
+ns2:restaurants_and_catering_businesses a ns1:Restaurant ;
+    rdfs:label "restaurants and catering businesses" ;
+    ns1:restaurant ns2:the_Kremlin .
+
+ns2:Wagner_Group_in_2014 a ns1:Group ;
+    rdfs:label "Wagner Group in 2014" ;
+    ns1:participatingIn ns2:the_Kremlin .
+
+ns2:rebellion_against_the_Russian_military_leadership_in_June_2023 a ns1:Rebellion ;
+    rdfs:label "rebellion against the Russian military leadership in June 2023" .
+
+ns2:the_Kremlin a ns1:Building ;
+    rdfs:label "the Kremlin" .
+

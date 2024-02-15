@@ -1,0 +1,35 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:1977_Danish-language_version_of_The_Lord_of_the_Rings_under_a_pseudonym a ns1:LiteraryGenre ;
+    rdfs:label "1977 Danish-language version of The Lord of the Rings under a pseudonym" .
+
+ns2:New_Year%27s_Eve_address a ns1:SocietalEvent ;
+    rdfs:label "New Year's Eve address" .
+
+ns2:Queen_for_nearly_52_years a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "Queen for nearly 52 years" .
+
+ns2:global_issues_like_climate_change_in_her_address a ns1:TopicalConcept ;
+    rdfs:label "global issues like climate change in her address" .
+
+ns2:interest_in_archaeology_and_the_arts a owl:Thing ;
+    rdfs:label "interest in archaeology and the arts" .
+
+ns2:Crown_Prince_Frederik a ns1:Person ;
+    rdfs:label "Crown Prince Frederik" ;
+    ns1:age "83 years old" ;
+    ns1:illustrator ns2:1977_Danish-language_version_of_The_Lord_of_the_Rings_under_a_pseudonym ;
+    ns1:knownFor ns2:interest_in_archaeology_and_the_arts ;
+    ns1:startReign ns2:Queen_for_nearly_52_years ;
+    ns2:announcedAbdicationDuring ns2:New_Year%27s_Eve_address ;
+    ns2:approvalRatePercentage "about 80 percent as of 2022" ;
+    ns2:discussedTopic ns2:global_issues_like_climate_change_in_her_address ;
+    ns2:hasFormalCoronationCeremonies "no formal coronation ceremonies" ;
+    ns2:oldestSon ns2:Crown_Prince_Frederik ;
+    ns2:receivedSupportFrom ns2:Crown_Prince_Frederik ;
+    ns2:setToBeProclaimedKingImmediatelyAfter ns2:Crown_Prince_Frederik ;
+    ns2:setToSucceed ns2:Crown_Prince_Frederik .
+

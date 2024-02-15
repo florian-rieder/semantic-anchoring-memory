@@ -40,14 +40,22 @@ def main(args):
         output_kg_path = os.path.join(topic_dir_path, 'output.ttl')
         entities_db_path = os.path.join(topic_dir_path, 'entities_db')
         stats_file_path = os.path.join(topic_dir_path, 'statistics.json')
+        dbpedia_stats_file_path = os.path.join(
+            topic_dir_path, 'dbpedia_statistics.json')
+        dbpedia_resource_file_path = os.path.join(
+            topic_dir_path, 'dbpedia.ttl')
 
-        # Delete knowledge graph and/or entities db if they already exist
-        if os.path.exists(output_kg_path):
-            os.remove(output_kg_path)
-        if os.path.exists(stats_file_path):
-            os.remove(stats_file_path)
-        if os.path.exists(entities_db_path):
-            shutil.rmtree(entities_db_path)
+        # Get metadata about the topic
+        metadata = get_metadata(topic_dir_path)
+
+        if topic_directory != 'climate_change':
+            # Delete knowledge graph and/or entities db if they already exist
+            if os.path.exists(output_kg_path):
+                os.remove(output_kg_path)
+            if os.path.exists(stats_file_path):
+                os.remove(stats_file_path)
+            if os.path.exists(entities_db_path):
+                shutil.rmtree(entities_db_path)
 
         # 0. Initialize memory
         llm, store = init(
@@ -68,8 +76,9 @@ def main(args):
         # Call the function to read the first text file within the topic directory
         text = read_text_file(topic_dir_path)
 
-        # 2. Process the text file and output a knowledge graph
-        memorize(text, llm, store)
+        if topic_directory != 'climate_change':
+            # 2. Process the text file and output a knowledge graph
+            memorize(text, llm, store)
 
         # 3. Compute statistics over the resulting knowledge graph
         stats = get_statistics(output_kg_path)
@@ -79,8 +88,20 @@ def main(args):
             f.write(json.dumps(stats))
 
         # 4. Look for information in dbpedia about the topic
+        if metadata['dbpedia'] == 'None':
+            continue
 
         # 5. Compute statistics from the dbpedia knowledge graph about the topic
+        dbpedia_stats = get_statistics(metadata['dbpedia'])
+
+        with open(dbpedia_stats_file_path, 'w') as f:
+            f.write(json.dumps(dbpedia_stats))
+
+        dbpedia_graph = Graph().parse(metadata['dbpedia'])
+        dbpedia_graph.serialize(
+            destination=dbpedia_resource_file_path,
+            format='turtle')
+
 
 
 def read_text_file(directory):
@@ -102,6 +123,19 @@ def read_text_file(directory):
             text = file.read()
 
         return text
+
+
+def get_metadata(directory: str):
+    metadata_path = os.path.join(directory, 'meta.json')
+
+    if not os.path.exists(metadata_path):
+        raise FileNotFoundError(f"{metadata_path} couldn't be found")
+
+    with open(metadata_path, "r") as f:
+        text = f.read()
+        metadata_json = json.loads(text)
+
+    return metadata_json
 
 
 def get_statistics(kg_path: str) -> dict:

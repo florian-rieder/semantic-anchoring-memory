@@ -1,61 +1,48 @@
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix ns1: <http://example.com/> .
-@prefix ns2: <http://dbpedia.org/ontology/> .
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-ns1:Filming a ns2:Event ;
-    rdfs:label "Filming" ;
-    ns2:distributor ns1:Universal%20Pictures%20internationally ;
-    ns2:startDate "January 2024" ;
-    ns1:delayedDueTo ns1:strike ;
-    ns1:distributedBy ns1:Lionsgate%20in%20the%20United%20States ;
-    ns1:setToBeReleasedOn "April 18, 2025" .
+ns2:Michael a ns1:Person ;
+    rdfs:label "Michael" ;
+    ns1:director ns2:Antoine_Fuqua ;
+    ns1:mainInterest ns2:life_of_Michael_Jackson ;
+    ns1:starring ns2:Colman_Domingo,
+        ns2:Miles_Teller,
+        ns2:Nia_Long,
+        ns2:life_of_Michael_Jackson ;
+    ns1:writer ns2:John_Logan .
 
-ns1:Production a ns2:Event ;
-    rdfs:label "Production" ;
-    ns2:productionStartYear ns1:2023 .
+ns2:film a ns1:Film ;
+    rdfs:label "film" ;
+    ns1:producedBy ns2:Lionsgate_in_the_United_States ;
+    ns1:releaseDate ns2:April_18%2C_2025 ;
+    ns2:beganOnDate "January 22, 2024" ;
+    ns2:wasDelayedDueTo ns2:2023_SAG-AFTRA_strike .
 
-ns1:2023 a ns2:Year ;
-    rdfs:label "2023" .
+ns2:2023_SAG-AFTRA_strike a ns1:SocietalEvent ;
+    rdfs:label "2023 SAG-AFTRA strike" .
 
-ns1:Antoine%20Fuqua a ns2:MovieDirector ;
+ns2:Antoine_Fuqua a ns1:MovieDirector ;
     rdfs:label "Antoine Fuqua" .
 
-ns1:Colman%20Domingo a ns2:Person ;
+ns2:April_18%2C_2025 a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "April 18, 2025" .
+
+ns2:Colman_Domingo a ns1:Actor ;
     rdfs:label "Colman Domingo" .
 
-ns1:Jaafar%20Jackson a foaf:Person ;
-    rdfs:label "Jaafar Jackson" ;
-    ns2:playRole ns1:Michael .
-
-ns1:John%20Logan a ns2:Person ;
+ns2:John_Logan a ns1:Writer ;
     rdfs:label "John Logan" .
 
-ns1:Lionsgate%20in%20the%20United%20States a ns2:Venue ;
+ns2:Lionsgate_in_the_United_States a ns1:Company ;
     rdfs:label "Lionsgate in the United States" .
 
-ns1:Michael a ns2:Person ;
-    rdfs:label "Michael" ;
-    ns2:director ns1:Antoine%20Fuqua ;
-    ns2:mainInterest ns1:life%20of%20Michael%20Jackson ;
-    ns2:movie ns1:Miles%20Teller ;
-    ns2:starring ns1:Colman%20Domingo,
-        ns1:Jaafar%20Jackson,
-        ns1:Nia%20Long ;
-    ns2:writer ns1:John%20Logan .
-
-ns1:Miles%20Teller a ns2:Person ;
+ns2:Miles_Teller a ns1:Person ;
     rdfs:label "Miles Teller" .
 
-ns1:Nia%20Long a ns2:Person ;
+ns2:Nia_Long a ns1:Actor ;
     rdfs:label "Nia Long" .
 
-ns1:Universal%20Pictures%20internationally a ns2:Company ;
-    rdfs:label "Universal Pictures internationally" .
-
-ns1:life%20of%20Michael%20Jackson a ns2:WrittenWork ;
+ns2:life_of_Michael_Jackson a ns1:Work ;
     rdfs:label "life of Michael Jackson" .
-
-ns1:strike a ns2:Event ;
-    rdfs:label "strike" .
 

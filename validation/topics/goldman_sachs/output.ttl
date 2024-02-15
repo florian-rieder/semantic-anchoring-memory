@@ -1,21 +1,35 @@
 @prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:55th_on_the_Fortune_500_list_of_the_largest_United_States_corporations_by_total_revenue a ns1:Company ;
+    rdfs:label "55th on the Fortune 500 list of the largest United States corporations by total revenue" .
+
+ns2:Lower_Manhattan_in_New_York_City a ns1:Place ;
+    rdfs:label "Lower Manhattan in New York City" .
+
+ns2:private-equity_funds_and_hedge_funds a ns1:Company ;
+    rdfs:label "private-equity funds and hedge funds" .
+
+ns2:startups a ns1:Company ;
+    rdfs:label "startups" .
+
+ns2:strategic_partner_of_the_World_Economic_Forum a ns1:Organisation ;
+    rdfs:label "strategic partner of the World Economic Forum" .
+
+ns2:systemically_important_financial_institution_by_the_Financial_Stability_Board a owl:Thing ;
+    rdfs:label "systemically important financial institution by the Financial Stability Board" .
 
 <http://example.com/Goldman_Sachs_Group%2C_Inc.> a ns1:Company ;
     rdfs:label "Goldman Sachs Group, Inc." ;
     ns1:foundingYear "1869" ;
-    ns1:headquarter <http://example.com/New_York> ;
-    ns1:internationally <http://example.com/major_financial_centers_worldwide> ;
-    ns1:office <http://example.com/major_financial_centers_worldwide> ;
-    ns1:service <http://example.com/diverse_clients> .
-
-<http://example.com/New_York> a ns1:City ;
-    rdfs:label "New York" .
-
-<http://example.com/diverse_clients> a owl:Thing ;
-    rdfs:label "diverse clients" .
-
-<http://example.com/major_financial_centers_worldwide> a ns1:PopulatedPlace ;
-    rdfs:label "major financial centers worldwide" .
+    ns1:headquarter ns2:Lower_Manhattan_in_New_York_City ;
+    ns1:industry <http://example.com/Goldman_Sachs_Group%2C_Inc.> ;
+    ns1:internationally ns2:systemically_important_financial_institution_by_the_Financial_Stability_Board ;
+    ns1:partner ns2:strategic_partner_of_the_World_Economic_Forum ;
+    ns1:provides ns2:private-equity_funds_and_hedge_funds ;
+    ns1:rank ns2:55th_on_the_Fortune_500_list_of_the_largest_United_States_corporations_by_total_revenue ;
+    ns1:ranking <http://example.com/Goldman_Sachs_Group%2C_Inc.> ;
+    ns2:investsInAndArrangesFinancingFor ns2:startups .
 

@@ -1,0 +1,38 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:1934 a owl:Thing ;
+    rdfs:label "1934" .
+
+ns2:Paris_Panth%C3%A9on a ns1:ArchitecturalStructure ;
+    rdfs:label "Paris Panthéon" .
+
+ns2:aplastic_anemia a ns1:Disease ;
+    rdfs:label "aplastic anemia" .
+
+ns2:chemist a ns1:Chemist ;
+    rdfs:label "chemist" .
+
+ns2:numerous_honors a ns1:Award ;
+    rdfs:label "numerous honors" .
+
+ns2:Marie_Sk%C5%82odowska-Curie a ns1:Scientist ;
+    rdfs:label "Marie Skłodowska-Curie" ;
+    ns1:deathYear ns2:1934 ;
+    ns1:foundedBy ns2:Marie_Sk%C5%82odowska-Curie ;
+    ns1:honours ns2:numerous_honors ;
+    ns1:medicalCause ns2:aplastic_anemia ;
+    ns1:nobelLaureates ns2:Marie_Sk%C5%82odowska-Curie,
+        ns2:radiation_exposure ;
+    ns1:placeOfBurial ns2:Paris_Panth%C3%A9on ;
+    ns1:spouse ns2:Marie_Sk%C5%82odowska-Curie ;
+    ns2:conductedResearchOn ns2:radiation_exposure ;
+    ns2:hadDaughters "2" ;
+    ns2:isA ns2:chemist ;
+    ns2:likelyCausedBy ns2:radiation_exposure .
+
+ns2:radiation_exposure a ns1:Disease ;
+    rdfs:label "radiation exposure" .
+

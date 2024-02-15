@@ -1,0 +1,32 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:Germany a ns1:Country ;
+    rdfs:label "Germany" .
+
+ns2:era_of_mass_communication_in_Europe_in_the_Renaissance a owl:Thing ;
+    rdfs:label "era of mass communication in Europe in the Renaissance" .
+
+ns2:literacy a ns1:TopicalConcept ;
+    rdfs:label "literacy" .
+
+ns2:proto-nationalism a owl:Thing ;
+    rdfs:label "proto-nationalism" .
+
+ns2:printing_press a ns1:Work ;
+    rdfs:label "printing press" ;
+    ns1:created ns2:printing_press ;
+    ns1:introduced ns2:era_of_mass_communication_in_Europe_in_the_Renaissance ;
+    ns1:output "150 to 200 million copies by the 16th century" ;
+    ns1:predecessor ns2:printing_press ;
+    ns1:production "over twenty million volumes by 1500" ;
+    ns1:startYearOfInsertion ns2:printing_press ;
+    ns2:allowedFor ns2:printing_press ;
+    ns2:improvedBy ns2:printing_press ;
+    ns2:inventedIn ns2:Germany ;
+    ns2:ledToIncreased ns2:literacy ;
+    ns2:ledToRiseOf ns2:proto-nationalism ;
+    ns2:reducedCostOf ns2:printing_press .
+

@@ -1,63 +1,58 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix ns1: <http://example.com/> .
-@prefix ns2: <http://dbpedia.org/ontology/> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<cancellation_of_fuel_tax_increase> ns1:ledTo ns1:shift_in_movement%27s_focus .
-
-ns1:President_Emmanuel_Macron a ns2:Politician ;
+ns2:President_Emmanuel_Macron a ns1:President ;
     rdfs:label "President Emmanuel Macron" ;
-    ns2:president ns1:cancellation_of_fuel_tax_increase .
+    ns2:addressOn ns2:address_on_TV .
 
-ns1:Yellow_Vests_Protests a ns2:SocietalEvent ;
-    rdfs:label "Yellow Vests Protests" ;
-    ns2:knownFor <Yellow_Vests_Protests> .
-
-<shift_in_movement%27s_focus> ns2:participatingIn ns1:international_attention ;
-    ns1:adoptedAsSymbolBy "protesters in other countries" ;
-    ns1:calledFor ns1:minimum_wage_increase,
-        ns1:other_social_and_fiscal_reforms,
-        "lower fuel taxes" ;
-    ns1:involvedInPopulation "around 3 million people" ;
-    foaf:focus ns1:citizens%27_initiative_referendums .
-
-<Yellow_Vests_Protests> ns2:pandemic <President_Emmanuel_Macron> ;
-    ns2:startDateTime ns1:17_November_2018 ;
-    ns1:beganIn <President_Emmanuel_Macron> ;
-    ns1:involvedIn "blocking roads and fuel depots" ;
-    ns1:motivatedBy ns1:economic_injustice,
-        "rising fuel prices" ;
-    ns1:resumedAfter ns1:health_restrictions_were_lifted ;
-    ns1:sometimesEscalatedInto ns1:major_riots .
-
-ns1:17_November_2018 a ns2:TimePeriod ;
+ns2:17_November_2018 a ns1:TimeInterval ;
     rdfs:label "17 November 2018" .
 
-ns1:cancellation_of_fuel_tax_increase a owl:Thing ;
-    rdfs:label "cancellation of fuel tax increase" .
+ns2:address_on_TV a <Literal> ;
+    rdfs:label "address on TV" ;
+    ns2:ledTo ns2:evolution_of_the_movement .
 
-ns1:citizens%27_initiative_referendums a owl:Thing ;
-    rdfs:label "citizens' initiative referendums" .
+ns2:evolution_of_the_movement a ns1:SocietalEvent ;
+    rdfs:label "evolution of the movement" ;
+    ns1:motive ns2:economic_inequality ;
+    ns2:demands ns2:lower_fuel_taxes,
+        ns2:minimum_wage_increase,
+        ns2:wealth_tax_reintroduction ;
+    ns2:motivatedBy "high cost of living",
+        "rising fuel prices" ;
+    ns2:receivedSupportFrom "around 3 million people worldwide" ;
+    foaf:focus ns2:citizens%27_initiative_referendums .
 
-ns1:economic_injustice a ns2:PoliticalConcept ;
-    rdfs:label "economic injustice" .
+ns2:lower_fuel_taxes a ns1:TopicalConcept ;
+    rdfs:label "lower fuel taxes" .
 
-ns1:health_restrictions_were_lifted a ns2:SocietalEvent ;
-    rdfs:label "health restrictions were lifted" .
-
-ns1:international_attention a ns2:SocietalEvent ;
-    rdfs:label "international attention" .
-
-ns1:major_riots a ns2:SocietalEvent ;
+ns2:major_riots a ns1:SocietalEvent ;
     rdfs:label "major riots" .
 
-ns1:minimum_wage_increase a ns2:Work ;
+ns2:minimum_wage_increase a ns1:Activity ;
     rdfs:label "minimum wage increase" .
 
-ns1:other_social_and_fiscal_reforms a owl:Thing ;
-    rdfs:label "other social and fiscal reforms" .
+ns2:wealth_tax_reintroduction a ns1:Law ;
+    rdfs:label "wealth tax reintroduction" .
 
-ns1:shift_in_movement%27s_focus a owl:Thing ;
-    rdfs:label "shift in movement's focus" .
+ns2:citizens%27_initiative_referendums a ns1:TopicalConcept ;
+    rdfs:label "citizens' initiative referendums" .
+
+ns2:economic_inequality a ns1:TopicalConcept ;
+    rdfs:label "economic inequality" .
+
+ns2:Yellow_Vests_Protests a ns1:SocietalEvent ;
+    rdfs:label "Yellow Vests Protests" ;
+    ns1:knownFor ns2:Yellow_Vests_Protests ;
+    ns1:namedAfter ns2:Yellow_Vests_Protests ;
+    ns1:result "international attention" ;
+    ns1:series ns2:Yellow_Vests_Protests ;
+    ns2:advocatingFor ns2:citizens%27_initiative_referendums,
+        ns2:economic_inequality ;
+    ns2:beganOnDate ns2:17_November_2018 ;
+    ns2:involvedIn "blocking roads and fuel depots" ;
+    ns2:resultedIn "criticism of police actions" ;
+    ns2:sometimesEscalatedInto ns2:major_riots .
 

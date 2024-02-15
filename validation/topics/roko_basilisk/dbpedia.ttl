@@ -1,0 +1,108 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://dbpedia.org/property/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://dbpedia.org/resource/Roko's_basilisk> rdfs:label "Roko's basilisk"@en,
+        "Basilisco de Roko"@es,
+        "Василиск Роко"@ru ;
+    ns1:abstract "Roko's basilisk is a thought experiment which states that an otherwise benevolent artificial superintelligence (AI) in the future would be incentivized to create a virtual reality simulation to torture anyone who knew of its potential existence but did not directly contribute to its advancement or development. It originated in a 2010 post at discussion board LessWrong, a technical forum focused on analytical rational enquiry. The thought experiment's name derives from the poster of the article (Roko) and the basilisk, a mythical creature capable of destroying enemies with its stare. While the theory was initially dismissed as nothing but conjecture or speculation by many LessWrong users, LessWrong co-founder Eliezer Yudkowsky reported users who described symptoms such as nightmares and mental breakdowns upon reading the theory, due to its stipulation that knowing about the theory and its basilisk made you vulnerable to the basilisk itself. This led to discussion of the basilisk on the site to be banned for five years. However, these reports were later dismissed as being exaggerations or inconsequential, and the theory itself was dismissed as nonsense, including by Yudkowsky himself. Even after the post's discreditation, it is still used as an example of principles such as Bayesian probability and implicit religion. It is also regarded as a modern version of Pascal's wager. In the field of artificial intelligence, Roko's basilisk has become notable as an example that raises the question of how to create an AI which is simultaneously moral and intelligent."@en,
+        "El basilisco de Roko es un experimento mental que explora los riesgos potenciales de desarrollar una inteligencia artificial.El experimento plantea que, en el futuro, una inteligencia artificial con acceso a recursos casi ilimitados desde una perspectiva humana (el basilisco) pudiera decidir castigar de manera retroactiva a todos aquellos que de alguna manera no contribuyeron a su creación. El basilisco de Roko fue propuesto por primera vez en la comunidad , un foro en Internet dedicado a temas de filosofía y psicología con una visión futurista. El dilema planteado por el basilisco de Roko es una versión de la Paradoja de Newcomb, y explora de manera informal aspectos del libre albedrío semejantes a los planteados por los casos de Frankfurt.​ Desde su planteamiento original, el Basilisco de Roko ha ido acompañado de polémica sobre su validez.​"@es,
+        "Василиск Роко (англ. Roko’s Basilisk) — мысленный эксперимент, предложенный участником сайта Lesswrong."@ru ;
+    ns1:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Arabian_Nights_-_Letchford_-_68.jpg?width=300> ;
+    ns1:wikiPageExternalLink <https://basilisk.neocities.org/>,
+        <https://link.springer.com/article/10.1007/s00146-020-00966-4>,
+        <https://link.springer.com/chapter/10.1007/978-1-4842-5629-9_25>,
+        <https://onlinelibrary.wiley.com/doi/abs/10.1111/zygo.12494>,
+        <https://social-epistemology.com/wp-content/uploads/2016/09/riggio_review.pdf>,
+        <https://www.elibrary.ru/item.asp%3Fid=32522502> ;
+    ns1:wikiPageID 70371803 ;
+    ns1:wikiPageLength "30496"^^xsd:nonNegativeInteger ;
+    ns1:wikiPageRevisionID 1123872883 ;
+    ns1:wikiPageWikiLink <http://dbpedia.org/resource/AI_&_Society>,
+        <http://dbpedia.org/resource/Apress>,
+        <http://dbpedia.org/resource/BLIT_(short_story)>,
+        <http://dbpedia.org/resource/Basilisk>,
+        <http://dbpedia.org/resource/Bayesian_probability>,
+        <http://dbpedia.org/resource/Blackmail>,
+        <http://dbpedia.org/resource/Capital_Fringe_Festival>,
+        <http://dbpedia.org/resource/Category:2010_introductions>,
+        <http://dbpedia.org/resource/Category:Artificial_intelligence>,
+        <http://dbpedia.org/resource/Category:Hypothetical_technology>,
+        <http://dbpedia.org/resource/Category:Thought_experiments>,
+        <http://dbpedia.org/resource/David_Auerbach>,
+        <http://dbpedia.org/resource/David_Langford>,
+        <http://dbpedia.org/resource/Eliezer_Yudkowsky>,
+        <http://dbpedia.org/resource/Elon_Musk>,
+        <http://dbpedia.org/resource/Ethics_of_artificial_intelligence>,
+        <http://dbpedia.org/resource/File:Arabian_Nights_-_Letchford_-_68.jpg>,
+        <http://dbpedia.org/resource/File:Eliezer_Yudkowsky,_Stanford_2006_(square_crop).jpg>,
+        <http://dbpedia.org/resource/Flesh_Without_Blood>,
+        <http://dbpedia.org/resource/Friendly_artificial_intelligence>,
+        <http://dbpedia.org/resource/Grimes>,
+        <http://dbpedia.org/resource/Heaven>,
+        <http://dbpedia.org/resource/Information_hazard>,
+        <http://dbpedia.org/resource/LessWrong>,
+        <http://dbpedia.org/resource/Machine_Intelligence_Research_Institute>,
+        <http://dbpedia.org/resource/Marie_Antoinette>,
+        <http://dbpedia.org/resource/Newcomb's_paradox>,
+        <http://dbpedia.org/resource/Nick_Bostrom>,
+        <http://dbpedia.org/resource/Orthogonality_thesis>,
+        <http://dbpedia.org/resource/Pascal's_wager>,
+        <http://dbpedia.org/resource/Prisoner's_dilemma>,
+        <http://dbpedia.org/resource/Reddit>,
+        <http://dbpedia.org/resource/Silicon_Valley_(TV_series)>,
+        <http://dbpedia.org/resource/Singleton_(global_governance)>,
+        <http://dbpedia.org/resource/Slate_(magazine)>,
+        <http://dbpedia.org/resource/Stephen_Hawking>,
+        <http://dbpedia.org/resource/Streisand_effect>,
+        <http://dbpedia.org/resource/Superintelligence>,
+        <http://dbpedia.org/resource/Technological_singularity>,
+        <http://dbpedia.org/resource/The_Game_(mind_game)>,
+        <http://dbpedia.org/resource/Thought_experiment>,
+        <http://dbpedia.org/resource/Time_travel>,
+        <http://dbpedia.org/resource/Virtual_reality>,
+        <http://dbpedia.org/resource/Washington,_D.C.>,
+        <http://dbpedia.org/resource/We_Appreciate_Power>,
+        <http://dbpedia.org/resource/William_Newcomb>,
+        <http://dbpedia.org/resource/World_War_III>,
+        <http://dbpedia.org/resource/Xkcd> ;
+    ns2:author "Eliezer Yudkowsky"@en ;
+    ns2:source "LessWrong"@en,
+        "Reddit"@en ;
+    ns2:text """Listen to me very closely, you idiot.
+
+YOU DO NOT THINK IN SUFFICIENT DETAIL ABOUT SUPERINTELLIGENCES CONSIDERING WHETHER OR NOT TO BLACKMAIL YOU. THAT IS THE ONLY POSSIBLE THING WHICH GIVES THEM A MOTIVE TO FOLLOW THROUGH ON THE BLACKMAIL.
+
+You have to be really clever to come up with a genuinely dangerous thought. I am disheartened that people can be clever enough to do that and not clever enough to do the obvious thing and KEEP THEIR IDIOT MOUTHS SHUT about it, because it is much more important to sound intelligent when talking to your friends.
+
+This post was STUPID."""@en,
+        "What I considered to be obvious common sense was that you did not spread potential information hazards because it would be a crappy thing to do to someone. The problem wasn't Roko's post itself, about CEV, being correct. That thought never occurred to me for a fraction of a second. The problem was that Roko's post seemed near in idea-space to a large class of potential hazards, all of which, regardless of their plausibility, had the property that they presented no potential benefit to anyone."@en ;
+    ns2:wikiPageUsesTemplate <http://dbpedia.org/resource/Template:Cite_book>,
+        <http://dbpedia.org/resource/Template:Cite_journal>,
+        <http://dbpedia.org/resource/Template:Quote>,
+        <http://dbpedia.org/resource/Template:Reflist>,
+        <http://dbpedia.org/resource/Template:Short_description>,
+        <http://dbpedia.org/resource/Template:Use_dmy_dates> ;
+    dcterms:subject <http://dbpedia.org/resource/Category:2010_introductions>,
+        <http://dbpedia.org/resource/Category:Artificial_intelligence>,
+        <http://dbpedia.org/resource/Category:Hypothetical_technology>,
+        <http://dbpedia.org/resource/Category:Thought_experiments> ;
+    rdfs:comment "Roko's basilisk is a thought experiment which states that an otherwise benevolent artificial superintelligence (AI) in the future would be incentivized to create a virtual reality simulation to torture anyone who knew of its potential existence but did not directly contribute to its advancement or development. It originated in a 2010 post at discussion board LessWrong, a technical forum focused on analytical rational enquiry. The thought experiment's name derives from the poster of the article (Roko) and the basilisk, a mythical creature capable of destroying enemies with its stare."@en,
+        "El basilisco de Roko es un experimento mental que explora los riesgos potenciales de desarrollar una inteligencia artificial.El experimento plantea que, en el futuro, una inteligencia artificial con acceso a recursos casi ilimitados desde una perspectiva humana (el basilisco) pudiera decidir castigar de manera retroactiva a todos aquellos que de alguna manera no contribuyeron a su creación."@es,
+        "Василиск Роко (англ. Roko’s Basilisk) — мысленный эксперимент, предложенный участником сайта Lesswrong."@ru ;
+    owl:sameAs <http://es.dbpedia.org/resource/Basilisco_de_Roko>,
+        <http://he.dbpedia.org/resource/הבסיליסק_של_רוקו>,
+        <http://ru.dbpedia.org/resource/Василиск_Роко>,
+        <http://simple.dbpedia.org/resource/Roko's_basilisk>,
+        <http://www.wikidata.org/entity/Q21564971>,
+        <https://global.dbpedia.org/id/23TCE> ;
+    prov:wasDerivedFrom <http://en.wikipedia.org/wiki/Roko's_basilisk?oldid=1123872883&ns=0> ;
+    foaf:depiction <http://commons.wikimedia.org/wiki/Special:FilePath/Arabian_Nights_-_Letchford_-_68.jpg>,
+        <http://commons.wikimedia.org/wiki/Special:FilePath/Eliezer_Yudkowsky,_Stanford_2006_(square_crop).jpg> ;
+    foaf:isPrimaryTopicOf <http://en.wikipedia.org/wiki/Roko's_basilisk> .
+

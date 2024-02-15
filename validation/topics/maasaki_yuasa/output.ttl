@@ -1,0 +1,60 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:Annecy a ns1:FilmFestival ;
+    rdfs:label "Annecy" .
+
+ns2:Devilman_Crybaby a ns1:Anime ;
+    rdfs:label "Devilman Crybaby" .
+
+ns2:Keep_Your_Hands_Off_Eizouken%21 a ns1:TelevisionShow ;
+    rdfs:label "Keep Your Hands Off Eizouken!" .
+
+ns2:Lu_Over_the_Wall a ns1:Work ;
+    rdfs:label "Lu Over the Wall" .
+
+ns2:Venice_International_Film_Festival_in_September_2021 a ns1:FilmFestival ;
+    rdfs:label "Venice International Film Festival in September 2021" .
+
+ns2:feature_film_Mind_Game_in_2004 a ns1:Film ;
+    rdfs:label "feature film Mind Game in 2004" .
+
+ns2:international_critical_acclaim a ns1:Award ;
+    rdfs:label "international critical acclaim" .
+
+ns2:musical_drama_feature_film_Inu-Oh a ns1:Film ;
+    rdfs:label "musical drama feature film Inu-Oh" ;
+    ns1:premierePlace ns2:Venice_International_Film_Festival_in_September_2021 ;
+    ns2:wasReleasedWorldwideIn "August 2022" .
+
+ns2:television_series_like_Crayon_Shin-chan a ns1:TelevisionShow ;
+    rdfs:label "television series like Crayon Shin-chan" .
+
+ns2:Masaaki_Yuasa%27s_latest_project a ns1:Film ;
+    rdfs:label "Masaaki Yuasa's latest project" ;
+    ns1:affiliation ns2:Science_SARU ;
+    ns1:animator ns2:director ;
+    ns1:award ns2:Annecy,
+        ns2:Masaaki_Yuasa%27s_latest_project ;
+    ns1:creativeDirector ns2:television_series_like_Crayon_Shin-chan ;
+    ns1:director ns2:director,
+        ns2:feature_film_Mind_Game_in_2004 ;
+    ns1:drama ns2:musical_drama_feature_film_Inu-Oh ;
+    ns1:foundedBy ns2:Science_SARU ;
+    ns1:nationalFilmAward ns2:Masaaki_Yuasa%27s_latest_project ;
+    ns1:otherWorks ns2:Science_SARU ;
+    ns1:startCareer ns2:director ;
+    ns1:writer ns2:director ;
+    ns2:hasWonInternationally ns2:international_critical_acclaim .
+
+ns2:Science_SARU a ns1:Anime,
+        ns1:Scientist ;
+    rdfs:label "Science SARU" ;
+    ns1:producedBy ns2:Keep_Your_Hands_Off_Eizouken%21,
+        ns2:Lu_Over_the_Wall ;
+    ns1:produces ns2:Devilman_Crybaby .
+
+ns2:director a ns1:MovieDirector ;
+    rdfs:label "director" .
+

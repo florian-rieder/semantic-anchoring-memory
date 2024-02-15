@@ -1,0 +1,65 @@
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#> .
+@prefix ns3: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns1:Nick_Bostrom a ns3:Scientist ;
+    rdfs:label "Nick Bostrom" ;
+    ns3:definition ns1:Information_hazards .
+
+ns1:Willful_blindness a owl:Thing ;
+    rdfs:label "Willful blindness" ;
+    ns3:avoids ns1:Information_hazards,
+        ns1:obscuring_or_misleading_a_case .
+
+ns1:forbidden_knowledge a ns3:TopicalConcept ;
+    rdfs:label "forbidden knowledge" ;
+    ns3:isPartOf ns1:stories_in_the_16th_and_17th_centuries ;
+    ns1:canCause "widespread panic if picked up by media or third parties" ;
+    ns1:canHarm ns1:person_who_knows_it .
+
+ns1:entities a owl:Thing ;
+    rdfs:label "entities" ;
+    ns3:classification ns1:Information_hazards ;
+    ns3:hasInput ns1:entities .
+
+ns1:fields_of_biology_and_pathology a ns3:TopicalConcept ;
+    rdfs:label "fields of biology and pathology" .
+
+ns1:obscuring_or_misleading_a_case a ns3:Criminal ;
+    rdfs:label "obscuring or misleading a case" .
+
+ns1:person_who_knows_it a ns3:Person ;
+    rdfs:label "person who knows it" .
+
+ns1:replication a ns3:Work ;
+    rdfs:label "replication" .
+
+ns1:stories_in_the_16th_and_17th_centuries a ns3:Work ;
+    rdfs:label "stories in the 16th and 17th centuries" .
+
+ns1:those_who_attempt_them a ns3:Person ;
+    rdfs:label "those who attempt them" .
+
+ns1:viral_trends a ns3:Disease ;
+    rdfs:label "viral trends" ;
+    ns1:canBePhysicallyDangerousTo ns1:those_who_attempt_them ;
+    ns1:canResultIn ns1:replication .
+
+ns1:some_agent_to_cause_harm a ns3:Agent ;
+    rdfs:label "some agent to cause harm" .
+
+ns1:Information_hazards a ns2:InformationObject,
+        owl:Thing ;
+    rdfs:label "Information hazards" ;
+    ns3:category ns1:Information_hazards ;
+    ns3:interest ns1:fields_of_biology_and_pathology ;
+    ns1:couldHarm "others" ;
+    ns1:hasSubsets ns1:Information_hazards ;
+    ns1:mayCause ns1:some_agent_to_cause_harm ;
+    ns1:mayEnable ns1:some_agent_to_cause_harm ;
+    ns1:overlapsWith ns1:viral_trends ;
+    ns1:purposefullyUsedBy ns1:some_agent_to_cause_harm ;
+    ns2:isRelevantTo ns1:Information_hazards .
+

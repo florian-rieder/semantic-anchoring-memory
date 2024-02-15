@@ -1,0 +1,43 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:Malfunctions a ns1:Disease ;
+    rdfs:label "Malfunctions" ;
+    ns1:medicalSpecialty ns2:peripheral_nervous_system ;
+    ns2:canOccurDueTo ns2:genetic_defects%2C_trauma%2C_infection%2C_or_senescence .
+
+ns2:actions_and_sensory_information a ns1:Activity ;
+    rdfs:label "actions and sensory information" .
+
+ns2:genetic_defects%2C_trauma%2C_infection%2C_or_senescence a owl:Thing ;
+    rdfs:label "genetic defects, trauma, infection, or senescence" .
+
+ns2:somatic%2C_autonomic%2C_and_enteric_subsystems a owl:Thing ;
+    rdfs:label "somatic, autonomic, and enteric subsystems" .
+
+ns2:varying_levels_of_complexity a owl:Thing ;
+    rdfs:label "varying levels of complexity" .
+
+ns2:an_animal a ns1:Animal ;
+    rdfs:label "an animal" .
+
+ns2:glial_cells a ns1:Cell ;
+    rdfs:label "glial cells" ;
+    ns1:innervates ns2:peripheral_nervous_system ;
+    ns1:specialization ns2:glial_cells ;
+    ns2:sendSignals "rapidly and precisely" .
+
+ns2:peripheral_nervous_system a ns1:Nerve ;
+    rdfs:label "peripheral nervous system" ;
+    ns1:focus ns2:peripheral_nervous_system ;
+    ns1:isPartOfAnatomicalStructure ns2:an_animal,
+        ns2:peripheral_nervous_system ;
+    ns1:kindOfCoordinate ns2:actions_and_sensory_information ;
+    ns1:organSystem ns2:peripheral_nervous_system,
+        ns2:varying_levels_of_complexity ;
+    ns1:subsystem ns2:somatic%2C_autonomic%2C_and_enteric_subsystems ;
+    ns2:areFoundIn ns2:an_animal ;
+    ns2:contains ns2:glial_cells .
+

@@ -1,62 +1,66 @@
-@prefix ns1: <http://dbpedia.org/ontology/> .
-@prefix ns2: <http://example.com/> .
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://dbpedia.org/ontology/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-ns2:2024%20French%20farmers%27%20protests a ns1:Rebellion ;
-    rdfs:label "2024 French farmers' protests" ;
-    ns1:goalsInclude ns2:payment%20of%20aid%20planned%20by%20the%20state ;
-    ns1:start ns2:16%20January ;
-    ns2:goalsInclude ns2:end%20of%20tax%20on%20diesel ;
-    ns2:ongoing "true" .
+ns1:damage_to_property a ns2:Building ;
+    rdfs:label "damage to property" ;
+    ns2:governmentPlace ns1:government .
 
-ns2:government%20buildings a ns1:ArchitecturalStructure ;
-    rdfs:label "government buildings" ;
-    ns1:damagedIn ns2:Occitania .
-
-ns2:movement a ns1:Region ;
-    rdfs:label "movement" ;
-    ns1:start ns2:Occitania ;
-    ns2:hasDamaged ns2:property .
-
-ns2:protests a ns1:SocietalEvent ;
+ns1:protests a ns2:SocietalEvent ;
     rdfs:label "protests" ;
-    ns1:groundsForLiquidation "scrapping of proposed reductions in government subsidies for agricultural diesel" ;
-    ns1:result ns2:casualties ;
-    ns2:hasPersisted "true" ;
-    ns2:involvedIn ns2:blockades%20of%20autoroutes,
-        "free tolls" .
+    ns2:groundsForLiquidation "damage to property" ;
+    ns2:result ns1:casualties ;
+    ns1:hasAffected ns1:road_blockages ;
+    ns1:hasLedTo ns1:road_blockages ;
+    ns1:hasResultedIn "at least 91 arrests" ;
+    ns1:haveAffected ns1:reportedly_besieging_Paris .
 
-ns2:16%20January a ns1:TimePeriod ;
-    rdfs:label "16 January" .
+ns1:16_January_2024 a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "16 January 2024" .
 
-ns2:blockades%20of%20autoroutes a ns1:RouteOfTransportation ;
-    rdfs:label "blockades of autoroutes" ;
-    ns1:routeNext "3 February 2024" .
+ns1:EU-Mercosur_free_trade_agreement a ns2:PrimeMinister ;
+    rdfs:label "EU-Mercosur free trade agreement" .
 
-ns2:casualties a owl:Thing ;
+ns1:FNSEA a ns2:Organisation ;
+    rdfs:label "FNSEA" .
+
+ns1:Rural_Coordination a ns2:Organisation ;
+    rdfs:label "Rural Coordination" .
+
+ns1:casualties a owl:Thing ;
     rdfs:label "casualties" ;
-    ns2:include "three injuries",
-        "two deaths" .
+    ns1:includes "2 deaths",
+        "3 injuries" .
 
-ns2:end%20of%20tax%20on%20diesel a ns1:SocietalEvent ;
-    rdfs:label "end of tax on diesel" .
+ns1:government a ns2:GovernmentAgency ;
+    rdfs:label "government" ;
+    ns1:initiallyProposedBy ns1:reductions_in_subsidies_for_agricultural_diesel ;
+    ns1:laterScrapped "the proposal" .
 
-ns2:government a ns1:GovernmentAgency ;
-    rdfs:label "government" .
+ns1:low_food_prices a ns2:Food ;
+    rdfs:label "low food prices" .
 
-ns2:payment%20of%20aid%20planned%20by%20the%20state a ns1:GrossDomesticProductPerCapita ;
-    rdfs:label "payment of aid planned by the state" .
+ns1:reductions_in_subsidies_for_agricultural_diesel a ns2:TopicalConcept ;
+    rdfs:label "reductions in subsidies for agricultural diesel" .
 
-ns2:property a owl:Thing ;
-    rdfs:label "property" ;
-    ns1:hasVariant ns2:Occitania ;
-    ns2:include ns2:government .
+ns1:reportedly_besieging_Paris a ns2:MilitaryConflict ;
+    rdfs:label "reportedly besieging Paris" .
 
-ns2:property%20damage a owl:Thing ;
-    rdfs:label "property damage" .
+ns1:farmers a ns2:Farmer ;
+    rdfs:label "farmers" ;
+    ns2:affiliation ns1:Rural_Coordination ;
+    ns2:federation ns1:FNSEA ;
+    ns2:nationalAffiliation ns1:farmers ;
+    ns2:organisedBy ns1:farmers ;
+    ns2:participatingIn ns1:EU-Mercosur_free_trade_agreement ;
+    ns2:youthWing ns1:farmers ;
+    ns1:beganOnDate ns1:16_January_2024 ;
+    ns1:protestingAgainst ns1:low_food_prices,
+        "proposed reductions in state subsidies for farmers' diesel fuel" .
 
-ns2:Occitania a ns1:PopulatedPlace ;
-    rdfs:label "Occitania" ;
-    ns1:location ns2:property%20damage .
+ns1:road_blockages a ns2:RoadJunction ;
+    rdfs:label "road blockages" ;
+    ns2:routeNext ns1:road_blockages ;
+    ns1:wereRemovedBy "3 February 2024" .
 

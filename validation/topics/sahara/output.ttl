@@ -1,0 +1,19 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:9%2C200%2C000_square_kilometers a ns1:Area ;
+    rdfs:label "9,200,000 square kilometers" .
+
+ns2:several_regions a ns1:Region ;
+    rdfs:label "several regions" .
+
+ns2:The_Sahara a ns1:Desert ;
+    rdfs:label "The Sahara" ;
+    ns1:largestDesert ns2:The_Sahara ;
+    ns1:regionServed ns2:The_Sahara ;
+    ns1:subdivision ns2:several_regions ;
+    ns2:alternatedBetween ns2:The_Sahara ;
+    ns2:isNamed "\"The greatest desert\" in Arabic" ;
+    ns2:spansArea ns2:9%2C200%2C000_square_kilometers .
+

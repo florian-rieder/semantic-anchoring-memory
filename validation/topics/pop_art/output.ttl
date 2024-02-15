@@ -1,0 +1,33 @@
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://dbpedia.org/ontology/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns1:Campbell%27s_Soup_Cans a ns2:Artwork ;
+    rdfs:label "Campbell's Soup Cans" .
+
+ns1:advertising a ns2:TopicalConcept ;
+    rdfs:label "advertising" .
+
+ns1:reaction_to_abstract_expressionism a ns2:TopicalConcept ;
+    rdfs:label "reaction to abstract expressionism" .
+
+ns1:UK a ns2:Country ;
+    rdfs:label "UK" .
+
+ns1:banal_or_kitschy_elements_of_any_culture a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "banal or kitschy elements of any culture" .
+
+ns1:Pop_art a ns2:ArtisticGenre ;
+    rdfs:label "Pop art" ;
+    ns2:abstract ns1:reaction_to_abstract_expressionism ;
+    ns2:aimedToEmphasize ns1:banal_or_kitschy_elements_of_any_culture ;
+    ns2:challenged ns1:Pop_art ;
+    ns2:creator ns1:Campbell%27s_Soup_Cans ;
+    ns2:features ns1:advertising,
+        "logos" ;
+    ns2:incorporates ns1:banal_or_kitschy_elements_of_any_culture ;
+    ns2:movement ns1:Pop_art ;
+    ns2:predecessor ns1:Pop_art ;
+    ns2:recordedIn ns1:UK ;
+    ns1:emergedIn ns1:UK .
+

@@ -1,0 +1,50 @@
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://example.com/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:The_statue a ns1:Sculpture ;
+    rdfs:label "The statue" ;
+    ns1:designer ns2:Fr%C3%A9d%C3%A9ric_Auguste_Bartholdi ;
+    ns1:giftFrom ns2:people_of_France ;
+    ns1:groupCommemorated ns2:centennial_of_U.S._independence_and_the_abolition_of_slavery ;
+    ns1:iconographicAttributes ns2:symbol_of_welcome_to_immigrants_arriving_by_sea ;
+    ns1:locationCity ns2:Libertas ;
+    ns1:maintainedBy ns2:National_Park_Service ;
+    ns1:representative ns2:Libertas ;
+    ns2:becameSymbolOf ns2:symbol_of_welcome_to_immigrants_arriving_by_sea ;
+    ns2:dedicatedOnDate ns2:October_28%2C_1886 ;
+    ns2:proposedBy ns2:Fr%C3%A9d%C3%A9ric_Auguste_Bartholdi .
+
+ns2:National_Park_Service a ns1:PublicService ;
+    rdfs:label "National Park Service" .
+
+ns2:metal_framework a ns1:ArchitecturalStructure ;
+    rdfs:label "metal framework" ;
+    ns1:builder ns2:Fr%C3%A9d%C3%A9ric_Auguste_Bartholdi .
+
+ns2:people_of_France a ns1:Person ;
+    rdfs:label "people of France" .
+
+ns2:torch a ns1:Work ;
+    rdfs:label "torch" .
+
+ns2:October_28%2C_1886 a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "October 28, 1886" .
+
+ns2:centennial_of_U.S._independence_and_the_abolition_of_slavery a ns1:Memorial ;
+    rdfs:label "centennial of U.S. independence and the abolition of slavery" .
+
+ns2:symbol_of_welcome_to_immigrants_arriving_by_sea a ns1:Monument ;
+    rdfs:label "symbol of welcome to immigrants arriving by sea" .
+
+ns2:Fr%C3%A9d%C3%A9ric_Auguste_Bartholdi a ns1:Architect ;
+    rdfs:label "Frédéric Auguste Bartholdi" ;
+    ns1:significantBuilding ns2:metal_framework ;
+    ns2:proposedIn ns2:October_28%2C_1886 .
+
+ns2:Libertas a ns1:Artwork ;
+    rdfs:label "Libertas" ;
+    ns1:religion ns2:Libertas ;
+    ns2:holding ns2:centennial_of_U.S._independence_and_the_abolition_of_slavery,
+        ns2:torch .
+

@@ -1,0 +1,41 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ns1: <http://dbpedia.org/ontology/> .
+@prefix ns2: <http://dbpedia.org/property/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://dbpedia.org/resource/Information_hazard> rdfs:label "Information hazard"@en,
+        "Risque d'information"@fr ;
+    ns1:abstract "An information hazard, or infohazard, is \"a risk that arises from the dissemination of (true) information that may cause harm or enable some agent to cause harm\", as defined by philosopher Nick Bostrom in 2011. One example would be instructions for creating a thermonuclear weapon."@en,
+        "Un risque d'information, ou danger informationnel , est « un risque qui découle de la diffusion d'informations (vraies) qui peuvent causer un préjudice ou permettre à un agent de causer un préjudice », tel que défini par le philosophe Nick Bostrom en 2011. Un exemple serait des instructions pour créer une arme thermonucléaire."@fr ;
+    ns1:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Infohazard_warning_sign.svg?width=300> ;
+    ns1:wikiPageID 66924132 ;
+    ns1:wikiPageLength "2043"^^xsd:nonNegativeInteger ;
+    ns1:wikiPageRevisionID 1123823991 ;
+    ns1:wikiPageWikiLink <http://dbpedia.org/resource/Category:Hazards>,
+        <http://dbpedia.org/resource/Category:Information>,
+        <http://dbpedia.org/resource/File:Infohazard_warning_sign.svg>,
+        <http://dbpedia.org/resource/Knowledge_(legal_construct)>,
+        <http://dbpedia.org/resource/Nick_Bostrom>,
+        <http://dbpedia.org/resource/Nucleic_acid_sequence>,
+        <http://dbpedia.org/resource/Pathogen>,
+        <http://dbpedia.org/resource/Roko's_basilisk>,
+        <http://dbpedia.org/resource/Thermonuclear_weapon>,
+        <http://dbpedia.org/resource/Witchcraft> ;
+    ns2:wikiPageUsesTemplate <http://dbpedia.org/resource/Template:Philosophy-stub>,
+        <http://dbpedia.org/resource/Template:Rp>,
+        <http://dbpedia.org/resource/Template:Short_description> ;
+    dcterms:subject <http://dbpedia.org/resource/Category:Hazards>,
+        <http://dbpedia.org/resource/Category:Information> ;
+    rdfs:comment "An information hazard, or infohazard, is \"a risk that arises from the dissemination of (true) information that may cause harm or enable some agent to cause harm\", as defined by philosopher Nick Bostrom in 2011. One example would be instructions for creating a thermonuclear weapon."@en,
+        "Un risque d'information, ou danger informationnel , est « un risque qui découle de la diffusion d'informations (vraies) qui peuvent causer un préjudice ou permettre à un agent de causer un préjudice », tel que défini par le philosophe Nick Bostrom en 2011. Un exemple serait des instructions pour créer une arme thermonucléaire."@fr ;
+    owl:sameAs <http://fr.dbpedia.org/resource/Risque_d'information>,
+        <http://www.wikidata.org/entity/Q105952144>,
+        <https://global.dbpedia.org/id/FoWL9> ;
+    prov:wasDerivedFrom <http://en.wikipedia.org/wiki/Information_hazard?oldid=1123823991&ns=0> ;
+    foaf:depiction <http://commons.wikimedia.org/wiki/Special:FilePath/Infohazard_warning_sign.svg> ;
+    foaf:isPrimaryTopicOf <http://en.wikipedia.org/wiki/Information_hazard> .
+
