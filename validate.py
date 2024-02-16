@@ -48,14 +48,13 @@ def main(args):
         # Get metadata about the topic
         metadata = get_metadata(topic_dir_path)
 
-        if topic_directory != 'climate_change':
-            # Delete knowledge graph and/or entities db if they already exist
-            if os.path.exists(output_kg_path):
-                os.remove(output_kg_path)
-            if os.path.exists(stats_file_path):
-                os.remove(stats_file_path)
-            if os.path.exists(entities_db_path):
-                shutil.rmtree(entities_db_path)
+        # Delete knowledge graph and/or entities db if they already exist
+        if os.path.exists(output_kg_path):
+            os.remove(output_kg_path)
+        if os.path.exists(stats_file_path):
+            os.remove(stats_file_path)
+        if os.path.exists(entities_db_path):
+            shutil.rmtree(entities_db_path)
 
         # 0. Initialize memory
         llm, store = init(
@@ -76,9 +75,8 @@ def main(args):
         # Call the function to read the first text file within the topic directory
         text = read_text_file(topic_dir_path)
 
-        if topic_directory != 'climate_change':
-            # 2. Process the text file and output a knowledge graph
-            memorize(text, llm, store)
+        # 2. Process the text file and output a knowledge graph
+        memorize(text, llm, store)
 
         # 3. Compute statistics over the resulting knowledge graph
         stats = get_statistics(output_kg_path)
