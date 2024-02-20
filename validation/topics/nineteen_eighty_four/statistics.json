@@ -1,1 +1,11 @@
-{"num_triples": 31}
+{
+    "semantic": {
+        "num_triples": 31
+    },
+    "landwehr": {
+        "num_facts": 5
+    },
+    "dbpedia": {
+        "num_triples": 748
+    }
+}

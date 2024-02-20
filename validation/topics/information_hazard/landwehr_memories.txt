@@ -1,0 +1,13 @@
+The concept of information hazard, or infohazard, is defined as a risk that arises from the dissemination of true information that may cause harm or enable some agent to cause harm.
+
+Philosopher Nick Bostrom defined the concept of information hazard in 2011.
+
+Information hazards contradict the idea of Freedom of information, as they suggest that some types of information are too dangerous for every single person to have access to.
+
+One example of an information hazard is instructions for creating a thermonuclear weapon, as following the instructions could cause massive amounts of harm to others.
+
+There are two major categories of information hazard: adversarial hazard, where information can be purposefully used by a bad actor to hurt others, and unintended consequence hazard, where harm is not purposeful but is merely an unintended consequence that harms the person who learns it.
+
+Subsets of these major categories include data hazards, idea hazards, and knowing-too-much hazards.
+
+In biotechnology, information hazards can also arise.

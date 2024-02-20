@@ -1,0 +1,11 @@
+Roko's basilisk is a thought experiment about the potential actions of a future AI.
+
+The concept originated in a 2010 post on the LessWrong forum.
+
+The name "Roko's basilisk" comes from the poster of the article (Roko) and the basilisk, a mythical creature.
+
+Some users reported experiencing distress, nightmares, and mental breakdowns upon reading the theory, leading to a ban on discussing the basilisk for five years.
+
+The theory was later dismissed as nonsense, including by one of the co-founders of LessWrong, Eliezer Yudkowsky.
+
+Despite its discreditation, the theory is still used as an example of principles such as Bayesian probability and implicit religion, and is regarded as a modern version of Pascal's wager.

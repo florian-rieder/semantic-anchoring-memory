@@ -64,7 +64,10 @@ class LandwehrMemory(BaseChatMemory):
         pass
 
 
-def memorize(input_text: str, llm: BaseLanguageModel, store: VectorStore):
+def memorize(input_text: str, llm: BaseLanguageModel, store: VectorStore) -> list[str]:
+    """Memorizes a text by passing it extracting facts from the text,
+    and embed them into the memories vector db. Returns the list of
+    extracted facts as well"""
     chunk_summary_pairs = split_chunk_context_pairs(input_text, llm)
 
     extracted_facts = []
@@ -80,6 +83,7 @@ def memorize(input_text: str, llm: BaseLanguageModel, store: VectorStore):
 
     print('Adding facts to memory...')
     store.add_texts(extracted_facts)
+    return extracted_facts
 
 
 def split_chunk_context_pairs(text: str, llm: BaseLanguageModel, chunk_size=2048) -> List[tuple]:

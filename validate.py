@@ -9,10 +9,14 @@ import os
 import shutil
 from tqdm import tqdm
 
+from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings
 from rdflib import Graph
 
+from config import EMBEDDING_MODEL_NAME
 from ingest import init
-from memory.semantic.learn import memorize
+from memory.semantic.learn import memorize as semantic_memorize
+from memory.landwehr.landwehr import memorize as landwehr_memorize
 
 
 logger = logging.getLogger(__name__)
@@ -23,12 +27,12 @@ def main(args):
     # Define the directory containing the topic directories
     topics_dir = f'{os.getcwd()}/validation/topics/'
 
-    # Get a list of all directories in the topics directory
-    topic_directories = sorted(os.listdir(topics_dir))
-
     if args.topics:
+        # If topics have been defined with the command line argument,
+        # only process the selected topics
         topic_directories = sorted(args.topics)
     else:
+        # Get a list of all directories in the topics directory
         topic_directories = sorted(os.listdir(topics_dir))
 
     # Loop through each topic directory
@@ -40,21 +44,25 @@ def main(args):
         output_kg_path = os.path.join(topic_dir_path, 'output.ttl')
         entities_db_path = os.path.join(topic_dir_path, 'entities_db')
         stats_file_path = os.path.join(topic_dir_path, 'statistics.json')
-        dbpedia_stats_file_path = os.path.join(
-            topic_dir_path, 'dbpedia_statistics.json')
+        landwehr_db_path = os.path.join(
+            topic_dir_path, 'landwehr_memories_db')
+        landwehr_text_output_path = os.path.join(
+            topic_dir_path, 'landwehr_memories.txt')
         dbpedia_resource_file_path = os.path.join(
             topic_dir_path, 'dbpedia.ttl')
 
         # Get metadata about the topic
         metadata = get_metadata(topic_dir_path)
 
-        # Delete knowledge graph and/or entities db if they already exist
+        # Delete files and dbs we're going to overwrite
         if os.path.exists(output_kg_path):
             os.remove(output_kg_path)
         if os.path.exists(stats_file_path):
             os.remove(stats_file_path)
         if os.path.exists(entities_db_path):
             shutil.rmtree(entities_db_path)
+        if os.path.exists(landwehr_db_path):
+            shutil.rmtree(landwehr_db_path)
 
         # 0. Initialize memory
         llm, store = init(
@@ -73,36 +81,59 @@ def main(args):
             continue
 
         # Call the function to read the first text file within the topic directory
-        text = read_text_file(topic_dir_path)
+        text = read_first_text_file_in_dir(topic_dir_path)
 
         # 2. Process the text file and output a knowledge graph
-        memorize(text, llm, store)
+        semantic_memorize(text, llm, store)
 
         # 3. Compute statistics over the resulting knowledge graph
-        stats = get_statistics(output_kg_path)
+        semantic_stats = get_statistics(output_kg_path)
 
-        # Write stats JSON to the topic directory
+        embeddings = OpenAIEmbeddings(
+            model=EMBEDDING_MODEL_NAME,
+        )
+
+        landwehr_store = Chroma(
+            persist_directory=landwehr_db_path,
+            embedding_function=embeddings
+        )
+
+        # 4. Process using Landwehr
+        landwehr_facts = landwehr_memorize(text, llm, landwehr_store)
+
+        with open(landwehr_text_output_path, 'w') as f:
+            f.write("\n\n".join(landwehr_facts))
+
+        landwehr_stats = {
+            'num_facts': len(landwehr_facts)
+        }
+
+        # 5. Look for information in dbpedia about the topic
+        dbpedia_stats = None
+        dbpedia_resource = metadata['dbpedia']
+
+        if dbpedia_resource != 'None':
+            # 6. Compute statistics from the dbpedia knowledge graph about the topic
+            dbpedia_stats = get_statistics(dbpedia_resource)
+
+            # Save the dbpedia resource graph to file in turtle format
+            dbpedia_graph = Graph().parse(dbpedia_resource)
+            dbpedia_graph.serialize(
+                destination=dbpedia_resource_file_path,
+                format='turtle')
+
+        # 7. Write statistics to file
+        stats = {
+            'semantic': semantic_stats,
+            'landwehr': landwehr_stats,
+            'dbpedia': dbpedia_stats
+        }
+
         with open(stats_file_path, 'w') as f:
-            f.write(json.dumps(stats))
-
-        # 4. Look for information in dbpedia about the topic
-        if metadata['dbpedia'] == 'None':
-            continue
-
-        # 5. Compute statistics from the dbpedia knowledge graph about the topic
-        dbpedia_stats = get_statistics(metadata['dbpedia'])
-
-        with open(dbpedia_stats_file_path, 'w') as f:
-            f.write(json.dumps(dbpedia_stats))
-
-        dbpedia_graph = Graph().parse(metadata['dbpedia'])
-        dbpedia_graph.serialize(
-            destination=dbpedia_resource_file_path,
-            format='turtle')
+            f.write(json.dumps(stats, indent=4))
 
 
-
-def read_text_file(directory):
+def read_first_text_file_in_dir(directory):
     """Read the first text file in the given directory"""
     # Get a list of all files in the directory
     files = os.listdir(directory)
@@ -121,6 +152,9 @@ def read_text_file(directory):
             text = file.read()
 
         return text
+
+    # If no text file was found, raise a FileNotFoundError
+    raise FileNotFoundError(f"No text file found in {directory}")
 
 
 def get_metadata(directory: str):
