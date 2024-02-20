@@ -2,9 +2,11 @@ import os
 
 from rdflib import Graph, URIRef
 from urllib.parse import quote, unquote
-#from owlrl import DeductiveClosure, OWLRL_Semantics, interpret_owl_imports
+# from owlrl import DeductiveClosure, OWLRL_Semantics, interpret_owl_imports
 
 from langchain_core.vectorstores import VectorStore
+
+from config import COREFERENCE_SIMILARITY_THRESHOLD
 
 
 class ABox():
@@ -61,11 +63,11 @@ class ABox():
         self.entities_db.similarity_search(query)
         return [d.page_content for d in self.entities_db.similarity_search(query, k)]
 
-    def query_entities_with_score(self,
-                                  query: str,
-                                  threshold: float = 0.75,
-                                  k=4
-                                  ) -> list[str]:
+    def query_sufficiently_similar_entity(self,
+                                          query: str,
+                                          threshold: float = COREFERENCE_SIMILARITY_THRESHOLD,
+                                          k: int = 4
+                                          ) -> list[str]:
         """Get the entities which are most relevant to the query, above
         the threshold"""
         # Query with score:

@@ -316,7 +316,7 @@ class SemanticStore():
         """
         # Verify if the object is an entity that's already in memory
         subject_entity_query = f"{new_entity}"
-        similar_objects_in_memory = self.abox.query_entities_with_score(
+        similar_objects_in_memory = self.abox.query_sufficiently_similar_entity(
             subject_entity_query, threshold=self.entity_similarity_threshold)
 
         # If there is exactly one match, then we're probably talking about the

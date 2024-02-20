@@ -34,6 +34,7 @@ MEMORY_PATH = _MEMORIES_PATH + 'knowledge.ttl'
 
 K_CLASSES_TO_RETRIEVE = 8
 K_PREDICATES_TO_RETRIEVE = 16
+COREFERENCE_SIMILARITY_THRESHOLD = 0.85
 
 
 # Create ontology databases directory if it doesn't exist
