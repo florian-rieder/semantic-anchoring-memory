@@ -1,5 +1,14 @@
 """
-Purpose: get the predicate or class which most closely resembles our input
+This module defines a TBox class for handling ontologies. 
+
+The TBox class provides methods to store and query predicates and classes from ontologies. 
+It also provides methods to get embedding strings for predicates and classes, which are strings 
+containing extra information about the predicates and classes described in the given ontology, 
+to be stored in a vector database. 
+
+Additionally, it provides methods to get properties for a given entity in the graph, 
+get the URI from an embedding string, get properties from embedding strings, 
+and get parent classes for a given class in the ontology hierarchy.
 """
 import queue
 import re
@@ -11,6 +20,49 @@ from langchain_core.vectorstores import VectorStore
 
 
 class TBox():
+    """
+    TBox class represents a knowledge base that stores and queries
+    information about predicates and classes in an ontology. It uses
+    RDFLib and VectorStore for data storage and retrieval.
+
+    Attributes
+    ----------
+    graph (Graph): The RDF graph that stores the ontology data.
+    pred_db (VectorStore): The vector store for storing predicate
+        embedding strings.
+    class_db (VectorStore): The vector store for storing class embedding
+        strings.
+
+    Methods
+    -------
+    __init__(ontologies_paths, predicates_db, classes_db)
+        Initializes the TBox instance by parsing the ontologies and
+        setting up the vector stores.
+    store_predicates(predicates_embedding_strings)
+        Stores the given predicate embedding strings in the predicates
+        database.
+    store_classes(classes_embedding_strings)
+        Stores the given class embedding strings in the classes database.
+    query_predicates(query, k)
+        Returns the k predicates that are most similar to the input query.
+    query_classes(query, k)
+        Returns the k classes that are most similar to the input query.
+    get_predicates_embedding_strings()
+        Retrieves all predicates in the ontology and transforms them into embedding strings.
+    get_classes_embedding_strings()
+        Retrieves all classes in the ontology and transforms them into embedding strings.
+    get_properties(subject, properties_to_get)
+        Retrieves the given properties for the given entity in the graph.
+    _get_uri_from_embedding_string(embedding_string)
+        Extracts the URI from an embedding string.
+    _get_properties_from_embedding_strings(embedding_strings, properties_to_get)
+        Retrieves the given properties for the embedding strings.
+    get_parent_classes(target_class)
+        Retrieves all direct parents of the given class.
+    get_all_parent_classes(target_class, max_depth)
+        Retrieves all parent classes in the hierarchy up to a maximum depth.
+    """
+
     def __init__(self,
                  ontologies_paths: list[str],
                  predicates_db: VectorStore,
@@ -56,7 +108,6 @@ class TBox():
         Returns k predicates which are most similar to the input query.
         """
         return [d.page_content for d in self.class_db.similarity_search(query, k)]
-
 
     def get_predicates_embedding_strings(self) -> list[str]:
         """
@@ -274,7 +325,7 @@ class TBox():
 
         while not nodes_to_check.empty():
             if depth > max_depth:
-                #print(f'Maximum recursion depth reached ({max_depth})')
+                # print(f'Maximum recursion depth reached ({max_depth})')
                 break
 
             # get the next node to check from the queue

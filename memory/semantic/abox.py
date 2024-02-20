@@ -1,3 +1,31 @@
+"""
+Summary
+-------
+This module defines the ABox class, which is used for managing a
+knowledge graph (A-Box) and an associated entity database. 
+
+The ABox class provides methods for storing entities, querying entities
+based on similarity, querying entities above a certain similarity
+threshold, retrieving knowledge about a specific entity, and saving the
+knowledge graph to a file.
+
+The module also includes utility functions for encoding and decoding
+entity URIs.
+
+Classes
+-------
+ABox
+    A class for managing a knowledge graph and an associated entity
+    database.
+
+Functions
+---------
+encode_entity_uri(entity_string: str) -> str
+    Encodes a string into a format suitable for use as an entity URI.
+decode_entity_uri(entity_uri: str) -> str
+    Decodes an entity URI into a human-readable string.
+"""
+
 import os
 
 from rdflib import Graph, URIRef
@@ -10,6 +38,44 @@ from config import COREFERENCE_SIMILARITY_THRESHOLD
 
 
 class ABox():
+    """
+    Summary
+    -------
+    A class for managing a knowledge graph (A-Box) and an associated
+    entity database.
+
+    The ABox class provides methods for storing entities, querying
+    entities based on similarity, querying entities above a certain
+    similarity threshold, retrieving knowledge about a specific entity,
+    and saving the knowledge graph to a file.
+
+    Attributes
+    ----------
+    graph : Graph
+        The RDFLib Graph object representing the knowledge graph.
+    memory_base_path : str
+        The path to the base knowledge graph file.
+    memory_path : str
+        The path to the knowledge graph file.
+    entities_db : VectorStore
+        The VectorStore object representing the entity database.
+    memory_format : str
+        The format of the knowledge graph file.
+
+    Methods
+    -------
+    store_entities(entities: list[str])
+        Store a list of entity strings in the entities db.
+    query_entities(query: str, k=4)
+        Get the k most similar entities from the entities db.
+    query_sufficiently_similar_entity(query: str, threshold: float = COREFERENCE_SIMILARITY_THRESHOLD, k: int = 4)
+        Get the entities which are most relevant to the query, above the threshold.
+    get_entity_knowledge(entity: str)
+        Retrieve all knowledge about a specific entity from the knowledge graph.
+    save_graph()
+        Save the current state of the knowledge graph to a file.
+    """
+
     def __init__(self,
                  entities_store: VectorStore,
                  memory_base_path: str,
@@ -49,6 +115,11 @@ class ABox():
         Store a list of entity strings in the entities db. An entity string is
         a string in natural language used as the descriptor of an entity
         in memory. For example "Yellow vests protests"
+
+        Parameters
+        ----------
+        entities: list[str]
+            List of entity names to add to the entities db
 
         Usage
         -----
@@ -126,8 +197,14 @@ class ABox():
 
 
 def encode_entity_uri(entity_string: str) -> str:
+    """
+    Encodes a string into a format suitable for use as an entity URI.
+    """
     return quote(entity_string.replace(' ', '_'))
 
 
 def decode_entity_uri(entity_uri: str) -> str:
+    """
+    Decodes an entity URI into a human-readable string.
+    """
     return unquote(entity_uri).replace('_', ' ')

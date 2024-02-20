@@ -4,7 +4,8 @@ Responsibility:
 Process:
     Splits the source text into smaller chunks, processes each chunk
     using the LLM to extract important facts, and creates corresponding
-    memories.
+    memories in the form of semantically typed triples, forming a
+    knowledge graph.
 """
 from typing import List
 import re
@@ -27,6 +28,10 @@ def memorize(conversation_history: str,
              llm: BaseLanguageModel,
              semantic_store: SemanticStore
              ):
+    """
+    Converts a raw text into a RDF knowledge graph, memorized in the
+    SemanticStore
+    """
     # Extract raw triplets from the conversation history
     raw_triplets = conversation_to_triplets(conversation_history, llm)
     print(list(raw_triplets))
@@ -52,48 +57,48 @@ def parse_triplet_string(triplets_string: str) -> tuple[str, str, str]:
     return triplets
 
 
-def split_chunk_context_pairs(text: str,
-                              llm: BaseLanguageModel
-                              ) -> List[tuple]:
-    """Split text into multiple chunks, and for each chunk create a summary
-    that takes into account previous chunks."""
+# def split_chunk_context_pairs(text: str,
+#                               llm: BaseLanguageModel
+#                               ) -> List[tuple]:
+#     """Split text into multiple chunks, and for each chunk create a summary
+#     that takes into account previous chunks."""
 
-    # 1. Split source text into smaller chunks
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=2048, chunk_overlap=0)
-    chunks = text_splitter.split_text(text)
+#     # 1. Split source text into smaller chunks
+#     text_splitter = RecursiveCharacterTextSplitter(
+#         chunk_size=2048, chunk_overlap=0)
+#     chunks = text_splitter.split_text(text)
 
-    # 2. Process each chunk in isolation but with a context that contains a
-    # summary of all previous chunks.
-    contexts = []
-    for idx, chunk in enumerate(chunks):
-        chunks_before = chunks[:idx+1]
-        context = "".join(chunks_before)
+#     # 2. Process each chunk in isolation but with a context that contains a
+#     # summary of all previous chunks.
+#     contexts = []
+#     for idx, chunk in enumerate(chunks):
+#         chunks_before = chunks[:idx+1]
+#         context = "".join(chunks_before)
 
-        context = 'There are no previous chunks. The chunk to summarize is the start of the conversation.'
-        if idx > 0:
-            context = contexts[idx-1][1]
+#         context = 'There are no previous chunks. The chunk to summarize is the start of the conversation.'
+#         if idx > 0:
+#             context = contexts[idx-1][1]
 
-        # summary = summarize_chunk(context, chunk, llm)
-        summary = summarize(context, llm)
-        contexts.append((chunk, summary))
-        break
+#         # summary = summarize_chunk(context, chunk, llm)
+#         summary = summarize(context, llm)
+#         contexts.append((chunk, summary))
+#         break
 
-    return contexts
+#     return contexts
 
 
-def summarize_chunk(summary_of_previous_chunks, chunk, llm):
-    chain = LLMChain(
-        llm=llm,
-        prompt=CHUNK_SUMMARIZER_PROMPT,
-        verbose=True
-    )
+# def summarize_chunk(summary_of_previous_chunks, chunk, llm):
+#     chain = LLMChain(
+#         llm=llm,
+#         prompt=CHUNK_SUMMARIZER_PROMPT,
+#         verbose=True
+#     )
 
-    response = chain.predict(
-        summary_of_previous_chunks=summary_of_previous_chunks,
-        chunk=chunk
-    )
-    return response
+#     response = chain.predict(
+#         summary_of_previous_chunks=summary_of_previous_chunks,
+#         chunk=chunk
+#     )
+#     return response
 
 
 def summarize(text: str, llm: BaseLanguageModel) -> str:
@@ -113,7 +118,6 @@ def summarize(text: str, llm: BaseLanguageModel) -> str:
 
 def extract_triplets(summary: str, llm: BaseLanguageModel) -> list[tuple[str, str, str]]:
     chain = LLMChain(
-        # prompt=KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
         prompt=NEW_KNOWLEDGE_TRIPLE_EXTRACTION_PROMPT,
         llm=llm,
         verbose=True

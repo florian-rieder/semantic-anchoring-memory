@@ -1,3 +1,30 @@
+"""
+This module is used to ingest the content of multiple files into a
+Semantic Store. 
+
+It initializes the language model, embeddings, T-Box, A-Box, and
+Semantic Store, and then ingests the content of the files.
+
+Usage:
+------
+python ingest.py -f file1.txt file2.txt -o output_path -b base_knowledge_path
+
+Arguments
+---------
+-f, --files: List of files to process. Provide the file names separated
+    by space.
+-o, --output: Path to save the generated graph to (memory path). If not
+    provided, it defaults to the value of MEMORY_PATH in config.py.
+-b, --base-knowledge: Path to preconceived knowledge file (base
+    knowledge). If not provided, it defaults to the value of
+    BASE_KNOWLEDGE_PATH in config.py. If you want to specify no base
+    knowledge, use 'None'.
+
+Example
+-------
+python filename.py -f file1.txt file2.txt -o /path/to/memory -b /path/to/base/knowledge
+"""
+
 import argparse
 import traceback
 from tqdm import tqdm
@@ -32,6 +59,25 @@ def init(memory_path: str,
          class_db_path: str = CLASS_DB_PATH,
          entities_db_path: str = ENTITIES_DB_PATH
          ):
+    """
+    Initializes the language model, embeddings, T-Box, A-Box, and
+    Semantic Store.
+
+    Parameters
+    ----------
+    memory_path (str): The path to the memory directory.
+    base_knowledge (str): The path to the base knowledge directory.
+    ontologies_paths (str, optional): The paths to the ontologies. Defaults to ONTOLOGIES_PATHS.
+    predicates_db_path (str, optional): The path to the predicates database. Defaults to PREDICATES_DB_PATH.
+    class_db_path (str, optional): The path to the classes database. Defaults to CLASS_DB_PATH.
+    entities_db_path (str, optional): The path to the entities database. Defaults to ENTITIES_DB_PATH.
+
+    Returns
+    -------
+    llm (ChatOpenAI): The initialized language model.
+    store (SemanticStore): The initialized Semantic Store.
+    """
+
     print('Initializing LLM...', end=' ', flush=True)
     llm = ChatOpenAI(
         model=WORKHORSE_MODEL_NAME,
@@ -84,6 +130,19 @@ def init(memory_path: str,
 
 
 def ingest_files(files, llm, store):
+    """
+    Ingests the content of multiple files into the Semantic Store.
+    Outputs files as defined in config.py
+
+    Parameters
+    ----------
+    files : list
+        A list of file paths to be ingested.
+    llm : ChatOpenAI
+        The initialized language model.
+    store : SemanticStore
+        The initialized Semantic Store.
+    """
 
     for file in tqdm(files):
         try:

@@ -1,3 +1,26 @@
+"""
+This module provides a command line interface for the chat application
+that uses a long term memory model. 
+The memory model can be either 'landwehr' or 'semantic', with 'semantic'
+being the default.
+
+Arguments
+---------
+-m, --memory: the memory model to use. Can be either 'landwehr' or
+    'semantic', with 'semantic' being the default.
+
+Usage
+-----
+>>> python cli.py [-m {landwehr,semantic}]
+
+Example
+-------
+>>> python cli.py -m landwehr
+
+This will start the chat application with the 'landwehr' memory model. 
+To end the conversation and memorize it, type 'exit'.
+"""
+
 import argparse
 
 from langchain.chains import ConversationChain

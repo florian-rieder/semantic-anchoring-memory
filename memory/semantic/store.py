@@ -1,3 +1,28 @@
+"""
+This module provides a SemanticStore class that represents a
+semantic knowledge store. It allows encoding and memorizing triplets
+into an RDF knowledge graph. The class uses a TBox for querying
+classes and predicates, and an ABox for storing the encoded triplets.
+
+Classes
+-------
+SemanticStore
+    Represents a semantic knowledge store. It has methods for
+    encoding triplets, memorizing encoded triplets, and resolving
+    memorized entities.
+
+Functions
+---------
+choose_predicate: Uses a language model to choose the most relevant
+    predicate from a list of predicates.
+choose_class: Uses a language model to choose the most relevant
+    class from a list of classes.
+
+Constants
+---------
+LITERAL_TYPES: A list of literal types used for encoding triplets.
+"""
+
 from langchain_core.language_models import BaseLanguageModel
 
 from langchain.chains import LLMChain
@@ -21,6 +46,36 @@ LITERAL_TYPES = (
 
 
 class SemanticStore():
+    """
+    A class representing a semantic store for encoding and memorizing
+    triplets in RDF format.
+
+    Methods
+    -------
+    __init__(self, tbox, abox, encoder_llm, k_similar_classes, k_similar_predicates, entity_similarity_threshold):
+        Initializes a SemanticStore object with the given parameters.
+    encode_triplets(self, triplets):
+        Encodes the given triplets into RDF format.
+    _encode_triplet(self, triplet):
+        Encodes a single triplet into a dictionary that represents the
+        RDF classes and predicate.
+    memorize_encoded_triplets(self, encoded_triplets):
+        Memorizes the encoded triplets by adding them to the knowledge
+        graph and saving it.
+    _memorize_encoded_triplet(self, encoded_triplet):
+        Memorizes a single encoded triplet by saving it to the knowledge
+        memory graph.
+    encode_class(self, triplet, role):
+        Uses an LLM to choose the best class to represent the subject or
+        object of a triplet.
+    encode_predicate(self, triplet, subject_class, object_class):
+        Returns the best predicate URI to represent the predicate in the
+        given triplet.
+    resolve_memorized_entity(self, new_entity):
+        Searches the memory to see if the new entity is already in
+        memory and returns its URIRef.
+    """
+
     def __init__(self,
                  tbox: TBox,
                  abox: ABox,
@@ -125,7 +180,7 @@ class SemanticStore():
             # Add the new node to the graph
             self.abox.graph.add(
                 (subject_node, RDF.type, encoded_triplet['subject']['type']))
-            
+
             # Add the entity string as a label
             self.abox.graph.add(
                 (subject_node, RDFS.label, Literal(subject)))

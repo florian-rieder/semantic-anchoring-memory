@@ -1,5 +1,20 @@
 """
+Summary
+-------
 Validation pipeline for the knowledge graph extraction
+
+This script provides a validation pipeline for knowledge graph extraction.
+It processes each topic directory, extracts information from text files,
+generates knowledge graphs, computes statistics, and saves results.
+
+Usage
+-----
+>>> python validate.py [-h] [--topics TOPICS [TOPICS ...]]
+
+Arguments
+---------
+-t , --topics: Specify which folders inside validation/topics to
+    process.
 """
 
 import argparse
@@ -23,7 +38,36 @@ logger = logging.getLogger(__name__)
 
 
 def main(args):
+    """
+    Validation pipeline for the knowledge graph extraction.
 
+    Arguments
+    ---------
+        args (argparse.Namespace): Command-line arguments.
+
+    Returns
+    -------
+        None
+
+    This function serves as the main entry point for the validation pipeline.
+    It processes each topic directory, extracts information from text files,
+    generates knowledge graphs, computes statistics, and saves results.
+
+    The validation pipeline consists of the following steps:
+    1. Iterate through each topic directory.
+    2. Read the text file within the directory.
+    3. Process the text file to generate a semantic knowledge graph.
+    4. Compute statistics on the generated knowledge graph.
+    5. Process the text using Landwehr to generate additional facts.
+    6. Compute statistics on the generated memories
+    7. Optionally retrieve information from DBpedia about the topic.
+    8. Compute statistics on the DBpedia knowledge graph.
+    9. Save statistics for each step to file.
+
+    Note:
+        This function assumes the existence of certain directory structures
+        and file formats as per the validation pipeline's requirements.
+    """
     # Define the directory containing the topic directories
     topics_dir = f'{os.getcwd()}/validation/topics/'
 
@@ -35,7 +79,7 @@ def main(args):
         # Get a list of all directories in the topics directory
         topic_directories = sorted(os.listdir(topics_dir))
 
-    # Loop through each topic directory
+    # 1. Loop through each topic directory
     for topic_directory in tqdm(topic_directories):
         print(f'Processing {topic_directory}...')
 
@@ -64,31 +108,35 @@ def main(args):
         if os.path.exists(landwehr_db_path):
             shutil.rmtree(landwehr_db_path)
 
-        # 0. Initialize memory
+        # Initialize memory, using the same config as in the ingestion
+        # script for consistency
         llm, store = init(
             # Save the output graph in the topic directory
             memory_path=output_kg_path,
-            # Save the entities db associated to the graph in the topic directory
+            # Save the entities db associated to the graph in the topic
+            # directory
             entities_db_path=entities_db_path,
             # Use no prior knowledge
             base_knowledge=None
         )
 
-        # 1. Get the text file
+        # 2. Get the text file
         # Check if the path is a directory
         if not os.path.isdir(topic_dir_path):
             logger.warning(f'Not a valid directory {topic_dir_path}')
             continue
 
-        # Call the function to read the first text file within the topic directory
+        # Call the function to read the first text file within the topic
+        # directory
         text = read_first_text_file_in_dir(topic_dir_path)
 
-        # 2. Process the text file and output a knowledge graph
+        # 3. Process the text file and output a knowledge graph
         semantic_memorize(text, llm, store)
 
-        # 3. Compute statistics over the resulting knowledge graph
+        # 4. Compute statistics over the resulting knowledge graph
         semantic_stats = get_statistics(output_kg_path)
 
+        # 5. Process using Landwehr
         embeddings = OpenAIEmbeddings(
             model=EMBEDDING_MODEL_NAME,
         )
@@ -98,22 +146,24 @@ def main(args):
             embedding_function=embeddings
         )
 
-        # 4. Process using Landwehr
         landwehr_facts = landwehr_memorize(text, llm, landwehr_store)
 
         with open(landwehr_text_output_path, 'w') as f:
             f.write("\n\n".join(landwehr_facts))
 
+        # 6. Compute statistics over landwehr's output
         landwehr_stats = {
             'num_facts': len(landwehr_facts)
         }
 
-        # 5. Look for information in dbpedia about the topic
-        dbpedia_stats = None
+        # 7. Look for information in dbpedia about the topic
+        # Basically look if a dbpedia link was defined in the medatada
+        # of this topic
         dbpedia_resource = metadata['dbpedia']
+        dbpedia_stats = None
 
         if dbpedia_resource != 'None':
-            # 6. Compute statistics from the dbpedia knowledge graph about the topic
+            # 8. Compute statistics from the dbpedia knowledge graph about the topic
             dbpedia_stats = get_statistics(dbpedia_resource)
 
             # Save the dbpedia resource graph to file in turtle format
@@ -122,7 +172,7 @@ def main(args):
                 destination=dbpedia_resource_file_path,
                 format='turtle')
 
-        # 7. Write statistics to file
+        # 9. Write statistics to file
         stats = {
             'semantic': semantic_stats,
             'landwehr': landwehr_stats,
@@ -190,7 +240,7 @@ def get_statistics(kg_path: str) -> dict:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="Validation pipeline for knowledge graph extraction")
-    parser.add_argument("--topics", "-t",
+    parser.add_argument("-t", "--topics",
                         nargs="+",
                         help="Specify folders inside validation/topics to process")
     args = parser.parse_args()

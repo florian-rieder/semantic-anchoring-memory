@@ -1,17 +1,16 @@
-"""Main conversation chain"""
+"""Main conversation chain, used by main.py and cli.py to provide the
+chat model with long term memory"""
 
 from langchain.chains import ConversationChain
 from langchain.prompts import PromptTemplate
 from langchain.callbacks.manager import AsyncCallbackManager
 from langchain.memory import (
-    CombinedMemory,
-    ConversationBufferWindowMemory
+    CombinedMemory, ConversationBufferWindowMemory
 )
 
 from langchain_community.vectorstores import Chroma
 
 from langchain_openai import ChatOpenAI
-from langchain_openai import OpenAI
 from langchain_openai import OpenAIEmbeddings
 
 from memory.semantic.memory import SemanticLongTermMemory
@@ -70,7 +69,48 @@ CONVERSATION_PROMPT = PromptTemplate(
 
 
 def get_chain(stream_handler, memory_model = 'semantic') -> ConversationChain:
-    """Create a streaming ConversationChain for question/answering."""
+    """
+    Create a streaming ConversationChain for question/answering.
+
+    Parameters
+    ----------
+    stream_handler: The stream handler for processing the streaming
+        responses.
+    memory_model (optional): The memory model to use. Can be either
+        "semantic" or "landwehr". Defaults to "semantic".
+
+    Returns
+    -------
+    ConversationChain: The created ConversationChain object.
+
+    Raises
+    ------
+    ValueError: If an unexpected memory model is provided.
+
+    Summary
+    -------
+    The function creates a ConversationChain object for question/answering.
+    It sets up the necessary components such as the streaming ChatOpenAI
+    model, the workhorse ChatOpenAI model, the OpenAIEmbeddings for
+    vector stores, and the conversation memory.
+
+    If the memory_model is set to "semantic", it also creates a
+    SemanticStore object and a SemanticLongTermMemory object for
+    integrating with an external knowledge graph. The SemanticStore is
+    initialized with the necessary parameters such as the encoder_llm,
+    the TBox, and the ABox. The SemanticLongTermMemory is initialized
+    with the background_llm and the semantic_store.
+
+    If the memory_model is set to "landwehr", it creates a LandwehrMemory
+    object with the background_llm.
+
+    The ConversationChain is then created with the stream_llm, the
+    CONVERSATION_PROMPT, the combined memory consisting of the
+    conversation_memory and the long_term_memory, and the
+    callback_manager for streaming. The verbose parameter is set to True.
+
+    The created ConversationChain object is returned.
+    """
 
     # Used for streaming
     manager = AsyncCallbackManager([])

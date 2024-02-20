@@ -1,6 +1,33 @@
-from os import path
+"""
+This module defines the SemanticLongTermMemory class, a specialized form
+of chat memory for a Language Learning Model (LLM). 
+
+The SemanticLongTermMemory class integrates with an external knowledge
+graph to store and retrieve information about knowledge triples in the
+conversation. It uses the BaseChatMemory as a base class and extends it
+with functionality specific to handling semantic long-term memory. The
+memorization process is only launched at the end of a conversation, as
+opposed to after each message, for the last couple of messages. The
+latter option wasn't chosen because it would introduce a large latency
+between messages, as the memory creation process is relatively intensive
+in its current form.
+
+It also includes a helper function `get_entities` to extract entities
+from a given entity string.
+
+Classes
+-------
+SemanticLongTermMemory
+    A long term chat memory for a LLM that integrates with an external
+    knowledge graph (the A-box, which is the memory storage).
+
+Functions
+---------
+get_entities(entity_str: str) -> List[str]
+    Extracts entities from a given entity string.
+"""
+
 from typing import Any, Dict, List
-from urllib.parse import urlparse
 
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.prompts import BasePromptTemplate
@@ -19,10 +46,46 @@ from memory.semantic.store import SemanticStore
 
 
 class SemanticLongTermMemory(BaseChatMemory):
-    """Knowledge graph conversation memory.
+    """
+    A subclass of BaseChatMemory that integrates with an external
+    knowledge graph to store and retrieve information about knowledge
+    triples in the conversation. It uses a language model (llm) and a
+    semantic store to process and store the information.
 
-    Integrates with external knowledge graph to store and retrieve
-    information about knowledge triples in the conversation.
+    Attributes
+    ----------
+    semantic_store: SemanticStore
+        An instance of SemanticStore used to encode and store knowledge
+        triples.
+    llm: BaseLanguageModel
+        An instance of a language model used to process and understand
+        the conversation.
+    knowledge_extraction_prompt: BasePromptTemplate
+        A template for extracting knowledge triples from the conversation.
+    entity_extraction_prompt: BasePromptTemplate
+        A template for extracting entities from the conversation.
+    k: int
+        The number of last messages to consider for entity recognition.
+    human_prefix: str
+        The prefix used to denote human messages in the conversation.
+    ai_prefix: str
+        The prefix used to denote AI messages in the conversation.
+    memory_key: str
+        The key used to store memory variables.
+
+    Methods
+    -------
+    load_memory_variables(inputs: Dict[str, Any]) -> Dict[str, Any]:
+        Returns the history buffer after performing named entity
+        recognition on the last k messages.
+    memory_variables() -> List[str]:
+        Returns a list of memory variables.
+    _get_prompt_input_key(inputs: Dict[str, Any]) -> str:
+        Returns the input key for the prompt.
+    _get_prompt_output_key(outputs: Dict[str, Any]) -> str:
+        Returns the output key for the prompt.
+    get_current_entities(input_string: str) -> List[str]:
+        Returns the current entities in the conversation.
     """
 
     semantic_store: SemanticStore
