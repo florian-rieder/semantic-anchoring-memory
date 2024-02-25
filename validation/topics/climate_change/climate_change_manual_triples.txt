@@ -1,0 +1,81 @@
+Global map, shows, sea temperature rises of 0.5 to 1 degree Celsius     L   S
+Global map, shows, land temperature rises of 1 to 2 degree Celsius      L
+Global map, shows, Arctic temperature rises of up to 4 degrees Celsius.     L   S
+Climate change, describes, Global warming               L
+Global warming, is, the ongoing increase in global average temperature
+Global warming, has effect, effects of global warming
+Climate change, describes, effects of global warming    L
+Climate change, includes in a broader sense, previous long-term changes to Earth's climate
+Global warming, is more rapid than, previous changes
+Global warming, is primarily caused by, humans burning fossil fuels     L
+Fossil fuel use, add to, greenhouse gas     L
+deforestation, add to, greenhouse gas       L
+some agricultural and industrial practices, add to, greenhouse gas      L   S
+Earth's average surface air temperature, has increased, almost 1.5 °C (about 2.5 °F) since the Industrial Revolution.   L   S
+The 20-year average, shows, the progressive influence of human activity.
+greenhouse gas, contains, carbon dioxide        L
+greenhouse gas, contains, methane       L
+greenhouse gas, absorbs, some of the heat that the Earth radiates after it warms from sunlight
+greenhouse gas, trap more, heat in Earth's lower atmosphere
+heat in Earth's lower atmosphere, causes, Global warming
+Climate change, has an increasing impact on, the environment        L
+Deserts, are, expanding             L   S
+heatwaves, are becoming, more common    L
+wildfires, are becoming, more common   L
+Effects of global warming, includes, amplified warming in the Arctic
+Amplified warming in the Arctic, has contributed to, thawing permafrost     L   S
+Amplified warming in the Arctic, has contributed to, retreat of glaciers    L
+Amplified warming in the Arctic, has contributed to, sea ice decline        L
+Higher temperatures, cause, more intense storms     L   S
+Higher temperatures, cause, droughts        L
+Higher temperatures, cause, weather extremes    L
+Rapid environmental change, happening in, mountains
+Rapid environmental change, happening in, coral reefs
+Rapid environmental change, happening in, the Arctic
+Rapid environmental change, forces, many species to relocate or become extinct  L
+Effects of global warming, will continue, for centuries     L
+Effects of global warming, will continue, even if efforts to minimize future warming are successful
+Effects of global warming, include, ocean heating       L
+Effects of global warming, include, ocean acidification     L
+Effects of global warming, include, sea level rise      L
+Climate change, causes, threat to people    S
+Threat to people, consists of, increased flooding   S
+Threat to people, consists of, extreme heat
+Threat to people, consists of, increased food and water scarcity    S
+Threat to people, consists of, more disease
+Threat to people, consists of, economic loss    S
+Threat to people, can result in, human migration
+Threat to people, can result in, human conflict     S
+World Health Organization (WHO), calls, climate change the greatest threat to global health in the 21st century
+Societies, will experience, more severe risks without action to limit warming
+Ecosystems, will experience, more severe risks without action to limit warming
+Humans, can adapt, BN1
+BN1, to climate change
+BN1, through, efforts
+efforts, include, flood control measures
+efforts, include, drought-resistant crops
+efforts, partially reduce, threat to people
+BN1, has limits, some limit to adaptation
+some limit to adaptation, has already been, reached
+Poorer communities, are responsible for, a small share of global emissions
+Poorer communities, have the least ability to, adapt
+Poorer communities, ar the most vulnerable to, climate change
+global warming effects, have been felt, in recent years.
+warmest average temperature recorded, has temperature increase in Celsius, +1.48 °C
+warmest average temperature recorded, has temperature increase in Farenheit, +2.66 °F
+warmest average temperature recorded, year, 2023    S
+Additional warming, will increase, global warming effects
+Additional warming, can trigger, tipping points
+tipping points, include, melting all of the Greenland ice sheet
+2015 Paris Agreement, includes, keep warming "well under 2 °C"  S
+2015 Paris Agreement, has, pledges
+pledges, made by, nations
+pledges, has limits, effects of global warming would still reach about 2.7 °C (4.9 °F) by the end of the century    S
+Limiting warming to 1.5 °C, requires, halving emissions by 2030     S
+Limiting warming to 1.5 °C, requires, achieving net-zero emissions by 2050  S
+Strategies to phase out fossil fuels, involve, conserving energy    S
+Strategies to phase out fossil fuels, involve, generating electricity cleanly   S
+Strategies to phase out fossil fuels, involve, using electricity to power transportation, heat buildings, and operate industrial facilities.
+The electricity supply, can be made cleaner and more plentiful by, vastly increasing deployment of wind, and solar power, alongside other forms of renewable energy and nuclear power.
+Carbon recapture, can be achieved by, increasing forest cover
+Carbon recapture, can be achieved by, farming with methods that capture carbon in soil.

@@ -14,7 +14,7 @@ ns2:Global_map a ns1:Place ;
 
 ns2:World_Health_Organization a ns1:InternationalOrganisation ;
     rdfs:label "World Health Organization" ;
-    ns1:world ns2:Climate_change .
+    ns1:world ns2:Climate_change . # Doesn't really convey information
 
 ns2:current_pledges a owl:Thing ;
     rdfs:label "current pledges" ;
@@ -35,7 +35,7 @@ ns2:recent_years a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeIn
 ns2:sea a ns1:Sea ;
     rdfs:label "sea" ;
     ns2:averageSurfaceAirTemperature "has increased" ;
-    ns2:hasIncreasedBy ns2:1.5_%C2%B0C_since_the_Industrial_Revolution .
+    ns2:hasIncreasedBy ns2:1.5_%C2%B0C_since_the_Industrial_Revolution . # Incorrect. It's not the sea temperature which has increased by 1.5°, but the Earth's average surface air temperature
 
 ns2:thawing_permafrost a ns1:NaturalEvent ;
     rdfs:label "thawing permafrost" .
@@ -63,13 +63,13 @@ ns2:the_warmest_on_record a ns1:Year ;
 
 ns2:Climate_change a ns1:TopicalConcept ;
     rdfs:label "Climate change" ;
-    ns1:causedBy ns2:Climate_change,
-        ns2:intense_storms,
+    ns1:causedBy ns2:Climate_change, # Should be Global Warming. Unfortunately, the system mixed up Climate change and Global warming as the same entity.
+        ns2:intense_storms, # Causes intense storms, not caused by
         "other practices" ;
     ns1:medicalCause ns2:conflict ;
-    ns1:participatingIn ns2:nations ;
-    ns2:affects ns2:Climate_change ;
-    ns2:causedBy ns2:Climate_change ;
+    ns1:participatingIn ns2:nations ; # Should be nations participatingIn current_pledges
+    ns2:affects ns2:Climate_change ; # Same thing: Global warming affects Climate change
+    ns2:causedBy ns2:Climate_change ; # Caused by Global warming
     ns2:hasLedTo ns2:Climate_change,
         ns2:expanding_deserts,
         ns2:flooding,
