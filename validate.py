@@ -184,19 +184,14 @@ def main(args):
 
 
 def read_first_text_file_in_dir(directory):
-    """Read the first text file in the given directory"""
+    """Read the text file in the given directory which has the same name
+    as the directory"""
     # Get a list of all files in the directory
     files = os.listdir(directory)
+    file_name = directory.split('/')[-1] + '.txt'
+    file_path = os.path.join(directory, file_name)
 
-    # Loop through each file in the directory
-    for file_name in files:
-        # Check if the file is a text file
-        if not file_name.endswith('.txt'):
-            continue
-
-        # Construct the full path to the text file
-        file_path = os.path.join(directory, file_name)
-
+    if file_name in files:
         # Open the text file and read its contents
         with open(file_path, 'r') as file:
             text = file.read()

@@ -1,9 +1,15 @@
 {
+    "manual": {
+        "num_triples": 38
+    },
     "semantic": {
-        "num_triples": 24
+        "num_triples": 24,
+        "relevant_triples": "11 (ignoring the confusion between the prince and the queen) + 5 (correctly assigned types) = 16"
     },
     "landwehr": {
-        "num_facts": 13
+        "num_facts": 13,
+        "num_triples_manual": 24,
+        "relevant_triples": 24
     },
     "dbpedia": {
         "num_triples": 708

@@ -2,10 +2,10 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix ns1: <http://dbpedia.org/ontology/> .
 @prefix ns2: <http://dbpedia.org/property/> .
-@prefix ns3: <http://purl.org/linguistics/gold/> .
-@prefix ns4: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix ns5: <http://www.georss.org/georss/> .
-@prefix ns6: <http://schema.org/> .
+@prefix ns3: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix ns4: <http://schema.org/> .
+@prefix ns5: <http://purl.org/linguistics/gold/> .
+@prefix ns6: <http://www.georss.org/georss/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -35,12 +35,12 @@
         ns1:Mountain,
         ns1:NaturalPlace,
         ns1:Place,
-        ns6:Mountain,
-        ns6:Place,
+        ns4:Mountain,
+        ns4:Place,
         <http://umbel.org/umbel/rc/Location_Underspecified>,
         <http://umbel.org/umbel/rc/Mountain>,
         owl:Thing,
-        ns4:SpatialThing,
+        ns3:SpatialThing,
         <http://www.wikidata.org/entity/Q8502> ;
     rdfs:label "جبل إفرست"@ar,
         "Everest"@ca,
@@ -729,9 +729,9 @@
         <http://dbpedia.org/resource/Category:Shigatse>,
         <http://dbpedia.org/resource/Category:Tourist_attractions_in_Nepal>,
         <http://dbpedia.org/resource/Category:Tourist_attractions_in_Tibet> ;
-    ns3:hypernym <http://dbpedia.org/resource/Earth> ;
-    ns6:sameAs <http://viaf.org/viaf/247168735> ;
-    ns5:point "27.988055555555555 86.92527777777778" ;
+    ns5:hypernym <http://dbpedia.org/resource/Earth> ;
+    ns4:sameAs <http://viaf.org/viaf/247168735> ;
+    ns6:point "27.988055555555555 86.92527777777778" ;
     rdfs:comment "جبل إيفْرِستْ (بالإنجليزية Mount Everest، بالتبتية تشومولانغما وبالنيبالية ساجارماثا) أعلى جبل على وجه الأرض، حيث يرتفع إلى حوالي 9كم عن سطح البحر. وهو أحد الجبال التي تتكوّن منها سلاسل جبال الهملايا، على حدودالصين (التبت) ونيبال (ساجارماثا) وشمالي الهند."@ar,
         "L'Everest, dins la serralada de l'Himàlaia, és el cim més alt del món, amb 8.848,86 m. Està situat a la frontera entre el Nepal i el Tibet. En nepalès el cim s'anomena Sagarmatha (सगरमाथा, el front del cel), i en tibetà Chomolungma o Qomolangma (la mare de l'univers), del qual deriva el xinès 珠穆朗玛峰 (en transcripció pinyin: Zhūmùlǎngmǎ Fēng). El nom Everest l'hi va donar Sir Andrew Waugh, l'agrimensor general britànic de l'Índia, en honor del seu predecessor Sir George Everest."@ca,
         "Mount Everest (tibetsky ཇོ་མོ་གླང་མ, Džomolangma; nepálsky सगरमाथा, Sagarmátha), je s nadmořskou výškou 8848,86 m n. m. (podle starších údajů i 8848 m n. m. a 8850 m n. m.) nejvyšší hora na Zemi. Mount Everest vznikl spolu se zbytkem Himálaje kolizí indické a eurasijské kontinentální desky. Hora je pojmenována po britském geodetovi George Everestovi. Pohoří Himálají stále roste díky neustálému tlačení Indické desky na Eurasijskou, v důsledku čehož se zvětšuje i nadmořská výška Mount Everestu."@cs,
@@ -893,9 +893,9 @@
         <http://yi.dbpedia.org/resource/עווערעסט>,
         <http://zh.dbpedia.org/resource/珠穆朗瑪峰>,
         <https://global.dbpedia.org/id/uA9y> ;
-    ns4:geometry "POINT(86.925277709961 27.988056182861)"^^<http://www.openlinksw.com/schemas/virtrdf#Geometry> ;
-    ns4:lat 2.798806e+01 ;
-    ns4:long 8.692528e+01 ;
+    ns3:geometry "POINT(86.925277709961 27.988056182861)"^^<http://www.openlinksw.com/schemas/virtrdf#Geometry> ;
+    ns3:lat 2.798806e+01 ;
+    ns3:long 8.692528e+01 ;
     skos:exactMatch <http://globalwordnet.org/ili/i85376> ;
     prov:wasDerivedFrom <http://en.wikipedia.org/wiki/Mount_Everest?oldid=1123038867&ns=0> ;
     foaf:depiction <http://commons.wikimedia.org/wiki/Special:FilePath/%22Papers_relating_to_the_Himalaya_and_Mount_Everest%22_in_Proceedings_of_the_Royal_Geographical_Society_of_London,_Vol._I_(1857),_p._346.jpg>,

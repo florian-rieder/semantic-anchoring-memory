@@ -1,9 +1,15 @@
 {
+    "manual": {
+        "num_triples": 36
+    },
     "semantic": {
-        "num_triples": 33
+        "num_triples": 32,
+        "num_relevant_triples": "11 (ignoring mixed entities) + 9 (correctly assigned types) = 20"
     },
     "landwehr": {
-        "num_facts": 12
+        "num_facts": 8,
+        "num_triples_manual": 14,
+        "num_relevant_triples": 14
     },
     "dbpedia": null
 }

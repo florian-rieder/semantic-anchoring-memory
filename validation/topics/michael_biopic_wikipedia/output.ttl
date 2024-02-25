@@ -2,47 +2,44 @@
 @prefix ns2: <http://example.com/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-ns2:Michael a ns1:Person ;
-    rdfs:label "Michael" ;
-    ns1:director ns2:Antoine_Fuqua ;
-    ns1:mainInterest ns2:life_of_Michael_Jackson ;
-    ns1:starring ns2:Colman_Domingo,
-        ns2:Miles_Teller,
-        ns2:Nia_Long,
-        ns2:life_of_Michael_Jackson ;
-    ns1:writer ns2:John_Logan .
+ns2:Colman_Domingo a ns1:Actor ;
+    rdfs:label "Colman Domingo" ;
+    ns1:starring ns2:Michael .
 
-ns2:film a ns1:Film ;
-    rdfs:label "film" ;
-    ns1:producedBy ns2:Lionsgate_in_the_United_States ;
-    ns1:releaseDate ns2:April_18%2C_2025 ;
-    ns2:beganOnDate "January 22, 2024" ;
-    ns2:wasDelayedDueTo ns2:2023_SAG-AFTRA_strike .
+ns2:Miles_Teller a ns1:Actor ;
+    rdfs:label "Miles Teller" ;
+    ns1:starring ns2:Michael .
 
-ns2:2023_SAG-AFTRA_strike a ns1:SocietalEvent ;
-    rdfs:label "2023 SAG-AFTRA strike" .
+ns2:Nia_Long a ns1:Actor ;
+    rdfs:label "Nia Long" ;
+    ns1:starring ns2:Michael .
+
+ns2:Universal_Pictures a ns1:Company ;
+    rdfs:label "Universal Pictures" ;
+    ns1:producedBy ns2:Michael ;    # False ! This is likely the result of the merging ot Universal Pictures and other production companies !
+    ns2:willRelease ns2:Michael,
+        "Michael internationally" .
 
 ns2:Antoine_Fuqua a ns1:MovieDirector ;
     rdfs:label "Antoine Fuqua" .
 
-ns2:April_18%2C_2025 a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
-    rdfs:label "April 18, 2025" .
-
-ns2:Colman_Domingo a ns1:Actor ;
-    rdfs:label "Colman Domingo" .
+ns2:Graham_King a ns1:Producer ;
+    rdfs:label "Graham King" .
 
 ns2:John_Logan a ns1:Writer ;
     rdfs:label "John Logan" .
 
-ns2:Lionsgate_in_the_United_States a ns1:Company ;
-    rdfs:label "Lionsgate in the United States" .
+ns2:life_of_Michael_Jackson a ns1:WrittenWork ;
+    rdfs:label "life of Michael Jackson" ;
+    ns1:movie ns2:Michael .
 
-ns2:Miles_Teller a ns1:Person ;
-    rdfs:label "Miles Teller" .
-
-ns2:Nia_Long a ns1:Actor ;
-    rdfs:label "Nia Long" .
-
-ns2:life_of_Michael_Jackson a ns1:Work ;
-    rdfs:label "life of Michael Jackson" .
+ns2:Michael a ns1:Film,
+        ns1:Person ;
+    rdfs:label "Michael" ;
+    ns1:director ns2:Antoine_Fuqua ;
+    ns1:followedBy ns2:life_of_Michael_Jackson ;
+    ns1:mainInterest ns2:life_of_Michael_Jackson ;
+    ns1:producedBy ns2:Graham_King ;
+    ns1:writer ns2:John_Logan ;
+    ns2:willBeReleasedOn "April 18, 2025" .
 

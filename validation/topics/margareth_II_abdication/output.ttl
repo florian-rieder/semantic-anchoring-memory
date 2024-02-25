@@ -18,7 +18,7 @@ ns2:global_issues_like_climate_change_in_her_address a ns1:TopicalConcept ;
 ns2:interest_in_archaeology_and_the_arts a owl:Thing ;
     rdfs:label "interest in archaeology and the arts" .
 
-ns2:Crown_Prince_Frederik a ns1:Person ;
+ns2:Crown_Prince_Frederik a ns1:Person ;  # Once again, merged entity between Queen Margreth II and Crown Prince Frederik
     rdfs:label "Crown Prince Frederik" ;
     ns1:age "83 years old" ;
     ns1:illustrator ns2:1977_Danish-language_version_of_The_Lord_of_the_Rings_under_a_pseudonym ;

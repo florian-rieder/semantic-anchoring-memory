@@ -1,26 +1,54 @@
 @prefix ns1: <http://dbpedia.org/ontology/> .
 @prefix ns2: <http://example.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ns2:Over_310_people a ns1:Event ;
+    rdfs:label "Over 310 people" ;
+    ns1:managementMountain ns2:First_recorded_ascent_of_Mount_Everest ;
+    ns2:numberOfDeathsOn ns2:First_recorded_ascent_of_Mount_Everest .
+
+ns2:29_May_1953 a <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#TimeInterval> ;
+    rdfs:label "29 May 1953" .
 
 ns2:8%2C848.86_meters a ns1:Altitude ;
     rdfs:label "8,848.86 meters" .
 
-ns2:China a ns1:Country ;
-    rdfs:label "China" .
+ns2:Southeast_ridge_route a ns1:RouteOfTransportation ;
+    rdfs:label "Southeast ridge route" ;
+    ns1:locatedInArea ns2:Tibet%2C_China .
 
-ns2:Chomolungma a ns1:Mountain ;
-    rdfs:label "Chomolungma" .
+ns2:avalanches a ns1:NaturalPlace ;
+    rdfs:label "avalanches" .
 
-ns2:First_recorded_ascent_of_Mount_Everest a ns1:MountainPass ;
+ns2:wind a ns1:StormSurge ;
+    rdfs:label "wind" .
+
+ns2:Mahalangur_Himal_sub-range a ns1:MountainRange ;
+    rdfs:label "Mahalangur Himal sub-range" ;
+    ns1:isPartOf ns2:Mahalangur_Himal_sub-range .
+
+ns2:Tibet%2C_China a ns1:PopulatedPlace ; # Seems like Tibet, China, and Nepal have been merged into one entity
+    rdfs:label "Tibet, China" .
+
+ns2:First_recorded_ascent_of_Mount_Everest a ns1:HistoricPlace,
+        ns1:Mountain ; # Again, Mount Everest, and First recorded ascent of Mount Everest have been mixed up
     rdfs:label "First recorded ascent of Mount Everest" ;
-    ns1:alias ns2:Chomolungma ;
-    ns1:altName ns2:Chomolungma ;
+    ns1:alpsSubsection ns2:Mahalangur_Himal_sub-range ;
+    ns1:ascent ns2:First_recorded_ascent_of_Mount_Everest,
+        "1960" ;
     ns1:elevation ns2:8%2C848.86_meters ;
     ns1:firstAscentPerson ns2:First_recorded_ascent_of_Mount_Everest ;
-    ns1:firstPlace "1953" ;
+    ns1:firstAscentYear ns2:29_May_1953 ;
     ns1:highestMountain ns2:First_recorded_ascent_of_Mount_Everest ;
-    ns1:locatedInArea ns2:China,
-        ns2:First_recorded_ascent_of_Mount_Everest ;
-    ns1:route ns2:First_recorded_ascent_of_Mount_Everest ;
-    ns2:attractsClimbers ns2:First_recorded_ascent_of_Mount_Everest .
+    ns1:locatedInArea ns2:First_recorded_ascent_of_Mount_Everest,
+        ns2:Tibet%2C_China ;
+    ns1:route ns2:Southeast_ridge_route ;
+    ns2:attractsClimbers ns2:First_recorded_ascent_of_Mount_Everest ;
+    ns2:presentsDangersSuchAs ns2:First_recorded_ascent_of_Mount_Everest,
+        ns2:avalanches,
+        ns2:wind,
+        "altitude sickness" ;
+    ns2:wasMadeBy ns2:First_recorded_ascent_of_Mount_Everest ;
+    rdf:label ns2:Tibet%2C_China .
 
