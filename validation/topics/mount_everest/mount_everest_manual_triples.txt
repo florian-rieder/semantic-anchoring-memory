@@ -1,4 +1,4 @@
-Mount Everest, type, Mountain
+Mount Everest, type, Mountain       S   
 Mount Everest, highest point, 8,848.86 m (29,031.7 ft) Ranked 1st
 Mount Everest, Prominence, 8,848.86 m (29,031.7 ft) Ranked 1st
 Mount Everest, coordinates, 27°59′17″N 86°55′31″E
@@ -11,19 +11,25 @@ Mount Everest, is located in, Nepal
 Mount Everest, location, on the border between Koshi Province, Nepal and Tibet Autonomous Region, China 
 Mount Everest, location, Solukhumbu District, Koshi Province, Nepal
 Mount Everest, location, Tingri County, Xigazê, Tibet Autonomous Region, China      S 
-Mount Everest, country, China    
+Mount Everest, country, China
+China, type, country
+Nepal, type, country
 Mount Everest, country, Nepal
 Mount Everest, parent range, Mahalangur Himal, Himalayas    L      S 
+Mahalangur Himal, type, MountainRange       S 
 Mount Everest, event, first ascent
 first ascent, date, 29 May 1953             L   S  
 first ascent, climbed by, Edmund Hillary    L   
 first ascent, climbed by, Tenzing Norgay    L   
-Mount Everest, normal route is, Southeast ridge (Nepal)
+Mount Everest, normal route is, Southeast ridge route (Nepal)
+Southeast ridge route, located in, Nepal
+Southeast ridge route, type, route of transportation        S   
 Mount Everest, is, Earth's highest mountain above sea level     L   
 Mount Everest, located in, the Mahalangur Himal sub-range of the Himalayas.
 The China–Nepal border runs across its summit point.        L   
 Mount Everest, elevation, elevation (snow height)
-elevation (snow height), height, 8,848.86 m (29,031 ft 8+1⁄2 in)    L   S   
+elevation (snow height), height, 8,848.86 m (29,031 ft 8+1⁄2 in)    L   S 
+elevation (snow height), type, altitude     S  
 elevation (snow height), most recently established date, 2020
 elevation (snow height), most recently established by, the Chinese and Nepali authorities
 Mount Everest, attracts, many climbers
@@ -31,22 +37,31 @@ Mount Everest, attracts, highly experienced mountaineers.
 Mount Everest, has, main climbing routes
 Main climbing routes, include, standard route
 standard route, details, approaching the summit from the southeast in Nepal     S 
+standard route, equivalent to, Southeast ridge route
 Main climbding routes, include, approaching from the north in Tibet
 Climbing mount everest,
 Standard route, does not, pose substantial technical climbing challenges
 Mount Everest, presents danger, altitude sickness       S 
+altitude sickness, type, Disease
 Mount Everest, presents danger, weather
+weather, type, NaturalEvent
 Mount Everest, presents danger, wind        S 
+Wind, type, NaturalEvent            S   
 Mount Everest, presents danger, hazards from avalanches     S 
+hazards from avalanches, type, NaturalEvent
 Mount Everest, presents danger, hazards from the Khumbu Icefall.
 Mount Everest, number of people who died on, 310    S 
 Mount Everest, number of bodies remaining, Over 200
 The first recorded efforts to reach Everest's summit, were made by, British mountaineers.
 Nepal, did not allow, foreigners to enter the country at the time
 The British, made several attempts, on the north ridge route from the Tibetan side.
-The first reconnaissance expedition by the British, reached height, 7,000 m (22,970 ft)
-The first reconnaissance expedition by the British, date, in 1921
-The first reconnaissance expedition by the British, route, the North Col.
+The British, type, expedition team
+The first reconnaissance expedition, made by, the british
+The first reconnaissance expedition, type, expedition
+The first reconnaissance expedition, reached height, 7,000 m (22,970 ft)
+The first reconnaissance expedition, date, in 1921
+The first reconnaissance expedition, route, the North Col.
+the 1922 expedition, type, expedition
 the 1922 expedition, reached height, 8,320 m (27,300 ft)
 the 1922 expedition, route, the north ridge route
 the 1922 expedition, marks, the first time a human had climbed above 8,000 m (26,247 ft).
@@ -54,11 +69,14 @@ The 1924 expedition, resulted in, one of the greatest mysteries on Everest to th
 The 1924 expedition, climbed by, George Mallory
 The 1924 expedition, climbed by, Andrew Irvine
 THe 1924 expedition, attempt, final attempt
+final attempt, type, attempt
 final attempt, date, 8 june 1924
 final attempt, returned, never
-final attempt, sparked, debate as to whether they were the first to reach the top
+final attempt, sparked debate, as to whether they were the first to reach the top
 first ascent, route, southeast ridge route
 Tenzig Norgay, had reached in 1923, 8,595 m (28,199 ft) as a member of the 1952 Swiss expedition.
 The Chinese mountaineering team of Wang Fuzhou, Gonpo, and Qu Yinhua, made, the first reported ascent of the peak
+The Chinese mountaineering team of Wang Fuzhou, Gonpo, and Qu Yinhua, type, expedition team
+the first reported ascent of the peak, type, expedition
 the first reported ascent of the peak, route, north ridge
 the first reported ascent of the peak, date, 25 May 1960.   S 

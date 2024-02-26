@@ -153,7 +153,13 @@ def main(args):
 
         # 6. Compute statistics over landwehr's output
         landwehr_stats = {
-            'num_facts': len(landwehr_facts)
+            'num_facts': len(landwehr_facts),
+            "num_triples": "Compute this, human !",
+            "true_positives": "Compute this, human !",
+            "false_positives": "Compute this, human !",
+            "true_negatives": "Compute this, human !",
+            "precision": "Compute this, human !",
+            "recall": "Compute this, human !"
         }
 
         # 7. Look for information in dbpedia about the topic
@@ -229,6 +235,11 @@ def get_statistics(kg_path: str) -> dict:
     # Return the number of triples
     return {
         "num_triples": num_triples,
+        "true_positives": "Compute this, human !",
+        "false_positives": "Compute this, human !",
+        "true_negatives": "Compute this, human !",
+        "precision": "Compute this, human !",
+        "recall": "Compute this, human !"
     }
 
 

@@ -26,7 +26,7 @@ ns2:wind a ns1:StormSurge ;
 
 ns2:Mahalangur_Himal_sub-range a ns1:MountainRange ;
     rdfs:label "Mahalangur Himal sub-range" ;
-    ns1:isPartOf ns2:Mahalangur_Himal_sub-range .
+    ns1:isPartOf ns2:Mahalangur_Himal_sub-range . # probably is part of Himalayas, but got mixed up due to too much similarity
 
 ns2:Tibet%2C_China a ns1:PopulatedPlace ; # Seems like Tibet, China, and Nepal have been merged into one entity
     rdfs:label "Tibet, China" .
