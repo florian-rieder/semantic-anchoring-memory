@@ -1,15 +1,23 @@
 {
     "manual": {
-        "num_triples": 38
+        "num_triples": 45
     },
     "semantic": {
         "num_triples": 24,
-        "relevant_triples": "11 (ignoring the confusion between the prince and the queen) + 5 (correctly assigned types) = 16"
+        "true_positives": 16,
+        "false_positives": "24-16 = 8",
+        "false_negatives": "45-24 = 21",
+        "precision": "16/24 = 0.667",
+        "recall": "16/45 = 0.355"
     },
     "landwehr": {
         "num_facts": 13,
         "num_triples_manual": 24,
-        "relevant_triples": 24
+        "true_positives": 24,
+        "false_positives": 0,
+        "false_negatives": "45-24 = 21",
+        "precision": "24/24 = 1.000",
+        "recall": "24/45 = 0.534"
     },
     "dbpedia": {
         "num_triples": 708

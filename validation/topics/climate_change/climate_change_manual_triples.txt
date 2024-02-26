@@ -109,7 +109,7 @@ tipping points, include, melting all of the Greenland ice sheet
 2015 Paris Agreement, includes, keep warming "well under 2 °C"  S   
 keep warming "well under 2 °C", type, objective
 2015 Paris Agreement, has, pledges
-pledges, type, Commitment
+pledges, type, StatedResolution
 pledges, made by, nations
 nations, type, International organization or Country    S   
 pledges, has limits, effects of global warming would still reach about 2.7 °C (4.9 °F) by the end of the century    S 

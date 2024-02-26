@@ -2,20 +2,26 @@ Queen's annual New Year's Eve address, date, Sunday 31 december 2023
 Queen's annual New Year's Eve address, announcement of, abdication      L   S   
 Margrethe II, spoke, Queen's annual New Year's Eve address  S 
 Margrethe II, is, Queen of Denmark      L
+Margrethe II, type, Monarch
 Margrethe II, informed the public of, abdication
 abdication, date, January 14
 Margrethe II, oldest son, Crown Prince Frederik     L   S 
+Crown Prince Frederik, type, Person                             S   
 Crown Prince Frederik, will succeed to, Margrethe II        L   S 
 Margrethe II, age, 83 years old     L   S 
-Margrethe II, served as Queen for, nearly 52 years.     L
-Queen's annual New Year's Eve address, media, television
+Margrethe II, served as Queen for, nearly 52 years.     L   S   
+Queen's annual New Year's Eve address, type, TelevisionShow
+Queen's annual New Year's Eve address, type, SocietalEvent      S   
 Queen's annual New Year's Eve address, discussed, global issues like climate change.    L   S 
+global issues like climate change, type, TopicalConcept         S 
 Monarch of Denmark, serves as, head of state    L
+the danish parliament, type, Parliament
 the danish parliament, is in charge of, forming the government. L
 Margrethe II, received high levels of support from, the Danish people,  L
 Margrethe II, public approval in 2022, 80%      L   S 
 Mette Frederiksen, Prime Minister of, Denmark       L
 Mette Frederiksen, statement, BN1
+Mette Frederiksen, type, Person
 BN1, about, Margrethe II
 BN1, expressed gratitude for, decades of service on the throne      L
 BN1, calling her, "epitome of Denmark"
@@ -36,3 +42,4 @@ Margrethe II, frequently traveled, around her country without formal accompanime
 Margrethe II, visited deployed Danish soldiers in the War in Afghanistan at 70 years old.       L
 Margrethe II, is known for, her interest in archaeology and the arts.       L   S 
 Margrethe II, is known for, illustrations of a 1977 Danish-language version of The Lord of the Rings under a pseudonym      L   S 
+1977 Danish-language version of The Lord of the Rings, type, WrittenWork        S 
