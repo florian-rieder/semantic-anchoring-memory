@@ -16,7 +16,7 @@ ns2:Nia_Long a ns1:Actor ;
 
 ns2:Universal_Pictures a ns1:Company ;
     rdfs:label "Universal Pictures" ;
-    ns1:producedBy ns2:Michael ;    # False ! This is likely the result of the merging ot Universal Pictures and other production companies !
+    ns1:producedBy ns2:Michael ;    # False ! This is likely the result of the merging ot Universal Pictures and other production companies ! And it should be produces, not produced by, or it should be the other way around
     ns2:willRelease ns2:Michael,
         "Michael internationally" .
 

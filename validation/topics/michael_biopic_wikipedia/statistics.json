@@ -1,15 +1,23 @@
 {
     "manual": {
-        "num_triples": 36
+        "num_triples": 52
     },
     "semantic": {
         "num_triples": 32,
-        "num_relevant_triples": "11 (ignoring mixed entities) + 9 (correctly assigned types) = 20"
+        "true_positives": "20",
+        "false_positives": "32-20 = 12",
+        "false_negatives": "52-32 = 20",
+        "precision": "20/32 = 0.625",
+        "recall": "20/52 = 0.385"
     },
     "landwehr": {
         "num_facts": 8,
         "num_triples_manual": 14,
-        "num_relevant_triples": 14
+        "true_positives": 14,
+        "false_positives": 0,
+        "false_negatives": "36 - 14 = 22",
+        "precision": "14/14 = 1.000",
+        "recall": "14/52 = 0.269"
     },
     "dbpedia": null
 }

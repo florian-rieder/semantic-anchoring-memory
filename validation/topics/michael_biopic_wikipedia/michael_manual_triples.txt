@@ -1,36 +1,52 @@
 Michael (2025 film), directed by, Antoine Fuqua         L   S   
-Michael (2025 film), written by, John Logan             L   S   
+Antoine Fuqua, type, Movie Director                         S   
+Michael (2025 film), written by, John Logan             L   S  
+John Logan, type, Writer                                    S    
 Michael (2025 film), produced by, Graham King           L   S 
+Graham King, type, Producer                                 S 
 Michael (2025 film), produced by, John Branca           L   
+John Branca, type, Producer
 Michael (2025 film), produced by, John McClain          L   
+John McClain, type, Producer
 Michael (2025 film), starring, Jaafar Jackson           L   S   
+Jaafar Jacson, type, Actor
 Michael (2025 film), starring, Colman Domingo           L   S   
+Colman Domingo, type, Actor                                 S 
 Michael (2025 film), starring, Nia Long                 L   S   
+Nia Long, type, Actor                                       S 
 Michael (2025 film), starring, Miles Teller             L   S   
+Miles Teller, type, Actor                                   S 
 Michael (2025 film), cinematography by, Dion Beebe      L   
-Michael (2025 film), production company, GK Films       L   
-Michael (2025 film), production company, Lionsgate      L  
+Dion Beebe, type, cinematographer
+Michael (2025 film), production company, GK Films       L 
+GK Films, type, Company  
+Michael (2025 film), production company, Lionsgate      L
+Lionsgate, type, Company
 Michael (2025 film), distributed by, Lionsgate (United States)
 Michael (2025 film), distributed by, Universal Pictures (International)     S 
+Universal Pictures, type, Company                           S 
 Michael (2025 film), release date, April 18, 2025       L   S   
 Michael (2025 film), Country, United States
+United States, type, Country
 Michael (2025 film), Language, English
+Michael (2025 film), type, Film                         S   
 Michael (2025 film), is, an upcoming American biographical musical drama film
 Michael (2025 film), about, life of Michael Jackson     S   
+lige of Michael Jackson, type, Narrative                S 
 life of Michael Jackson, about, Michael Jackson         S   
 Michael Jackson, type, singer
 Michael Jackson, type, songwriter
 Michael Jackson, type, dancer
 Jafaar Jackson, nephew of, Michael Jackson
-Jafaar Jackson, film debut, Michael (2025 film)
+Jafaar Jackson, film debut in, Michael (2025 film)
 Michael (2025 film), premise, follows the life and four-decade-spanning career of Michael Jackson.      L   
-Michael (2025 film), role, Michael Jackson
+Michael (2025 film), has character, Michael Jackson
 Michael Jackson, played by, Jaafar Jackson
-Michael (2025 film), role, young Michael Jackson
+Michael (2025 film), has character, young Michael Jackson
 yound Michael Jackson, played by, Juliano Krue Valdi
-Michael (2025 film), role, Joe Jackson
+Michael (2025 film), has character, Joe Jackson
 Joe Jackson, played by, Colman Domingo 
-Michael (2025 film), role, Katherine Jackson
+Michael (2025 film), has character, Katherine Jackson
 Katherine Jackson, played by, Nia Long
-Michael (2025 film), role, John Branca
+Michael (2025 film), has character, John Branca
 John Branca, played by, Miles Teller
