@@ -75,7 +75,7 @@ ns2:Climate_change a ns1:TopicalConcept ;
         ns2:flooding,
         ns2:intense_storms,
         ns2:thawing_permafrost ;
-    ns2:impactYears ns2:recent_years ;
+    ns2:impactYears ns2:recent_years ; # Probably, impact of global warming will continue
     ns2:includes ns2:Climate_change ;
     ns2:involve ns2:generating_electricity_cleanly ;
     ns2:threatens ns2:Climate_change,

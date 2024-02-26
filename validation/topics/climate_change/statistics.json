@@ -1,15 +1,23 @@
 {
     "manual": {
-        "num_triples": 81
+        "num_triples": 133
     },
     "semantic": {
         "num_triples": 68,
-        "relevant_triples": "19 (triples in manual) + 11 (correctly assigned types) = 30"
+        "true_positives": 30,
+        "false_negatives": "130 - 30 = 100",
+        "false_positives": "68 - 30 = 38",
+        "precision": "30/68 = 0.441",
+        "recall": "30/133 = 0.226"
     },
     "landwehr": {
         "num_facts": 6,
         "num_manual_triples": 27,
-        "relevant_triples": 27
+        "relevant_triples": 27,
+        "false_negatives": "130 - 27 = 103",
+        "false_positives": 0,
+        "precision": "27/27 = 1.000",
+        "recall": "27/133 = 0.203"
     },
     "dbpedia": {
         "num_triples": 987

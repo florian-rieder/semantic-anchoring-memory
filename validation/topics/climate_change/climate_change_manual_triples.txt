@@ -1,34 +1,59 @@
-Global map, shows, sea temperature rises of 0.5 to 1 degree Celsius     L   S
+Global map, shows, sea temperature rises of 0.5 to 1 degree Celsius     L   S   
 Global map, shows, land temperature rises of 1 to 2 degree Celsius      L
-Global map, shows, Arctic temperature rises of up to 4 degrees Celsius.     L   S
-Climate change, describes, Global warming               L
+Global map, shows, Arctic temperature rises of up to 4 degrees Celsius.     L   S   
+Global map, type, map
+Climate change, describes, Global warming               L   S   
+Climate change, type, NaturalEvent or TopicalConcept    S   
+Global warming, type, NaturalEvent
 Global warming, is, the ongoing increase in global average temperature
-Global warming, has effect, effects of global warming
+Global warming, has effect, effects of global warming       S   
 Climate change, describes, effects of global warming    L
+Effects of global warming, type, NaturalEvent
 Climate change, includes in a broader sense, previous long-term changes to Earth's climate
 Global warming, is more rapid than, previous changes
 Global warming, is primarily caused by, humans burning fossil fuels     L
+Fossil fuel use, type, activity
 Fossil fuel use, add to, greenhouse gas     L
+deforestation, type, Activity
 deforestation, add to, greenhouse gas       L
-some agricultural and industrial practices, add to, greenhouse gas      L   S
-Earth's average surface air temperature, has increased, almost 1.5 °C (about 2.5 °F) since the Industrial Revolution.   L   S
+some agricultural and industrial practices, type, activity
+some agricultural and industrial practices, add to, greenhouse gas      L   S   
+Earth's average surface air temperature, has increased, almost 1.5 °C (about 2.5 °F) since the Industrial Revolution.   L   S   
+Earth's average surface air temperature, type, Temperature
+The 20-year average, type, Temperature
 The 20-year average, shows, the progressive influence of human activity.
+greenhouse gas, type, ChemicalCompound
 greenhouse gas, contains, carbon dioxide        L
+carbon dioxide, type, ChemicalSubstance
 greenhouse gas, contains, methane       L
+methane, type, ChemicalSubstance
 greenhouse gas, absorbs, some of the heat that the Earth radiates after it warms from sunlight
 greenhouse gas, trap more, heat in Earth's lower atmosphere
+heat in Earth's lower atmosphere, type, property of Earth's climate
 heat in Earth's lower atmosphere, causes, Global warming
 Climate change, has an increasing impact on, the environment        L
-Deserts, are, expanding             L   S
+Climate change, has an increasing impact on, expanding deserts            L   S     
+Expanding deserts, type, NaturalEvent or Desert     S   
+heatwaves, type, NaturalEvent
 heatwaves, are becoming, more common    L
 wildfires, are becoming, more common   L
+wildfires, type, NaturalEvent
 Effects of global warming, includes, amplified warming in the Arctic
-Amplified warming in the Arctic, has contributed to, thawing permafrost     L   S
+Amplified warming in the Arctic, type, NaturalEvent
+Amplified warming in the Arctic, has contributed to, thawing permafrost     L   S   
+thawing permafrost, type, NaturalEvent      S   
 Amplified warming in the Arctic, has contributed to, retreat of glaciers    L
+retreat of glaciers, type, NaturalEvent
 Amplified warming in the Arctic, has contributed to, sea ice decline        L
-Higher temperatures, cause, more intense storms     L   S
+Sea ice decline, type, NaturalEvent
+Higher temperatures, cause, more intense storms     L   S   
+more intense storms, type, NaturalEvent     S   
 Higher temperatures, cause, droughts        L
+droughts, type, NaturalEvent
+Higher temperatures, type, TopicalConcept
 Higher temperatures, cause, weather extremes    L
+weather extremes, type, NaturalEvent
+Rapid environmental change, type, NaturalEvent
 Rapid environmental change, happening in, mountains
 Rapid environmental change, happening in, coral reefs
 Rapid environmental change, happening in, the Arctic
@@ -38,22 +63,34 @@ Effects of global warming, will continue, even if efforts to minimize future war
 Effects of global warming, include, ocean heating       L
 Effects of global warming, include, ocean acidification     L
 Effects of global warming, include, sea level rise      L
-Climate change, causes, threat to people    S
-Threat to people, consists of, increased flooding   S
+Climate change, causes, threat to people    S   
+Threat to people, type, physical threat
+Threat to people, consists of, increased flooding   S   
+Increased flooding, type, NaturalEvent     S   
 Threat to people, consists of, extreme heat
-Threat to people, consists of, increased food and water scarcity    S
+extreme heat, type, NaturalEvent
+Threat to people, consists of, increased food and water scarcity    S   
+increased food and water scarcity, type, Situation (Human condition)
 Threat to people, consists of, more disease
-Threat to people, consists of, economic loss    S
+more disease, type, Disease
+Threat to people, consists of, economic loss    S   
+Economic loss, type, Economic event (SocietalEvent)
 Threat to people, can result in, human migration
-Threat to people, can result in, human conflict     S
+human migration, type, societal event
+Threat to people, can result in, human conflict     S   
+human conflict, type, military conflict (which is a type of societal event)     S   
+World Health Organization (WHO), type, International organization       S   
 World Health Organization (WHO), calls, climate change the greatest threat to global health in the 21st century
 Societies, will experience, more severe risks without action to limit warming
 Ecosystems, will experience, more severe risks without action to limit warming
+Humans, type, Species
 Humans, can adapt, BN1
-BN1, to climate change
+BN1, can adapt to, climate change
 BN1, through, efforts
 efforts, include, flood control measures
-efforts, include, drought-resistant crops
+flood control measures, type, strategy
+efforts, include, drought-resistant crops,
+drought-resistant crops, type, Plant
 efforts, partially reduce, threat to people
 BN1, has limits, some limit to adaptation
 some limit to adaptation, has already been, reached
@@ -63,19 +100,34 @@ Poorer communities, ar the most vulnerable to, climate change
 global warming effects, have been felt, in recent years.
 warmest average temperature recorded, has temperature increase in Celsius, +1.48 °C
 warmest average temperature recorded, has temperature increase in Farenheit, +2.66 °F
-warmest average temperature recorded, year, 2023    S
-Additional warming, will increase, global warming effects
+warmest average temperature recorded, year, 2023    S   
+2023, type, year        S   
+Additional warming, will increase, effects of global warming
 Additional warming, can trigger, tipping points
 tipping points, include, melting all of the Greenland ice sheet
-2015 Paris Agreement, includes, keep warming "well under 2 °C"  S
+2015 Paris Agreement, type, Treaty
+2015 Paris Agreement, includes, keep warming "well under 2 °C"  S   
+keep warming "well under 2 °C", type, objective
 2015 Paris Agreement, has, pledges
+pledges, type, Commitment
 pledges, made by, nations
-pledges, has limits, effects of global warming would still reach about 2.7 °C (4.9 °F) by the end of the century    S
-Limiting warming to 1.5 °C, requires, halving emissions by 2030     S
-Limiting warming to 1.5 °C, requires, achieving net-zero emissions by 2050  S
-Strategies to phase out fossil fuels, involve, conserving energy    S
-Strategies to phase out fossil fuels, involve, generating electricity cleanly   S
-Strategies to phase out fossil fuels, involve, using electricity to power transportation, heat buildings, and operate industrial facilities.
+nations, type, International organization or Country    S   
+pledges, has limits, effects of global warming would still reach about 2.7 °C (4.9 °F) by the end of the century    S 
+Limiting warming to 1.5 °C, requires, halving emissions by 2030     S   
+halving emissions by 2030, type, strategy
+Limiting warming to 1.5 °C, requires, achieving net-zero emissions by 2050  S   
+achieving net-zero emissions by 2050, type, strategy
+Strategies to phase out fossil fuels, type, strategy
+Strategies to phase out fossil fuels, involve, conserving energy    S   
+conserving energy, type, strategy
+Strategies to phase out fossil fuels, involve, generating electricity cleanly   S   
+generating electricity cleanly, type, strategy
+Strategies to phase out fossil fuels, involve, using electricity to power transportation, heat buildings, and operate industrial facilities
+using electricity to power transportation, heat buildings, and operate industrial facilities, type, strategy
+The electricity supply, type, Infrastructure
 The electricity supply, can be made cleaner and more plentiful by, vastly increasing deployment of wind, and solar power, alongside other forms of renewable energy and nuclear power.
+Carbon recapture, type, Technology
 Carbon recapture, can be achieved by, increasing forest cover
-Carbon recapture, can be achieved by, farming with methods that capture carbon in soil.
+increasing forest cover, type, strategy
+Carbon recapture, can be achieved by, farming with methods that capture carbon in soil
+farming with methods that capture carbon in soil, type, strategy
