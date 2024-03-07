@@ -6,7 +6,7 @@
         "num_triples": 32,
         "true_positives": "20",
         "false_positives": "32-20 = 12",
-        "false_negatives": "52-32 = 20",
+        "false_negatives": "52-20 = 32",
         "precision": "20/32 = 0.625",
         "recall": "20/52 = 0.385"
     },
@@ -15,7 +15,7 @@
         "num_triples_manual": 14,
         "true_positives": 14,
         "false_positives": 0,
-        "false_negatives": "36 - 14 = 22",
+        "false_negatives": "52 - 14 = 38",
         "precision": "14/14 = 1.000",
         "recall": "14/52 = 0.269"
     },

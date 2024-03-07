@@ -32,9 +32,12 @@ ENTITIES_DB_PATH = _MEMORIES_PATH + 'entities_db'
 # Path of RDF memory graph
 MEMORY_PATH = _MEMORIES_PATH + 'knowledge.ttl'
 
+# Number of possible classes to retrieve
 K_CLASSES_TO_RETRIEVE = 8
+# Number of possible predicates to retrieve
 K_PREDICATES_TO_RETRIEVE = 16
-COREFERENCE_SIMILARITY_THRESHOLD = 0.75
+# Similarity threshold over which an entity is matched in the entities db
+COREFERENCE_SIMILARITY_THRESHOLD = 0.90
 
 
 # Create ontology databases directory if it doesn't exist

@@ -1,6 +1,6 @@
 import unittest
 
-from server.memory.semantic.learn import parse_triplet_string
+from memory.semantic.learn import parse_triplet_string
 
 class TestParseTripletString(unittest.TestCase):
 
